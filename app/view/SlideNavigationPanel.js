@@ -1,3 +1,20 @@
+Ext.define('app.view.Draggable', {
+    override: 'Ext.util.Draggable',
+    getConstraint: function() {
+        return {
+            min: {
+                x: 0,
+                y: 0
+            },
+            max: {
+                x: 250,
+                y: 0
+            }
+        }
+    }
+    
+});
+
 Ext.define('app.view.SlideNavigationPanel', {
     extend: 'Ext.Container',
     requires: [
@@ -10,6 +27,10 @@ Ext.define('app.view.SlideNavigationPanel', {
     
     initialize: function() {
         this.callParent();
+        
+        this.setLayout({
+            type: 'hbox'
+        });
                 
         model = this.getInitialConfig('model');
         
@@ -36,14 +57,17 @@ Ext.define('app.view.SlideNavigationPanel', {
             store: this.store,
             itemTpl: '{title}',
             grouped: true,
-            width: 200,
+            width: 250,
             docked: 'left',
-            hidden: true,
+            //floating: true,
+            //hidden: true,
             items: [{
                 xtype: 'titlebar',
                 title: 'Navigation',
-                dock: 'top'
-            }]
+                docked: 'top'
+            }],
+            //renderTo: document.body,
+            style: 'position: absolute; top: 0; left: 0; width: 250px; height: 100%; z-index: 0'
         });
         
         this.container = Ext.create('Ext.Container', {
@@ -62,11 +86,17 @@ Ext.define('app.view.SlideNavigationPanel', {
             scrollable: 'vertical',
             style: 'width: 100%;', // this is needed to make the container fill the screen
             docked: 'left',
+            cls: 'slidenav',
             items: [{
                 xtype: 'titlebar',
                 title: 'Content',
                 dock: 'top'
-            }]
+            }],
+            //renderTo: document.body,
+            draggable: {
+                direction: 'horizontal'
+            }
+            //floating: true
         });
                 
         this.add([
@@ -76,10 +106,12 @@ Ext.define('app.view.SlideNavigationPanel', {
     },
     
     afterRender: function() {
+        /*
         this.mon(this.container.el, {
             dragstart: this.onDragStart,
             scope: this
         });
+        */
     },
     
     onDragStart: function(e) {
