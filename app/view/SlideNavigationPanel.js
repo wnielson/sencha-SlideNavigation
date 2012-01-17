@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Ext.define('app.view.Draggable', {
     override: 'Ext.util.Draggable',
     getConstraint: function() {
@@ -15,11 +16,14 @@ Ext.define('app.view.Draggable', {
     
 });
 
+=======
+>>>>>>> gh-pages
 Ext.define('app.view.SlideNavigationPanel', {
     extend: 'Ext.Container',
     requires: [
         'Ext.dataview.List'
     ],
+<<<<<<< HEAD
     xtype: 'slidenav',
     config: {
         model: 'SlideNavigationPanelItem'
@@ -42,10 +46,62 @@ Ext.define('app.view.SlideNavigationPanel', {
         
         this.store = Ext.create('Ext.data.Store', {
             model: model,
+=======
+    xtype: 'slidenavigationview',
+    config: {
+        /**
+         * @cfg {Object} list Configuration for the navigation list
+         */
+        list: {
+            width: 250,
+            maxDrag: null,
+            itemTpl: '{title}',
+            grouped: true,
+            items: [{
+                xtype: 'toolbar',
+                docked: 'top',
+                ui: 'light'
+            }]
+        },
+        
+        /**
+         * @cfg {Object} container Configuration for the container
+         */
+        container: {
+            items: []
+        },
+        
+        /**
+         * @cfg {String} slideSelector Class selector of object (or parent)
+         * of which dragging should be allowed.  Defaults to the entire container.
+         * For example, this could be set to something like 'x-toolbar' to restrict
+         * dragging only to a toolbar.
+         */
+        slideSelector: ''
+    },
+    
+    constructor: function(config) {
+        this.config = Ext.merge({}, this.config, config || {});
+        return this.callParent(arguments);
+    },
+            
+    initialize: function() {        
+        this.callParent();
+        
+        this.addCls('x-slidenavigation');
+        
+        this.store = Ext.create('Ext.data.Store', {
+            model: this.getModel(),
+>>>>>>> gh-pages
             sorters: 'group',
             getGroupString: function(record) {
                 return record.get('group');
             },
+<<<<<<< HEAD
+=======
+            
+            // TODO: Move this into config and support itemtap callback
+>>>>>>> gh-pages
             data: [
                 {title: 'Item 1', group: 'Group 1'},
                 {title: 'Item 2', group: 'Group 1'},
@@ -53,6 +109,7 @@ Ext.define('app.view.SlideNavigationPanel', {
             ]
         });
         
+<<<<<<< HEAD
         this.list = Ext.create('Ext.dataview.List', {
             store: this.store,
             itemTpl: '{title}',
@@ -134,5 +191,115 @@ Ext.define('app.view.SlideNavigationPanel', {
     hideList: function() {
         this.list.hide();
         this.container.setDisabled(false);
+=======
+        this.add([
+            this.createNavigationList(this.store),
+            this.createContainer()
+        ]);
+    },
+    
+    /**
+     * Registers the model with Ext.ModelManager, if it hasn't been
+     * already, and returns the name of the model for use in the store.
+     */
+    getModel: function() {
+        model = 'SlideNavigationPanelItem';
+        
+        if (!Ext.ModelManager.get(model)) {
+            Ext.regModel(model, {
+                fields: ['title', 'group']
+            });
+        }
+        
+        return model;
+    },
+    
+    /**
+     * Generates a new Ext.dataview.List object to be used for displaying
+     * the navigation items.
+     */
+    createNavigationList: function(store) {
+        return Ext.create('Ext.dataview.List', Ext.merge({}, this.config.list, {
+            store: store,
+            docked: 'left',
+            cls: 'x-slidenavigation-list',
+            style: 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0'
+        }));
+    },
+    
+    /**
+     * Generates and returns the Ext.Container to be used for displaying content.  This
+     * is the "slideable" container that is positioned above the navigation list.
+     */
+    createContainer: function() {
+        var config = this.config;
+        return Ext.create('Ext.Container', Ext.merge({}, this.config.container, {
+            docked: 'left',
+            cls: 'x-slidenavigation-container',
+            style: 'width: 100%; opacity: 1;',
+            docked: 'left',
+            draggable: {
+                direction: 'horizontal',
+                constraint: {
+                    min: { x: 0, y: 0 },
+                    max: { x: config.list.maxDrag || Math.max(screen.width, screen.height), y: 0 }
+                },
+                listeners: {
+                    dragstart: function(draggable, e, offset, eOpts) {
+                        if (config.slideSelector) {
+                            node = e.target;
+                            while (node = node.parentNode) {
+                                if (node.className && node.className.indexOf(config.slideSelector) > -1) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }
+                    },
+                    
+                    drag: Ext.Function.createThrottled(function(draggable, e, offset, eOpts) {
+                        if (offset.x < 1) {
+                            draggable.getElement().removeCls('open');
+                        } else {
+                            draggable.getElement().addCls('open');
+                        }
+                    }, 100),
+                    
+                    dragend: function(draggable, e, eOpts) {
+                        var velocity  = Math.abs(e.deltaX / e.deltaTime),
+                            direction = (e.deltaX > 0) ? "right" : "left",
+                            offset    = Ext.clone(draggable.offset),
+                            threshold = parseInt(config.list.width * .70);
+                        
+                        switch (direction) {
+                            case "right":
+                                offset.x = (velocity > 0.75 || offset.x > threshold) ? config.list.width : 0;
+                                break;
+                            case "left":
+                                offset.x = (velocity > 0.75 || offset.x < threshold) ? 0 : config.list.width;
+                                break;
+                        }
+                                                
+                        draggable.setOffset(offset, {
+                            duration: 100
+                        });
+                    }
+                },
+                translatable: {
+                    listeners: {
+                        animationend: function(translatable, b, c) {
+                            // Remove the class when the animation is finished, but only
+                            // if we're "closed"
+                            el = this.down('container[cls="x-slidenavigation-container"]');
+                            if (el.draggableBehavior.draggable.offset.x < 1) {
+                                el.removeCls('open');
+                            }
+                        },
+                        scope: this // The "x-slidenavigation" container
+                    }
+                }
+            }
+        }));
+>>>>>>> gh-pages
     }
 });

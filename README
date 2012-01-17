@@ -1,0 +1,10 @@
+SlideNavigationPanel
+====================
+
+This is an attempt to make a Facebook-like navigation panel for Sencha Touch 2.
+To see a current working demo, visit http://wnielson.github.com/sencha-SlideNavigationPanel/
+on a mobile device (only iOS and Safari have been tested).  To see the navigation menu in the
+example, "flick" the toolbar (at the top) to the right; the opposite action can be used to close
+the menu.
+
+This is a work in progress and still needs a lot of work.

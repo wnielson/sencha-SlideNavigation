@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Test</title>
+<<<<<<< HEAD
     <link rel="stylesheet" href="/touch/resources/css/sencha-touch.css" type="text/css" />
     <script type="text/javascript" src="/touch/sencha-touch-all.js"></script>
     <script type="text/javascript" src="app.js"></script>
@@ -17,6 +18,35 @@
             height: 100%;
             */
             background: #fff;
+=======
+    <link rel="stylesheet" href="touch/resources/css/sencha-touch.css" type="text/css" />
+    <script type="text/javascript" src="touch/sencha-touch-all.js"></script>
+    <script type="text/javascript" src="app.js"></script>
+    <style>
+        .x-dragging {
+            /* TODO: box-shadow on iphone kills the FPS during css animations; figure out
+             *       a better way to add a drop shadow to the container.
+             *
+             
+             box-shadow: 0 0 4px 1px #999;
+             -webkit-box-shadow: 0 0 4px 1px #999;
+             */
+        }
+        
+        .x-slidenavigation {
+            
+        }
+        
+        .x-slidenavigation-container.open {
+            /**  To override the default background color of 'white' use
+             *   '!important', like so:
+             */
+            /*
+            background: #000 !important;
+            */
+            border-width: 0 0 0 4px;
+            -webkit-border-image: url(shadow.png) 4 4 4 4 / 0 0 0 6px;
+>>>>>>> gh-pages
         }
     </style>
 </head>
