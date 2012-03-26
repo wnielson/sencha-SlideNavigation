@@ -24,7 +24,7 @@ Then in whatever component you wish to use the view, add:
         'Ext.ux.slidenavigation.View',
     ]
 
-or simple extend the 'Ext.ux.slidenavigation.View' class.
+or simply extend the 'Ext.ux.slidenavigation.View' class.
 
 For a more complete example, see "app/view/Main.js".
 
