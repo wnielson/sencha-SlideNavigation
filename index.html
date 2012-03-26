@@ -1,54 +1,92 @@
-<!doctype html>
-<html>
+<!DOCTYPE HTML>
+<html manifest="" lang="en-US">
 <head>
-    <title>Test</title>
-<<<<<<< HEAD
-    <link rel="stylesheet" href="/touch/resources/css/sencha-touch.css" type="text/css" />
-    <script type="text/javascript" src="/touch/sencha-touch-all.js"></script>
-    <script type="text/javascript" src="app.js"></script>
-    <style>
-        .x-dragging {
-            opacity: 1;
-        }
-        .slidenav {
-            /*
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            height: 100%;
-            */
-            background: #fff;
-=======
-    <link rel="stylesheet" href="touch/resources/css/sencha-touch.css" type="text/css" />
-    <script type="text/javascript" src="touch/sencha-touch-all.js"></script>
-    <script type="text/javascript" src="app.js"></script>
-    <style>
-        .x-dragging {
-            /* TODO: box-shadow on iphone kills the FPS during css animations; figure out
-             *       a better way to add a drop shadow to the container.
-             *
-             
+    <meta charset="UTF-8">
+    <title>SlideNavigationExample</title>
+    <style type="text/css">
+        /**
+         *  Example CSS for adding a drop shadow to the main container.
+         */
+        .x-slidenavigation-container.x-dragging,
+        .x-slidenavigation-container.open {
+            /**
+             *  The performance of this now seem acceptable.  If you
+             *  are experiencing a laggy sliding animation you can either
+             *   a) Turn off the slide animation (set duration to 0), or
+             *   b) Use the border-image method below
+             */
              box-shadow: 0 0 4px 1px #999;
              -webkit-box-shadow: 0 0 4px 1px #999;
-             */
         }
-        
-        .x-slidenavigation {
-            
+    
+    
+        /**
+         * Example of an initial loading indicator.
+         * It is recommended to keep this as minimal as possible to provide instant feedback
+         * while other resources are still being loaded for the first time
+         */
+        html, body {
+            height: 100%;
         }
-        
-        .x-slidenavigation-container.open {
-            /**  To override the default background color of 'white' use
-             *   '!important', like so:
-             */
-            /*
-            background: #000 !important;
-            */
-            border-width: 0 0 0 4px;
-            -webkit-border-image: url(shadow.png) 4 4 4 4 / 0 0 0 6px;
->>>>>>> gh-pages
+
+        #appLoadingIndicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -10px;
+            margin-left: -50px;
+            width: 100px;
+            height: 20px;
+        }
+
+        #appLoadingIndicator > * {
+            background-color: #FFFFFF;
+            float: left;
+            height: 20px;
+            margin-left: 11px;
+            width: 20px;
+            -webkit-animation-name: appLoadingIndicator;
+            -webkit-border-radius: 13px;
+            -webkit-animation-duration: 0.8s;
+            -webkit-animation-iteration-count: infinite;
+            -webkit-animation-direction: linear;
+            opacity: 0.3
+        }
+
+        #appLoadingIndicator > :nth-child(1) {
+            -webkit-animation-delay: 0.18s;
+        }
+
+        #appLoadingIndicator > :nth-child(2) {
+            -webkit-animation-delay: 0.42s;
+        }
+
+        #appLoadingIndicator > :nth-child(3) {
+            -webkit-animation-delay: 0.54s;
+        }
+
+        @-webkit-keyframes appLoadingIndicator{
+            0% {
+                opacity: 0.3
+            }
+
+            50% {
+                opacity: 1;
+                background-color:#1985D0
+            }
+
+            100% {
+                opacity:0.3
+            }
         }
     </style>
+    <script id="microloader" type="text/javascript" src="sdk/microloader/development.js"></script>
 </head>
-<body id="orient"></body>
+<body>
+    <div id="appLoadingIndicator">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</body>
 </html>

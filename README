@@ -1,10 +1,38 @@
-SlideNavigationPanel
-====================
+Slide Navigation
+================
 
 This is an attempt to make a Facebook-like navigation panel for Sencha Touch 2.
-To see a current working demo, visit http://wnielson.github.com/sencha-SlideNavigationPanel/
-on a mobile device (only iOS and Safari have been tested).  To see the navigation menu in the
-example, "flick" the toolbar (at the top) to the right; the opposite action can be used to close
-the menu.
+To see a current working demo, visit http://wnielson.github.com/sencha-SlideNavigation/
+on a mobile device (only iOS and Safari have been tested).  To see the
+navigation menu in the example, "flick" the toolbar (at the top) to the right;
+the opposite action can be used to close the menu.
 
-This is a work in progress and still needs a lot of work.
+This is a work in progress and still needs work.
+
+Getting Started
+---------------
+
+Using the SlideNavigation view in your project is now easier than before.
+Simply add the following at the beginning of your app:
+
+    Ext.Loader.setConfig({enabled:true});
+    Ext.Loader.setPath('Ext.ux', './ux');
+
+Then in whatever component you wish to use the view, add:
+
+    requires = [
+        'Ext.ux.slidenavigation.View',
+    ]
+
+or simple extend the 'Ext.ux.slidenavigation.View' class.
+
+For a more complete example, see "app/view/Main.js".
+
+Building the Example Application
+--------------------------------
+
+To build the example you need to put Sencha Touch into a folder named sdk.  Then run:
+
+    ./sdk/commands/sencha app build -e testing
+
+This will produce the example app in the `build/testing` directory.
