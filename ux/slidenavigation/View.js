@@ -45,9 +45,27 @@ Ext.define('Ext.ux.slidenavigation.View', {
         /**
          * @cfg {Array} items An array of items to put into the navigation list.
          * The items can either be Ext components or special objects with a "handler"
-         * key, which should be a function to execute when selected.
+         * key, which should be a function to execute when selected.  Additionally, you
+         * can define the order of the items by defining an 'order' parameter.
          */        
         items: [],
+        
+        /**
+         * @cfg {Object} groups Mapping of group name to order.  For example,
+         * say you have defined two groups; "Group 1" and "Group 2".  By default
+         * these will be presented in the list in that order, since
+         * 'Group 1' > 'Group 2'.  This option allows you to change the ordering,
+         * like so:
+         *
+         *  groups: {
+         *    'Group 1': 2
+         *    'Group 2': 1
+         *  }
+         *
+         *  You should use integers, starting with 1, as the ordering value.
+         *  By default groups are ordered by their name.
+         */
+        groups: {},
         
         /**
          * @cfg {Object} defaults An object of default values to apply to any Ext
@@ -97,8 +115,11 @@ Ext.define('Ext.ux.slidenavigation.View', {
          */
         me.store = Ext.create('Ext.data.Store', {
             model: me.getModel(),
-            sorters: 'group',
-            groupField: 'group'
+            sorters: 'order',
+            grouper: {
+                property: 'group',
+                sortProperty: 'groupOrder'
+            }
         });
         
         /**
@@ -162,7 +183,8 @@ Ext.define('Ext.ux.slidenavigation.View', {
      */
     addItems: function(items) {
         var me = this,
-            items = Ext.isArray(items) ? items : [items];
+            items = Ext.isArray(items) ? items : [items],
+            groups = me.config.groups;
         
         Ext.each(items, function(item, index) {
             if (!Ext.isDefined(item.index)) {
@@ -273,14 +295,28 @@ Ext.define('Ext.ux.slidenavigation.View', {
      * already, and returns the name of the model for use in the store.
      */
     getModel: function() {
-        model = 'SlideNavigationPanelItem';
+        var model = 'SlideNavigationPanelItem',
+            groups = this.config.groups;
         
         if (!Ext.ModelManager.get(model)) {
             Ext.define(model, {
                 extend: 'Ext.data.Model',
                 config: {
                     idProperty: 'index',
-                    fields: ['index', 'title', 'group']
+                    fields: [
+                        'index', 'title', 'group',
+                        {
+                            name: 'order',
+                            defaultValue: 1
+                        },{
+                            name: 'groupOrder',
+                            convert: function(value, record) {
+                                // By default we group and order by group name.
+                                group = record.get('group');
+                                return groups[group] || group;
+                            }
+                        }
+                    ]
                 }
             });
         }
