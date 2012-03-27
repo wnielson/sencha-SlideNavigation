@@ -11,11 +11,20 @@ This is a work in progress and still needs quite a bit of work, but it is usable
 Getting Started
 ---------------
 
-Using the SlideNavigation view in your project is now easier than before.
-Simply add the following at the beginning of your app::
+Using the SlideNavigation view in your project is now easier than before.  All you need
+to do is place the 'ux' folder somewhere within your application, then add the following
+to your app (at the top of 'app.js' is a good place)::
 
     Ext.Loader.setConfig({enabled:true});
     Ext.Loader.setPath('Ext.ux', './ux');
+
+Adjust './ux' to wherever you actually placed the 'ux' folder.
+
+.. note::
+
+    If you are using this with other components that also use the 'Ext.ux' namespace,
+    simply place the 'ux/slidenavigation' folder into the same location that you've placed
+    the other 'Ext.ux' components.
 
 Then in whatever component you wish to use the view, add::
 
@@ -23,7 +32,7 @@ Then in whatever component you wish to use the view, add::
         'Ext.ux.slidenavigation.View',
     ]
 
-or simply extend the `Ext.ux.slidenavigation.View` class.
+or simply extend the 'Ext.ux.slidenavigation.View' class.
 
 For a more complete example, see `app/view/Main.js`.
 
