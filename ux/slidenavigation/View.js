@@ -67,14 +67,16 @@ Ext.define('Ext.ux.slidenavigation.View', {
         
         /**
          * @cfg {Integer} slideDuration Number of miliseconds to animate the sliding
-         * of the container when "flicked".
+         * of the container when "flicked".  By default the animation is disable on
+         * Android.
          */
         slideDuration: Ext.os.is.Android ? 0 : 100,
         
         /**
          * @cfg {Integer} selectSlideDuration Number of miliseconds to animate the sliding
          * of the container when list item is selected (if closeOnSelect = true). The default
-         * value here of 300 gives a much nicer feel.
+         * value here of 300 gives a much nicer feel.  By default the animation is disable on
+         * Android.
          */
         selectSlideDuration: Ext.os.is.Android ? 0 : 300,
         
@@ -381,7 +383,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
             docked: 'left',
             cls: 'x-slidenavigation-list',
             style: 'position: absolute; top: 0; left: 0; height: 100%;' +
-                   'width: 100% !important; z-index: 50',
+                   'width: 100% !important; z-index: 2',
             listeners: {
                 select: this.onSelect,
                 scope: this
@@ -398,7 +400,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
         return Ext.create('Ext.Container', Ext.merge({}, this.config.container, {
             docked: 'left',
             cls: 'x-slidenavigation-container',
-            style: 'width: 100%; height: 100%; opacity: 1; z-index: 100',
+            style: 'width: 100%; height: 100%; position: absolute; opacity: 1; z-index: 5',
             docked: 'left',
             layout: 'card',
             draggable: {

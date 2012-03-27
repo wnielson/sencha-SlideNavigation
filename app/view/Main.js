@@ -1,6 +1,14 @@
 Ext.define("SlideNavigationExample.view.Main", {
     extend: 'Ext.ux.slidenavigation.View',
     
+    requires: [
+        'Ext.Container',
+        'Ext.MessageBox',
+        'Ext.Panel',
+        'Ext.Toolbar',
+        'Ext.event.publisher.Dom'
+    ],
+    
     config: {
         fullscreen: true,
          

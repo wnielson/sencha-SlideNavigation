@@ -9,7 +9,7 @@ Ext.application({
     name: 'SlideNavigationExample',
 
     requires: [
-        'Ext.MessageBox',
+        'Ext.Msg'
     ],
 
     views: [

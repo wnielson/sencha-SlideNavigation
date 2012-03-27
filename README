@@ -36,3 +36,14 @@ To build the example you need to put Sencha Touch into a folder named sdk.  Then
     ./sdk/commands/sencha app build -e testing
 
 This will produce the example app in the `build/testing` directory.
+
+
+Notes
+-----
+
+So far this has been tested on:
+
+	* iOS 5
+	* Android 4.0.3
+	* Android 2.3.3
+	
