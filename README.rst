@@ -20,11 +20,9 @@ to your app (at the top of 'app.js' is a good place)::
 
 Adjust './ux' to wherever you actually placed the 'ux' folder.
 
-.. note::
-
-    If you are using this with other components that also use the 'Ext.ux' namespace,
-    simply place the 'ux/slidenavigation' folder into the same location that you've placed
-    the other 'Ext.ux' components.
+Note: If you are using this with other components that also use the 'Ext.ux' namespace,
+simply place the 'ux/slidenavigation' folder into the same location that you've placed
+the other 'Ext.ux' components.
 
 Then in whatever component you wish to use the view, add::
 
