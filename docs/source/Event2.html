@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">// Using @mixins to include all members of Ext.event.Touch
+// into here to keep documentation simpler
+<span id='Ext-event-Event'>/**
+</span> * @mixins Ext.event.Touch
+ *
+ * Just as {@link Ext.dom.Element} wraps around a native DOM node, {@link Ext.event.Event} wraps the browser's native
+ * event-object normalizing cross-browser differences such as mechanisms to stop event-propagation along with a method
+ * to prevent default actions from taking place.
+ *
+ * Here is a simple example of how you use it:
+ *
+ *     @example preview
+ *     Ext.Viewport.add({
+ *         layout: 'fit',
+ *         items: [
+ *             {
+ *                 docked: 'top',
+ *                 xtype: 'toolbar',
+ *                 title: 'Ext.event.Event example!'
+ *             },
+ *             {
+ *                 id: 'logger',
+ *                 styleHtmlContent: true,
+ *                 html: 'Tap somewhere!',
+ *                 padding: 5
+ *             }
+ *         ]
+ *     });
+ *
+ *     Ext.Viewport.element.on({
+ *         tap: function(e, node) {
+ *             var string = '';
+ *
+ *             string += 'You tapped at: &lt;strong&gt;{ x: ' + e.pageX + ', y: ' + e.pageY + ' }&lt;/strong&gt; &lt;i&gt;(e.pageX &amp; e.pageY)&lt;/i&gt;';
+ *             string += '&lt;hr /&gt;';
+ *             string += 'The HTMLElement you tapped has the className of: &lt;strong&gt;' + e.target.className + '&lt;/strong&gt; &lt;i&gt;(e.target)&lt;/i&gt;';
+ *             string += '&lt;hr /&gt;';
+ *             string += 'The HTMLElement which has the listener has a className of: &lt;strong&gt;' + e.getTarget().className + '&lt;/strong&gt; &lt;i&gt;(e.getTarget())&lt;/i&gt;';
+ *
+ *             Ext.getCmp('logger').setHtml(string);
+ *         }
+ *     });
+ *
+ * ## Recgonisers
+ *
+ * Sencha Touch includes a bunch of default event recognisers to know when a user taps, swipes, etc.
+ *
+ * For a full list of default recognisers, and more information, please view the {@link Ext.event.recognizer.Recognizer} documentation
+ */
+Ext.define('Ext.event.Event', {
+    alternateClassName: 'Ext.EventObject',
+    isStopped: false,
+
+    set: function(name, value) {
+        if (arguments.length === 1 &amp;&amp; typeof name != 'string') {
+            var info = name;
+
+            for (name in info) {
+                if (info.hasOwnProperty(name)) {
+                    this[name] = info[name];
+                }
+            }
+        }
+        else {
+            this[name] = info[name];
+        }
+    },
+
+<span id='Ext-event-Event-method-stopEvent'>    /**
+</span>     * Stop the event (preventDefault and stopPropagation)
+     */
+    stopEvent: function() {
+        return this.stopPropagation();
+    },
+
+<span id='Ext-event-Event-method-stopPropagation'>    /**
+</span>     * Cancels bubbling of the event.
+     */
+    stopPropagation: function() {
+        this.isStopped = true;
+
+        return this;
+    }
+});
+</pre>
+</body>
+</html>

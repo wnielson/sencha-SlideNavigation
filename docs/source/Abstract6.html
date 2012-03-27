@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-device-orientation-Abstract'>/**
+</span> * @private
+ */
+Ext.define('Ext.device.orientation.Abstract', {
+    extend: 'Ext.EventedBase',
+
+<span id='Ext-device-orientation-Abstract-event-orientationchange'>    /**
+</span>     * @event orientationchange
+     * Fires when the orientation has been changed on this device.
+     *
+     *     Ext.device.Orientation.on({
+     *         scope: this,
+     *         orientationchange: function(e) {
+     *             console.log('Alpha: ', e.alpha);
+     *             console.log('Beta: ', e.beta);
+     *             console.log('Gamma: ', e.gamma);
+     *         }
+     *     });
+     *
+     * @param {Object} event The event object
+     * @param {Object} event.alpha The alpha value of the orientation event
+     * @param {Object} event.beta The beta value of the orientation event
+     * @param {Object} event.gamma The gamma value of the orientation event
+     */
+
+    onDeviceOrientation: function(e) {
+        this.doFireEvent('orientationchange', [e]);
+    }
+});
+</pre>
+</body>
+</html>

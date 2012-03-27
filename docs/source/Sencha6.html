@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-device-orientation-Sencha'>/**
+</span> * @private
+ */
+Ext.define('Ext.device.orientation.Sencha', {
+    extend: 'Ext.device.orientation.Abstract',
+
+    requires: [
+        'Ext.device.Communicator'
+    ],
+
+<span id='Ext-device-orientation-Sencha-method-initialize'>    /**
+</span>     * From the native shell, the callback needs to be invoked infinitely using a timer, ideally 50 times per second.
+     * The callback expects one event object argument, the format of which should looks like this:
+     *
+     *     {
+     *          alpha: 0,
+     *          beta: 0,
+     *          gamma: 0
+     *     }
+     *
+     * Refer to [Safari DeviceOrientationEvent Class Reference][1] for more details.
+     * 
+     * [1]: http://developer.apple.com/library/safari/#documentation/SafariDOMAdditions/Reference/DeviceOrientationEventClassRef/DeviceOrientationEvent/DeviceOrientationEvent.html
+     */
+    initialize: function() {
+        Ext.device.Communicator.send({
+            command: 'Orientation#watch',
+            callbacks: {
+                callback: this.onDeviceOrientation
+            },
+            scope: this
+        });
+    }
+});
+</pre>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-device-geolocation-Sencha'>/**
+</span> * @private
+ */
+Ext.define('Ext.device.geolocation.Sencha', {
+    extend: 'Ext.device.geolocation.Abstract',
+
+    getCurrentPosition: function(config) {
+        config = this.callParent([config]);
+
+        Ext.apply(config, {
+            command: 'Geolocation#getCurrentPosition',
+            callbacks: {
+                success: config.success,
+                failure: config.failure
+            }
+        });
+
+        Ext.applyIf(config, {
+            scope: this
+        });
+
+        delete config.success;
+        delete config.failure;
+
+        Ext.device.Communicator.send(config);
+
+        return config;
+    },
+
+    watchPosition: function(config) {
+        config = this.callParent([config]);
+
+        Ext.apply(config, {
+            command: 'Geolocation#watchPosition',
+            callbacks: {
+                success: config.callback,
+                failure: config.failure
+            }
+        });
+
+        Ext.applyIf(config, {
+            scope: this
+        });
+
+        delete config.callback;
+        delete config.failure;
+
+        Ext.device.Communicator.send(config);
+
+        return config;
+    },
+
+    clearWatch: function() {
+        if (this.geolocation) {
+            this.geolocation.destroy();
+        }
+
+        this.geolocation = null;
+    }
+});
+</pre>
+</body>
+</html>

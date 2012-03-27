@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-device-device-Abstract'>/**
+</span> * @private
+ */
+Ext.define('Ext.device.device.Abstract', {
+<span id='Ext-device-device-Abstract-property-name'>    /**
+</span>     * @property {String} name
+     * Returns the name of the current device. If the current device does not have a name (for example, in a browser), it will
+     * default to `Not available`.
+     */
+    name: 'not available',
+
+<span id='Ext-device-device-Abstract-property-uuid'>    /**
+</span>     * @property {String} uuid
+     * Returns a unique identifier for the current device. If the current device does not have a unique identifier (for example,
+     * in a browser), it will default to `anonymous`.
+     */
+    uuid: 'anonymous',
+
+<span id='Ext-device-device-Abstract-property-platform'>    /**
+</span>     * @property {String} platform
+     * The current platform the device is running on.
+     */
+    platform: Ext.os.name
+});
+</pre>
+</body>
+</html>

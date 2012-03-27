@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-device-notification-Abstract'>/**
+</span> * @private
+ */
+Ext.define('Ext.device.notification.Abstract', {
+<span id='Ext-device-notification-Abstract-method-show'>    /**
+</span>     * A simple way to show a notification.
+     *
+     *     Ext.device.Notification.show({
+     *        title: 'Verification',
+     *        message: 'Is your email address is: test@sencha.com',
+     *        buttons: Ext.MessageBox.OKCANCEL,
+     *        callback: function(button) {
+     *            if (button == &quot;ok&quot;) {
+     *                console.log('Verified');
+     *            } else {
+     *                console.log('Nope.');
+     *            }
+     *        }
+     *     });
+     *
+     * @param {Object} config An object which contains the following config options:
+     *
+     * @param {String} config.title The title of the notification
+     *
+     * @param {String} config.message The message to be displayed on the notification
+     *
+     * @param {String/String[]} [config.buttons=&quot;OK&quot;]
+     * The buttons to be displayed on the notification. It can be a string, which is the title of the button, or an array of multiple strings.
+     * Please not that you should not use more than 2 buttons, as they may not be displayed correct on all devices.
+     *
+     * @param {Function} config.callback
+     * A callback function which is called when the notification is dismissed by clicking on the configured buttons.
+     * @param {String} config.callback.buttonId The id of the button pressed, one of: 'ok', 'yes', 'no', 'cancel'.
+     *
+     * @param {Object} config.scope The scope of the callback function
+     */
+    show: function(config) {
+        if (!config.message) {
+            throw('[Ext.device.Notification#show] You passed no message');
+        }
+
+        if (!config.buttons) {
+            config.buttons = &quot;OK&quot;;
+        }
+
+        if (!Ext.isArray(config.buttons)) {
+            config.buttons = [config.buttons];
+        }
+
+        if (!config.scope) {
+            config.scope = this;
+        }
+
+        return config;
+    },
+
+<span id='Ext-device-notification-Abstract-method-vibrate'>    /**
+</span>     * Vibrates the device.
+     */
+    vibrate: Ext.emptyFn
+});
+</pre>
+</body>
+</html>

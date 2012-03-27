@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-picker-Slot'>/**
+</span> * @private
+ *
+ * A general {@link Ext.picker.Picker} slot class.  Slots are used to organize multiple scrollable slots into
+ * a single {@link Ext.picker.Picker}.
+ *
+ *     {
+ *         name : 'limit_speed',
+ *         title: 'Speed Limit',
+ *         data : [
+ *             {text: '50 KB/s', value: 50},
+ *             {text: '100 KB/s', value: 100},
+ *             {text: '200 KB/s', value: 200},
+ *             {text: '300 KB/s', value: 300}
+ *         ]
+ *     }
+ *
+ * See the {@link Ext.picker.Picker} documentation on how to use slots.
+ */
+Ext.define('Ext.picker.Slot', {
+    extend: 'Ext.DataView',
+    xtype : 'pickerslot',
+    alternateClassName: 'Ext.Picker.Slot',
+    requires: [
+        'Ext.XTemplate',
+        'Ext.data.Store',
+        'Ext.Component',
+        'Ext.data.StoreManager'
+    ],
+
+<span id='Ext-picker-Slot-event-slotpick'>    /**
+</span>     * @event slotpick
+     * Fires whenever an slot is picked
+     * @param {Ext.picker.Slot} this
+     * @param {Mixed} value The value of the pick
+     * @param {HTMLElement} node The node element of the pick
+     */
+
+    isSlot: true,
+
+    config: {
+<span id='Ext-picker-Slot-cfg-title'>        /**
+</span>         * @cfg {String} title
+         * The title to use for this slot. Null for no title
+         * @accessor
+         */
+        title: null,
+
+<span id='Ext-picker-Slot-cfg-showTitle'>        /**
+</span>         * @private
+         * @cfg {Boolean} showTitle
+         * @accessor
+         */
+        showTitle: true,
+
+<span id='Ext-picker-Slot-cfg-cls'>        /**
+</span>         * @private
+         * @cfg {String} cls
+         * The main component class
+         * @accessor
+         */
+        cls: Ext.baseCSSPrefix + 'picker-slot',
+
+<span id='Ext-picker-Slot-cfg-name'>        /**
+</span>         * @cfg {String} name
+         * The name of this slot. This config option is required.
+         * @accessor
+         */
+        name: null,
+
+<span id='Ext-picker-Slot-cfg-value'>        /**
+</span>         * @cfg {Number} value The value of this slot
+         * @accessor
+         */
+        value: null,
+
+<span id='Ext-picker-Slot-cfg-flex'>        /**
+</span>         * @cfg {Number} flex
+         * @accessor
+         * @hide
+         */
+        flex: 1,
+
+<span id='Ext-picker-Slot-cfg-align'>        /**
+</span>         * @cfg {String} align
+         * The horizontal alignment of the slot's contents. Valid values are &quot;left&quot;, &quot;center&quot;,
+         * and &quot;right&quot;. Defaults to &quot;left&quot;.
+         * @accessor
+         */
+        align: 'left',
+
+<span id='Ext-picker-Slot-cfg-displayField'>        /**
+</span>         * @cfg {String} displayField
+         * The display field in the store.
+         * Defaults to 'text'.
+         * @accessor
+         */
+        displayField: 'text',
+
+<span id='Ext-picker-Slot-cfg-valueField'>        /**
+</span>         * @cfg {String} valueField
+         * The value field in the store.
+         * Defaults to 'value'.
+         * @accessor
+         */
+        valueField: 'value',
+
+<span id='Ext-picker-Slot-cfg-scrollable'>        /**
+</span>         * @cfg {Object} scrollable
+         * @accessor
+         * @hide
+         */
+        scrollable: {
+            direction: 'vertical',
+            indicators: false,
+            momentumEasing: {
+                minVelocity: 2
+            },
+            slotSnapEasing: {
+                duration: 100
+            }
+        }
+    },
+
+    constructor: function() {
+<span id='Ext-picker-Slot-property-selectedIndex'>        /**
+</span>         * @property selectedIndex
+         * @type Number
+         * The current selectedIndex of the picker slot
+         * @private
+         */
+        this.selectedIndex = 0;
+
+<span id='Ext-picker-Slot-property-picker'>        /**
+</span>         * @property picker
+         * @type Ext.picker.Picker
+         * A reference to the owner Picker
+         * @private
+         */
+
+        this.callParent(arguments);
+    },
+
+<span id='Ext-picker-Slot-method-applyTitle'>    /**
+</span>     * Sets the title for this dataview by creating element
+     */
+    applyTitle: function(title) {
+        //check if the title isnt defined
+        if (title) {
+            //create a new title element
+            title = Ext.create('Ext.Component', {
+                cls: Ext.baseCSSPrefix + 'picker-slot-title',
+                docked      : 'top',
+                html        : title
+            });
+        }
+
+        return title;
+    },
+
+    updateTitle: function(newTitle, oldTitle) {
+        if (newTitle) {
+            this.add(newTitle);
+            this.setupBar();
+        }
+
+        if (oldTitle) {
+            this.remove(oldTitle);
+        }
+    },
+
+    updateShowTitle: function(showTitle) {
+        var title = this.getTitle();
+        if (title) {
+            title[showTitle ? 'show' : 'hide']();
+
+            this.setupBar();
+        }
+    },
+
+    updateDisplayField: function(newDisplayField) {
+        this.setItemTpl('&lt;div class=&quot;' + Ext.baseCSSPrefix + 'picker-item {cls} &lt;tpl if=&quot;extra&quot;&gt;' + Ext.baseCSSPrefix + 'picker-invalid&lt;/tpl&gt;&quot;&gt;{' + newDisplayField + '}&lt;/div&gt;');
+    },
+
+<span id='Ext-picker-Slot-method-updateAlign'>    /**
+</span>     * Updates the {@link #align} configuration
+     */
+    updateAlign: function(newAlign, oldAlign) {
+        var element = this.element;
+        element.addCls(Ext.baseCSSPrefix + 'picker-' + newAlign);
+        element.removeCls(Ext.baseCSSPrefix + 'picker-' + oldAlign);
+    },
+
+<span id='Ext-picker-Slot-method-applyData'>    /**
+</span>     * Looks at the {@link #data} configuration and turns it into {@link #store}
+     */
+    applyData: function(data) {
+        var parsedData = [],
+            ln = data &amp;&amp; data.length,
+            i, item, obj;
+
+        if (data &amp;&amp; Ext.isArray(data) &amp;&amp; ln) {
+            for (i = 0; i &lt; ln; i++) {
+                item = data[i];
+                obj = {};
+                if (Ext.isArray(item)) {
+                    obj[this.valueField] = item[0];
+                    obj[this.displayField] = item[1];
+                }
+                else if (Ext.isString(item)) {
+                    obj[this.valueField] = item;
+                    obj[this.displayField] = item;
+                }
+                else if (Ext.isObject(item)) {
+                    obj = item;
+                }
+                parsedData.push(obj);
+            }
+        }
+
+        return data;
+    },
+
+    updateData: function(data) {
+        this.setStore(Ext.create('Ext.data.Store', {
+            model: 'x-textvalue',
+            data : data
+        }));
+    },
+
+    // @private
+    initialize: function() {
+        this.callParent();
+
+        var scroller = this.getScrollable().getScroller();
+
+        this.on({
+            scope: this,
+            painted: 'onPainted',
+            itemtap: 'doItemTap'
+        });
+
+        scroller.on({
+            scope: this,
+            scrollend: 'onScrollEnd'
+        });
+    },
+
+    // @private
+    onPainted: function() {
+        this.setupBar();
+    },
+
+<span id='Ext-picker-Slot-method-getPicker'>    /**
+</span>     * Returns an instance of the owner picker
+     * @private
+     */
+    getPicker: function() {
+        if (!this.picker) {
+            this.picker = this.getParent();
+        }
+
+        return this.picker;
+    },
+
+    // @private
+    setupBar: function() {
+        if (!this.rendered) {
+            //if the component isnt rendered yet, there is no point in calculating the padding just eyt
+            return;
+        }
+
+        var element = this.element,
+            innerElement = this.innerElement,
+            picker = this.getPicker(),
+            bar = picker.bar,
+            value = this.getValue(),
+            showTitle = this.getShowTitle(),
+            title = this.getTitle(),
+            scrollable = this.getScrollable(),
+            scroller = scrollable.getScroller(),
+            titleHeight = 0,
+            barY, elY, barHeight, padding, paddingBottom;
+
+        barY = bar.getY();
+        elY = element.getY();
+
+        if (showTitle &amp;&amp; title) {
+            elY += title.element.getHeight();
+        }
+
+        barHeight = bar.getHeight();
+
+        if (showTitle &amp;&amp; title) {
+            titleHeight = title.element.getHeight();
+        }
+
+        padding = Math.ceil((element.getHeight() - titleHeight - barHeight) / 2);
+        this.slotPadding = padding;
+
+        innerElement.setStyle({
+            padding: padding + 'px 0 ' + (padding) + 'px'
+        });
+
+        scroller.refresh();
+        scroller.setSlotSnapSize(barHeight);
+
+        this.setValue(value);
+    },
+
+    // @private
+    doItemTap: function(list, index, item, e) {
+        var me = this;
+        me.selectedIndex = index;
+        me.selectedNode = item;
+        me.scrollToItem(item, true);
+
+        me.fireEvent('slotpick', me, me.getValue(), me.selectedNode);
+    },
+
+    // @private
+    scrollToItem: function(item, animated) {
+        var y = item.getY(),
+            parentEl = item.parent(),
+            parentY = parentEl.getY(),
+            // padding = this.slotPadding,
+            scrollView = this.getScrollable(),
+            scroller = scrollView.getScroller(),
+            difference;
+
+        difference = y - parentY;
+
+        scroller.scrollTo(0, difference, animated);
+    },
+
+    // @private
+    onScrollEnd: function(scroller, x, y) {
+        var me = this,
+            index = Math.round(y / me.picker.bar.getHeight()),
+            viewItems = me.getViewItems(),
+            item = viewItems[index];
+
+        if (item) {
+            me.selectedIndex = index;
+            me.selectedNode = item;
+
+            me.fireEvent('slotpick', me, me.getValue(), me.selectedNode);
+        }
+    },
+
+<span id='Ext-picker-Slot-method-getValue'>    /**
+</span>     * Returns the vlaue of this slot
+     * @private
+     */
+    getValue: function() {
+        var store = this.getStore(),
+            record, value;
+
+        if (!store) {
+            return;
+        }
+
+        if (!this.rendered) {
+            return this._value;
+        }
+
+        //if the value is ever false, that means we do not want to return anything
+        if (this._value === false) {
+            return null;
+        }
+
+        record = store.getAt(this.selectedIndex);
+
+        value = record ? record.get(this.getValueField()) : null;
+        this._value = value;
+
+        return value;
+    },
+
+<span id='Ext-picker-Slot-method-setValue'>    /**
+</span>     * Sets the value of this slot
+     * @private
+     */
+    setValue: function(value) {
+        if (!Ext.isDefined(value)) {
+            return;
+        }
+
+        if (!this.rendered || !value) {
+            //we don't want to call this until the slot has been rendered
+            this._value = value;
+            return;
+        }
+
+        var store = this.getStore(),
+            viewItems = this.getViewItems(),
+            valueField = this.getValueField(),
+            index, item;
+
+        index = store.find(valueField, value);
+        if (index != -1) {
+            item = Ext.get(viewItems[index]);
+
+            this.selectedIndex = index;
+            this.scrollToItem(item);
+
+            this._value = value;
+        }
+    },
+
+<span id='Ext-picker-Slot-method-setValueAnimated'>    /**
+</span>     * Sets the value of this slot
+     * @private
+     */
+    setValueAnimated: function(value) {
+        if (!value) {
+            return;
+        }
+
+        if (!this.rendered) {
+            //we don't want to call this until the slot has been rendered
+            this._value = value;
+            return;
+        }
+
+        var store = this.getStore(),
+            viewItems = this.getViewItems(),
+            valueField = this.getValueField(),
+            index, item;
+
+        index = store.find(valueField, value);
+        if (index != -1) {
+            item = Ext.get(viewItems[index]);
+
+            this.selectedIndex = index;
+            this.scrollToItem(item, {
+                duration: 100
+            });
+
+            this._value = value;
+        }
+    }
+});
+</pre>
+</body>
+</html>

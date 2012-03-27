@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-ActionSheet'>/**
+</span> * {@link Ext.ActionSheet ActionSheets} are used to display a list of {@link Ext.Button buttons} in a popup dialog.
+ *
+ * The key difference between ActionSheet and {@link Ext.Sheet} is that ActionSheets are docked at the bottom of the
+ * screen, and the {@link #defaultType} is set to {@link Ext.Button button}.
+ *
+ * ## Example
+ *
+ *     @example preview miniphone
+ *     var actionSheet = Ext.create('Ext.ActionSheet', {
+ *         items: [
+ *             {
+ *                 text: 'Delete draft',
+ *                 ui  : 'decline'
+ *             },
+ *             {
+ *                 text: 'Save draft'
+ *             },
+ *             {
+ *                 text: 'Cancel',
+ *                 ui  : 'confirm'
+ *             }
+ *         ]
+ *     });
+ *
+ *     Ext.Viewport.add(actionSheet);
+ *     actionSheet.show();
+ *
+ * As you can see from the code above, you no longer have to specify a `xtype` when creating buttons within a {@link Ext.ActionSheet ActionSheet},
+ * because the {@link #defaultType} is set to {@link Ext.Button button}.
+ *
+ */
+Ext.define('Ext.ActionSheet', {
+    extend: 'Ext.Sheet',
+    alias : 'widget.actionsheet',
+    requires: ['Ext.Button'],
+
+    config: {
+<span id='Ext-ActionSheet-cfg-baseCls'>        /**
+</span>         * @cfg
+         * @inheritdoc
+         */
+        baseCls: Ext.baseCSSPrefix + 'sheet-action',
+
+<span id='Ext-ActionSheet-cfg-left'>        /**
+</span>         * @cfg
+         * @inheritdoc
+         */
+        left: 0,
+
+<span id='Ext-ActionSheet-cfg-right'>        /**
+</span>         * @cfg
+         * @inheritdoc
+         */
+        right: 0,
+
+<span id='Ext-ActionSheet-cfg-bottom'>        /**
+</span>         * @cfg
+         * @inheritdoc
+         */
+        bottom: 0,
+
+        // @hide
+        centered: false,
+
+<span id='Ext-ActionSheet-cfg-height'>        /**
+</span>         * @cfg
+         * @inheritdoc
+         */
+        height: 'auto',
+
+<span id='Ext-ActionSheet-cfg-defaultType'>        /**
+</span>         * @cfg
+         * @inheritdoc
+         */
+        defaultType: 'button'
+    }
+});
+</pre>
+</body>
+</html>

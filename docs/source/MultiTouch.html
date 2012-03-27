@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-event-recognizer-MultiTouch'>/**
+</span> * @private
+ */
+Ext.define('Ext.event.recognizer.MultiTouch', {
+    extend: 'Ext.event.recognizer.Touch',
+
+    requiredTouchesCount: 2,
+
+    isTracking: false,
+
+    isStarted: false,
+
+    onTouchStart: function(e) {
+        var requiredTouchesCount = this.requiredTouchesCount,
+            touches = e.touches,
+            touchesCount = touches.length;
+
+        if (touchesCount === requiredTouchesCount) {
+            this.start(e);
+        }
+        else if (touchesCount &gt; requiredTouchesCount) {
+            this.end(e);
+        }
+    },
+
+    onTouchEnd: function(e) {
+        this.end(e);
+    },
+
+    start: function() {
+        if (!this.isTracking) {
+            this.isTracking = true;
+            this.isStarted = false;
+        }
+    },
+
+    end: function(e) {
+        if (this.isTracking) {
+            this.isTracking = false;
+
+            if (this.isStarted) {
+                this.isStarted = false;
+
+                this.fireEnd(e);
+            }
+        }
+    }
+});
+</pre>
+</body>
+</html>

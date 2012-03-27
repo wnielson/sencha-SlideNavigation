@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">//&lt;feature logger&gt;
+<span id='Ext-Logger'>/**
+</span> * @class Ext.Logger
+ * Logs messages to help with debugging.
+ *
+ * ## Example
+ *
+ *     Ext.Logger.deprecate('This method is no longer supported.');
+ *
+ * @singleton
+ */
+(function() {
+var Logger = Ext.define('Ext.log.Logger', {
+
+    extend: 'Ext.log.Base',
+
+    statics: {
+        defaultPriority: 'info',
+
+        priorities: {
+<span id='Ext-Logger-method-verbose'>            /**
+</span>             * @method verbose
+             * Convenience method for {@link #log} with priority 'verbose'
+             */
+            verbose:    0,
+<span id='Ext-Logger-method-info'>            /**
+</span>             * @method info
+             * Convenience method for {@link #log} with priority 'info'
+             */
+            info:       1,
+<span id='Ext-Logger-method-deprecate'>            /**
+</span>             * @method deprecate
+             * Convenience method for {@link #log} with priority 'deprecate'
+             */
+            deprecate:  2,
+<span id='Ext-Logger-method-warn'>            /**
+</span>             * @method warn
+             * Convenience method for {@link #log} with priority 'warn'
+             */
+            warn:       3,
+<span id='Ext-Logger-method-error'>            /**
+</span>             * @method error
+             * Convenience method for {@link #log} with priority 'error'
+             */
+            error:      4
+        }
+    },
+
+    config: {
+        enabled: true,
+        minPriority: 'deprecate',
+        writers: {}
+    },
+
+<span id='Ext-Logger-method-log'>    /**
+</span>     * Logs a message to help with debugging
+     * @param  {String} message  Message to log
+     * @param  {Number} priority Priority of the log message
+     */
+    log: function(message, priority, callerId) {
+        if (!this.getEnabled()) {
+            return this;
+        }
+
+        var statics = Logger,
+            priorities = statics.priorities,
+            priorityValue = priorities[priority],
+            caller = this.log.caller,
+            callerDisplayName = '',
+            writers = this.getWriters(),
+            event, i, originalCaller;
+
+        if (!priority) {
+            priority = 'info';
+        }
+
+        if (priorities[this.getMinPriority()] &gt; priorityValue) {
+            return this;
+        }
+
+        if (!callerId) {
+            callerId = 1;
+        }
+
+        if (Ext.isArray(message)) {
+            message = message.join(&quot; &quot;);
+        }
+        else {
+            message = String(message);
+        }
+
+        if (typeof callerId == 'number') {
+            i = callerId;
+
+            do {
+                i--;
+
+                caller = caller.caller;
+
+                if (!caller) {
+                    break;
+                }
+
+                if (!originalCaller) {
+                    originalCaller = caller.caller;
+                }
+
+                if (i &lt;= 0 &amp;&amp; caller.displayName) {
+                    break;
+                }
+            }
+            while (caller !== originalCaller);
+
+            callerDisplayName = Ext.getDisplayName(caller);
+        }
+        else {
+            caller = caller.caller;
+            callerDisplayName = Ext.getDisplayName(callerId) + '#' + caller.$name;
+        }
+
+        event = {
+            time: Ext.Date.now(),
+            priority: priorityValue,
+            priorityName: priority,
+            message: message,
+            caller: caller,
+            callerDisplayName: callerDisplayName
+        };
+
+        for (i in writers) {
+            if (writers.hasOwnProperty(i)) {
+                writers[i].write(Ext.merge({}, event));
+            }
+        }
+
+        return this;
+    }
+
+}, function() {
+    Ext.Object.each(this.priorities, function(priority) {
+        this.override(priority, function(message, callerId) {
+            if (!callerId) {
+                callerId = 1;
+            }
+
+            if (typeof callerId == 'number') {
+                callerId += 1;
+            }
+
+            this.log(message, priority, callerId);
+        });
+    }, this);
+});
+
+})();
+//&lt;/feature&gt;
+</pre>
+</body>
+</html>

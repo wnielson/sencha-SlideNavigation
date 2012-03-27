@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">//&lt;feature logger&gt;
+Ext.define('Ext.log.writer.Remote', {
+    extend: 'Ext.log.writer.Writer',
+
+    requires: [
+        'Ext.Ajax'
+    ],
+
+    config: {
+        batchSendDelay: 100,
+        onFailureRetryDelay: 500,
+        url: ''
+    },
+
+    isSending: false,
+
+    sendingTimer: null,
+
+    constructor: function() {
+        this.queue = [];
+
+        this.send = Ext.Function.bind(this.send, this);
+
+        return this.callParent(arguments);
+    },
+
+    doWrite: function(event) {
+        var queue = this.queue;
+        queue.push(event.message);
+
+        if (!this.isSending &amp;&amp; this.sendingTimer === null) {
+            this.sendingTimer = setTimeout(this.send, this.getBatchSendDelay());
+        }
+    },
+
+    send: function() {
+        var queue = this.queue,
+            messages = queue.slice();
+
+        queue.length = 0;
+
+        this.sendingTimer = null;
+
+        if (messages.length &gt; 0) {
+            this.doSend(messages);
+        }
+    },
+
+    doSend: function(messages) {
+        var me = this;
+
+        me.isSending = true;
+
+        Ext.Ajax.request({
+            url: me.getUrl(),
+            method: 'POST',
+            params: {
+                messages: messages.join(&quot;\n&quot;)
+            },
+            success: function(){
+                me.isSending = false;
+                me.send();
+            },
+            failure: function() {
+                setTimeout(function() {
+                    me.doSend(messages);
+                }, me.getOnFailureRetryDelay());
+            },
+            scope: me
+        });
+    }
+});
+//&lt;/feature&gt;
+</pre>
+</body>
+</html>

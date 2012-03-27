@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-device-camera-Simulator'>/**
+</span> * @private
+ */
+Ext.define('Ext.device.camera.Simulator', {
+    extend: 'Ext.device.camera.Abstract',
+
+    config: {
+        samples: [
+            {
+                success: 'http://www.sencha.com/img/sencha-large.png'
+            }
+        ]
+    },
+
+    constructor: function(config) {
+        this.initConfig(config);
+    },
+
+    updateSamples: function(samples) {
+        this.sampleIndex = 0;
+    },
+
+    capture: function(options) {
+        var index = this.sampleIndex,
+            samples = this.getSamples(),
+            samplesCount = samples.length,
+            sample = samples[index],
+            scope = options.scope,
+            success = options.success,
+            failure = options.failure;
+
+        if ('success' in sample) {
+            if (success) {
+                success.call(scope, sample.success);
+            }
+        }
+        else {
+            if (failure) {
+                failure.call(scope, sample.failure);
+            }
+        }
+
+        if (++index &gt; samplesCount - 1) {
+            index = 0;
+        }
+
+        this.sampleIndex = index;
+    }
+});
+</pre>
+</body>
+</html>

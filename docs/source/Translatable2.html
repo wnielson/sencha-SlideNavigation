@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-util-Translatable'>/**
+</span> * The utility class to abstract different implementations to have the best performance when applying 2D translation
+ * on any DOM element.
+ *
+ * @private
+ */
+Ext.define('Ext.util.Translatable', {
+    requires: [
+        'Ext.util.translatable.CssTransform',
+        'Ext.util.translatable.ScrollPosition'
+    ],
+
+    constructor: function(config) {
+        var namespace = Ext.util.translatable,
+            CssTransform = namespace.CssTransform,
+            ScrollPosition = namespace.ScrollPosition,
+            classReference;
+
+        if (typeof config == 'object' &amp;&amp; 'translationMethod' in config) {
+            if (config.translationMethod === 'scrollposition') {
+                classReference = ScrollPosition;
+            }
+            else if (config.translationMethod === 'csstransform') {
+                classReference = CssTransform;
+            }
+        }
+
+        if (!classReference) {
+            if (Ext.os.is.Android2 || Ext.browser.is.ChromeMobile) {
+                classReference = ScrollPosition;
+            }
+            else {
+                classReference = CssTransform;
+            }
+        }
+
+        return new classReference(config);
+    }
+});
+</pre>
+</body>
+</html>

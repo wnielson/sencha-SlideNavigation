@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-data-ResultSet'>/**
+</span> * @author Ed Spencer
+ *
+ * Simple wrapper class that represents a set of records returned by a Proxy.
+ */
+Ext.define('Ext.data.ResultSet', {
+    config: {
+<span id='Ext-data-ResultSet-cfg-loaded'>        /**
+</span>         * @cfg {Boolean} loaded
+         * True if the records have already been loaded. This is only meaningful when dealing with
+         * SQL-backed proxies.
+         */
+        loaded: true,
+
+<span id='Ext-data-ResultSet-cfg-count'>        /**
+</span>         * @cfg {Number} count
+         * The number of records in this ResultSet. Note that total may differ from this number.
+         */
+        count: null,
+
+<span id='Ext-data-ResultSet-cfg-total'>        /**
+</span>         * @cfg {Number} total
+         * The total number of records reported by the data source. This ResultSet may form a subset of
+         * those records (see {@link #count}).
+         */
+        total: null,
+
+<span id='Ext-data-ResultSet-cfg-success'>        /**
+</span>         * @cfg {Boolean} success
+         * True if the ResultSet loaded successfully, false if any errors were encountered.
+         */
+        success: false,
+
+<span id='Ext-data-ResultSet-cfg-records'>        /**
+</span>         * @cfg {Ext.data.Model[]} records (required)
+         * The array of record instances.
+         */
+        records: null,
+
+<span id='Ext-data-ResultSet-cfg-message'>        /**
+</span>         * @cfg {String} message
+         * The message that was read in from the data
+         */
+        message: null
+    },
+
+<span id='Ext-data-ResultSet-method-constructor'>    /**
+</span>     * Creates the resultSet
+     * @param {Object} [config] Config object.
+     */
+    constructor: function(config) {
+        this.initConfig(config);
+    },
+
+    applyCount: function(count) {
+        if (!count &amp;&amp; count !== 0) {
+            return this.getRecords().length;
+        }
+        return count;
+    },
+    
+<span id='Ext-data-ResultSet-method-updateRecords'>    /**
+</span>     * @private
+     * Make sure we set the right count when new records have been sent in
+     */
+    updateRecords: function(records) {
+        this.setCount(records.length);
+    }
+});</pre>
+</body>
+</html>

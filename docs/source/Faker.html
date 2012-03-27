@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">Ext.define('Ext.ux.Faker', {
+    config: {
+        names: ['Ed Spencer', 'Tommy Maintz', 'Rob Dougan', 'Jamie Avins', 'Jacky Nguyen'],
+        emails: ['ed@sencha.com', 'tommy@sencha.com', 'rob@sencha.com', 'jamie@sencha.com', 'jacky@sencha.com'],
+        lorem: [
+            &quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus eget neque nec sem semper cursus. Fusce &quot;,
+            &quot;molestie nibh nec ligula gravida et porta enim luctus. Curabitur id accumsan dolor. Vestibulum ultricies &quot;,
+            &quot;vehicula erat vel elementum. Mauris urna odio, dignissim sit amet molestie sit amet, sodales vel metus. Ut eu &quot;,
+            &quot;volutpat nulla. Morbi ut est sed eros egestas gravida quis eget eros. Proin sit amet massa nunc. Proin congue &quot;,
+            &quot;mollis mollis. Morbi sollicitudin nisl at diam placerat eu dignissim magna rutrum.\n&quot;,
+
+            &quot;Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Phasellus eu &quot;,
+            &quot;vestibulum lectus. Fusce a eros metus. Vivamus vel aliquet neque. Ut eu purus ipsum. Nullam id leo hendrerit &quot;,
+            &quot;augue imperdiet malesuada ac eget velit. Quisque congue turpis eget ante mollis ut sollicitudin massa dapibus. &quot;,
+            &quot;Sed magna dolor, dictum sit amet aliquam eu, ultricies sit amet diam. Fusce tempor porta tellus vitae &quot;,
+            &quot;pulvinar. Aenean velit ligula, fermentum non imperdiet et, suscipit sed libero. Aliquam ac ligula ut dui &quot;, 
+            &quot;pharetra dictum vel vel nunc. Phasellus semper, ligula id tristique ullamcorper, tortor diam mollis erat, sed &quot;,
+            &quot;feugiat nisl nisi sit amet sem. Maecenas nec mi vitae ligula malesuada pellentesque.\n&quot;,
+
+            &quot;Quisque diam velit, suscipit sit amet ornare eu, congue sed quam. Integer rhoncus luctus mi, sed pulvinar &quot;,
+            &quot;lectus lobortis non. Sed egestas orci nec elit sagittis eu condimentum massa volutpat. Fusce blandit congue &quot;,
+            &quot;enim venenatis lacinia. Donec enim sapien, sollicitudin at placerat non, vehicula ut nisi. Aliquam volutpat &quot;,
+            &quot;metus sit amet lacus condimentum fermentum. Aliquam congue scelerisque leo ut tristique.&quot;
+        ].join(&quot;&quot;),
+        
+        subjects: [
+            &quot;Order more widgets&quot;,
+            &quot;You're crazy&quot;,
+            &quot;Jacky is not his real name&quot;,
+            &quot;Why am I here?&quot;,
+            &quot;This is totally broken&quot;,
+            &quot;When do we ship?&quot;,
+            &quot;Top Secret&quot;,
+            &quot;There's always money in the banana stand&quot;
+        ]
+    },
+    
+    oneOf: function(set) {
+        return set[Math.floor(Math.random() * set.length)];
+    },
+    
+    name: function() {
+        return this.oneOf(this.getNames());
+    },
+    
+    email: function() {
+        return this.oneOf(this.getSubjects());
+    },
+    
+    subject: function() {
+        return this.oneOf(this.getSubjects());
+    },
+    
+    lorem: function(paragraphs) {
+        var lorem = this.getLorem();
+        
+        if (paragraphs) {
+            return lorem.split(&quot;\n&quot;).slice(0, paragraphs).join(&quot;\n&quot;);
+        } else {
+            return lorem;
+        }
+    }
+});</pre>
+</body>
+</html>

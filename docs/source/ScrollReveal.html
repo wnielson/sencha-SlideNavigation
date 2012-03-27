@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-fx-layout-card-ScrollReveal'>/**
+</span> * @private
+ */
+Ext.define('Ext.fx.layout.card.ScrollReveal', {
+    extend: 'Ext.fx.layout.card.Scroll',
+
+    alias: 'fx.layout.card.scrollreveal',
+
+    onActiveItemChange: function(cardLayout, inItem, outItem, options, controller) {
+        var containerElement, containerSize, xy, animConfig,
+            outTranslate, inTranslate;
+
+        this.lastController = controller;
+        this.outItem = outItem;
+        this.inItem = inItem;
+
+        if (inItem &amp;&amp; outItem) {
+            containerElement = this.getLayout().container.innerElement;
+
+            containerSize = containerElement.getSize();
+            xy = this.calculateXY(containerSize);
+            animConfig = {
+                easing: this.getEasing(),
+                duration: this.getDuration()
+            };
+
+            outTranslate = outItem.setTranslatable(true).getTranslatable();
+            inTranslate = inItem.setTranslatable(true).getTranslatable();
+            outTranslate.getWrapper().dom.style.setProperty('z-index', '100', '!important');
+            outTranslate.translate({ x: 0, y: 0});
+            inTranslate.translate({ x: 0, y: 0});
+
+            inItem.show();
+
+            outTranslate.on({
+                animationend: 'onOutAnimationEnd',
+                scope: this
+            });
+
+            outTranslate.translateAnimated({ x: xy.x, y: xy.y}, animConfig);
+
+            controller.pause();
+        }
+    },
+
+    onOutAnimationEnd: function() {
+        this.outItem.getTranslatable().getWrapper().dom.style.removeProperty('z-index'); // Remove this when we can remove translatable
+//        this.outItem.setTranslatable(null);
+        this.lastController.resume();
+    }
+});
+</pre>
+</body>
+</html>

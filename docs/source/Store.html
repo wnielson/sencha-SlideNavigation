@@ -1,0 +1,2122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-data-Store'>/**
+</span> * @author Ed Spencer
+ * @aside guide stores
+ *
+ * The Store class encapsulates a client side cache of {@link Ext.data.Model Model} objects. Stores load
+ * data via a {@link Ext.data.proxy.Proxy Proxy}, and also provide functions for {@link #sort sorting},
+ * {@link #filter filtering} and querying the {@link Ext.data.Model model} instances contained within it.
+ *
+ * Creating a Store is easy - we just tell it the Model and the Proxy to use to load and save its data:
+ *
+ *     // Set up a {@link Ext.data.Model model} to use in our Store
+ *     Ext.define('User', {
+ *         extend: 'Ext.data.Model',
+ *         config: {
+ *             fields: [
+ *                 {name: 'firstName', type: 'string'},
+ *                 {name: 'lastName',  type: 'string'},
+ *                 {name: 'age',       type: 'int'},
+ *                 {name: 'eyeColor',  type: 'string'}
+ *             ]
+ *         }
+ *     });
+ *
+ *     var myStore = Ext.create('Ext.data.Store', {
+ *         model: 'User',
+ *         proxy: {
+ *             type: 'ajax',
+ *             url : '/users.json',
+ *             reader: {
+ *                 type: 'json',
+ *                 rootProperty: 'users'
+ *             }
+ *         },
+ *         autoLoad: true
+ *     });
+ *
+ * In the example above we configured an AJAX proxy to load data from the url '/users.json'. We told our Proxy
+ * to use a {@link Ext.data.reader.Json JsonReader} to parse the response from the server into Model object -
+ * {@link Ext.data.reader.Json see the docs on JsonReader} for details.
+ *
+ * ## Inline data
+ *
+ * Stores can also load data inline. Internally, Store converts each of the objects we pass in as {@link #cfg-data}
+ * into Model instances:
+ *
+ *     Ext.create('Ext.data.Store', {
+ *         model: 'User',
+ *         data : [
+ *             {firstName: 'Ed',    lastName: 'Spencer'},
+ *             {firstName: 'Tommy', lastName: 'Maintz'},
+ *             {firstName: 'Aaron', lastName: 'Conran'},
+ *             {firstName: 'Jamie', lastName: 'Avins'}
+ *         ]
+ *     });
+ *
+ * Loading inline data using the method above is great if the data is in the correct format already (e.g. it doesn't need
+ * to be processed by a {@link Ext.data.reader.Reader reader}). If your inline data requires processing to decode the data structure,
+ * use a {@link Ext.data.proxy.Memory MemoryProxy} instead (see the {@link Ext.data.proxy.Memory MemoryProxy} docs for an example).
+ *
+ * Additional data can also be loaded locally using {@link #method-add}.
+ *
+ * ## Loading Nested Data
+ *
+ * Applications often need to load sets of associated data - for example a CRM system might load a User and her Orders.
+ * Instead of issuing an AJAX request for the User and a series of additional AJAX requests for each Order, we can load a nested dataset
+ * and allow the Reader to automatically populate the associated models. Below is a brief example, see the {@link Ext.data.reader.Reader} intro
+ * docs for a full explanation:
+ *
+ *     var store = Ext.create('Ext.data.Store', {
+ *         autoLoad: true,
+ *         model: &quot;User&quot;,
+ *         proxy: {
+ *             type: 'ajax',
+ *             url : 'users.json',
+ *             reader: {
+ *                 type: 'json',
+ *                 rootProperty: 'users'
+ *             }
+ *         }
+ *     });
+ *
+ * Which would consume a response like this:
+ *
+ *     {
+ *         &quot;users&quot;: [
+ *             {
+ *                 &quot;id&quot;: 1,
+ *                 &quot;name&quot;: &quot;Ed&quot;,
+ *                 &quot;orders&quot;: [
+ *                     {
+ *                         &quot;id&quot;: 10,
+ *                         &quot;total&quot;: 10.76,
+ *                         &quot;status&quot;: &quot;invoiced&quot;
+ *                     },
+ *                     {
+ *                         &quot;id&quot;: 11,
+ *                         &quot;total&quot;: 13.45,
+ *                         &quot;status&quot;: &quot;shipped&quot;
+ *                     }
+ *                 ]
+ *             }
+ *         ]
+ *     }
+ *
+ * See the {@link Ext.data.reader.Reader} intro docs for a full explanation.
+ *
+ * ## Filtering and Sorting
+ *
+ * Stores can be sorted and filtered - in both cases either remotely or locally. The {@link #sorters} and {@link #filters} are
+ * held inside {@link Ext.util.MixedCollection MixedCollection} instances to make them easy to manage. Usually it is sufficient to
+ * either just specify sorters and filters in the Store configuration or call {@link #sort} or {@link #filter}:
+ *
+ *     var store = Ext.create('Ext.data.Store', {
+ *         model: 'User',
+ *         sorters: [
+ *             {
+ *                 property : 'age',
+ *                 direction: 'DESC'
+ *             },
+ *             {
+ *                 property : 'firstName',
+ *                 direction: 'ASC'
+ *             }
+ *         ],
+ *
+ *         filters: [
+ *             {
+ *                 property: 'firstName',
+ *                 value   : /Ed/
+ *             }
+ *         ]
+ *     });
+ *
+ * The new Store will keep the configured sorters and filters in the MixedCollection instances mentioned above. By default, sorting
+ * and filtering are both performed locally by the Store - see {@link #remoteSort} and {@link #remoteFilter} to allow the server to
+ * perform these operations instead.
+ *
+ * Filtering and sorting after the Store has been instantiated is also easy. Calling {@link #filter} adds another filter to the Store
+ * and automatically filters the dataset (calling {@link #filter} with no arguments simply re-applies all existing filters). Note that by
+ * default your sorters are automatically reapplied if using local sorting.
+ *
+     store.filter('eyeColor', 'Brown');
+ *
+ * Change the sorting at any time by calling {@link #sort}:
+ *
+     store.sort('height', 'ASC');
+ *
+ * Note that all existing sorters will be removed in favor of the new sorter data (if {@link #sort} is called with no arguments,
+ * the existing sorters are just reapplied instead of being removed). To keep existing sorters and add new ones, just add them
+ * to the MixedCollection:
+ *
+ *     store.sorters.add(new Ext.util.Sorter({
+ *         property : 'shoeSize',
+ *         direction: 'ASC'
+ *     }));
+ *
+ *     store.sort();
+ *
+ * ## Registering with StoreManager
+ *
+ * Any Store that is instantiated with a {@link #storeId} will automatically be registed with the {@link Ext.data.StoreManager StoreManager}.
+ * This makes it easy to reuse the same store in multiple views:
+ *
+ *     //this store can be used several times
+ *     Ext.create('Ext.data.Store', {
+ *         model: 'User',
+ *         storeId: 'usersStore'
+ *     });
+ *
+ *     new Ext.List({
+ *         store: 'usersStore',
+ *
+ *         //other config goes here
+ *     });
+ *
+ *     new Ext.view.View({
+ *         store: 'usersStore',
+ *
+ *         //other config goes here
+ *     });
+ *
+ * ## Further Reading
+ *
+ * Stores are backed up by an ecosystem of classes that enables their operation. To gain a full understanding of these
+ * pieces and how they fit together, see:
+ *
+ *  - {@link Ext.data.proxy.Proxy Proxy} - overview of what Proxies are and how they are used
+ *  - {@link Ext.data.Model Model} - the core class in the data package
+ *  - {@link Ext.data.reader.Reader Reader} - used by any subclass of {@link Ext.data.proxy.Server ServerProxy} to read a response
+ */
+Ext.define('Ext.data.Store', {
+    alias: 'store.store',
+
+    extend: 'Ext.Evented',
+
+    requires: [
+        'Ext.util.Collection',
+        'Ext.data.Operation',
+        'Ext.data.proxy.Memory',
+        'Ext.data.Model',
+        'Ext.data.StoreManager',
+        'Ext.util.Grouper'
+    ],
+
+<span id='Ext-data-Store-event-addrecords'>    /**
+</span>     * @event addrecords
+     * Fired when one or more new Model instances have been added to this Store. You should listen
+     * for this event if you have to update a representation of the records in this store in your UI.
+     * If you need the indices of the records that were added please use the store.indexOf(record) method.
+     * @param {Ext.data.Store} store The store
+     * @param {Ext.data.Model[]} records The Model instances that were added
+     */
+
+<span id='Ext-data-Store-event-removerecords'>    /**
+</span>     * @event removerecords
+     * Fired when one or more Model instances have been removed from this Store. You should listen
+     * for this event if you have to update a representation of the records in this store in your UI.
+     * @param {Ext.data.Store} store The Store object
+     * @param {Ext.data.Model[]} records The Model instances that was removed
+     * @param {Number[]} indices The indices of the records that were removed. These indices already
+     * take into account any potential earlier records that you remove. This means that if you loop
+     * over the records, you can get its current index in your data representation from this array.
+     */
+
+<span id='Ext-data-Store-event-updaterecord'>    /**
+</span>     * @event updaterecord
+     * Fires when a Model instance has been updated
+     * @param {Ext.data.Store} this
+     * @param {Ext.data.Model} record The Model instance that was updated
+     * @param {Number} newIndex If the update changed the index of the record (due to sorting for example), then
+     * this gives you the new index in the store.
+     * @param {Number} oldIndex If the update changed the index of the record (due to sorting for example), then
+     * this gives you the old index in the store.
+     * @param {Array} modifiedFieldNames An array containing the field names that have been modified since the
+     * record was committed or created
+     * @param {Object} modifiedValues An object where each key represents a field name that had it's value modified,
+     * and where the value represents the old value for that field. To get the new value in a listener
+     * you should use the {@link Ext.data.Model#get get} method.
+     */
+
+<span id='Ext-data-Store-event-update'>    /**
+</span>     * @event update
+     * @inheritdoc Ext.data.Store#updaterecord
+     * @removed 2.0 Listen to #updaterecord instead.
+     */
+
+<span id='Ext-data-Store-event-refresh'>    /**
+</span>     * @event refresh
+     * Fires whenever the records in the Store have changed in a way that your representation of the records
+     * need to be entirely refreshed.
+     * @param {Ext.data.Store} this The data store
+     * @param {Ext.util.Collection} data The data collection containing all the records
+     */
+
+<span id='Ext-data-Store-event-beforeload'>    /**
+</span>     * @event beforeload
+     * Fires before a request is made for a new data object. If the beforeload handler returns false the load
+     * action will be canceled. Note that you should not listen for this event in order to refresh the
+     * data view. Use the {@link #refresh} event for this instead.
+     * @param {Ext.data.Store} store This Store
+     * @param {Ext.data.Operation} operation The Ext.data.Operation object that will be passed to the Proxy to
+     * load the Store
+     */
+
+<span id='Ext-data-Store-event-load'>    /**
+</span>     * @event load
+     * Fires whenever records have been loaded into the store. Note that you should not listen
+     * for this event in order to refresh the data view. Use the {@link #refresh} event for this instead.
+     * @param {Ext.data.Store} this
+     * @param {Ext.util.Grouper[]} records An array of records
+     * @param {Boolean} successful True if the operation was successful.
+     * @param {Ext.data.Operation} operation The associated operation
+     */
+
+<span id='Ext-data-Store-event-write'>    /**
+</span>     * @event write
+     * Fires whenever a successful write has been made via the configured {@link #proxy Proxy}
+     * @param {Ext.data.Store} store This Store
+     * @param {Ext.data.Operation} operation The {@link Ext.data.Operation Operation} object that was used in
+     * the write
+     */
+
+<span id='Ext-data-Store-event-beforesync'>    /**
+</span>     * @event beforesync
+     * Fired before a call to {@link #sync} is executed. Return false from any listener to cancel the synv
+     * @param {Object} options Hash of all records to be synchronized, broken down into create, update and destroy
+     */
+
+<span id='Ext-data-Store-event-clear'>    /**
+</span>     * @event clear
+     * Fired after the {@link #removeAll} method is called. Note that you should not listen for this event in order
+     * to refresh the data view. Use the {@link #refresh} event for this instead.
+     * @param {Ext.data.Store} this
+     */
+
+    statics: {
+        create: function(store) {
+            if (!store.isStore) {
+                if (!store.type) {
+                    store.type = 'store';
+                }
+                store = Ext.createByAlias('store.' + store.type, store);
+            }
+            return store;
+        }
+    },
+
+    isStore: true,
+
+    config: {
+<span id='Ext-data-Store-cfg-storeId'>        /**
+</span>         * @cfg {String} storeId
+         * Unique identifier for this store. If present, this Store will be registered with the {@link Ext.data.StoreManager},
+         * making it easy to reuse elsewhere.
+         * @accessor
+         */
+        storeId: undefined,
+
+<span id='Ext-data-Store-cfg-data'>        /**
+</span>         * @cfg {Object[]/Ext.data.Model[]} data
+         * Array of Model instances or data objects to load locally. See &quot;Inline data&quot; above for details.
+         * @accessor
+         */
+        data: null,
+
+<span id='Ext-data-Store-cfg-autoLoad'>        /**
+</span>         * @cfg {Boolean/Object} autoLoad
+         * If data is not specified, and if autoLoad is true or an Object, this store's load method is automatically called
+         * after creation. If the value of autoLoad is an Object, this Object will be passed to the store's load method.
+         * Defaults to false.
+         * @accessor
+         */
+        autoLoad: null,
+
+<span id='Ext-data-Store-cfg-autoSync'>        /**
+</span>         * @cfg {Boolean} autoSync
+         * True to automatically sync the Store with its Proxy after every edit to one of its Records. Defaults to false.
+         * @accessor
+         */
+        autoSync: false,
+
+<span id='Ext-data-Store-cfg-model'>        /**
+</span>         * @cfg {String} model
+         * Name of the {@link Ext.data.Model Model} associated with this store.
+         * The string is used as an argument for {@link Ext.ModelManager#getModel}.
+         * @accessor
+         */
+        model: undefined,
+
+<span id='Ext-data-Store-cfg-proxy'>        /**
+</span>         * @cfg {String/Ext.data.proxy.Proxy/Object} proxy The Proxy to use for this Store. This can be either a string, a config
+         * object or a Proxy instance - see {@link #setProxy} for details.
+         * @accessor
+         */
+        proxy: undefined,
+
+<span id='Ext-data-Store-cfg-fields'>        /**
+</span>         * @cfg {Object[]} fields
+         * This may be used in place of specifying a {@link #model} configuration. The fields should be a
+         * set of {@link Ext.data.Field} configuration objects. The store will automatically create a {@link Ext.data.Model}
+         * with these fields. In general this configuration option should be avoided, it exists for the purposes of
+         * backwards compatibility. For anything more complicated, such as specifying a particular id property or
+         * associations, a {@link Ext.data.Model} should be defined and specified for the {@link #model}
+         * config.
+         * @accessor
+         */
+        fields: null,
+
+<span id='Ext-data-Store-cfg-remoteSort'>        /**
+</span>         * @cfg {Boolean} remoteSort
+         * True to defer any sorting operation to the server. If false, sorting is done locally on the client. Defaults to &lt;tt&gt;false&lt;/tt&gt;.
+         *
+         * If this is set to `true`, you will have to manually call the {@link #method-load} method after you {@link #method-sort}, to retrieve the sorted
+         * data from the server.
+         * @accessor
+         */
+        remoteSort: false,
+
+<span id='Ext-data-Store-cfg-remoteFilter'>        /**
+</span>         * @cfg {Boolean} remoteFilter
+         * True to defer any filtering operation to the server. If false, filtering is done locally on the client. Defaults to `false`.
+         *
+         * If this is set to `true`, you will have to manually call the {@link #method-load} method after you {@link #method-filter} to retrieve the filtered
+         * data from the server.
+         * @accessor
+         */
+        remoteFilter: false,
+
+<span id='Ext-data-Store-cfg-remoteGroup'>        /**
+</span>         * @cfg {Boolean} remoteGroup
+         * True to defer any grouping operation to the server. If false, grouping is done locally on the client. Defaults to &lt;tt&gt;false&lt;/tt&gt;
+         * @accessor
+         */
+        remoteGroup: false,
+
+<span id='Ext-data-Store-cfg-filters'>        /**
+</span>         * @cfg {Object[]} filters
+         * Array of {@link Ext.util.Filter Filters} for this store. This configuration is handled by the
+         * {@link Ext.mixin.Filterable Filterable} mixin of the {@link Ext.util.Collection data} collection.
+         * @accessor
+         */
+        filters: null,
+
+<span id='Ext-data-Store-cfg-sorters'>        /**
+</span>         * @cfg {Object[]} sorters
+         * Array of {@link Ext.util.Sorter Sorters} for this store. This configuration is handled by the
+         * {@link Ext.mixin.Sortable Sortable} mixin of the {@link Ext.util.Collection data} collection.
+         * See also the {@link #sort} method.
+         * @accessor
+         */
+        sorters: null,
+
+<span id='Ext-data-Store-cfg-grouper'>        /**
+</span>         * @cfg {Object[]} grouper
+         * A configuration object for this Store's {@link Ext.util.Grouper grouper}.
+         *
+         * For example, to group a store's items by the first letter of the last name:
+         *
+         *     Ext.define('People', {
+         *         extend: 'Ext.data.Store',
+         *
+         *         config: {
+         *             fields: ['first_name', 'last_name'],
+         *
+         *             grouper: {
+         *                 groupFn: function(record) {
+         *                     return record.get('last_name').substr(0, 1);
+         *                 },
+         *                 sortProperty: 'last_name'
+         *             }
+         *         }
+         *     });
+         *
+         * @accessor
+         */
+        grouper: null,
+
+<span id='Ext-data-Store-cfg-groupField'>        /**
+</span>         * @cfg {String} groupField
+         * The (optional) field by which to group data in the store. Internally, grouping is very similar to sorting - the
+         * groupField and {@link #groupDir} are injected as the first sorter (see {@link #sort}). Stores support a single
+         * level of grouping, and groups can be fetched via the {@link #getGroups} method.
+         * @accessor
+         */
+        groupField: null,
+
+<span id='Ext-data-Store-cfg-groupDir'>        /**
+</span>         * @cfg {String} groupDir
+         * The direction in which sorting should be applied when grouping. If you specify a grouper by using the {@link #groupField}
+         * configuration, this will automatically default to &quot;ASC&quot; - the other supported value is &quot;DESC&quot;
+         * @accessor
+         */
+        groupDir: null,
+
+<span id='Ext-data-Store-cfg-getGroupString'>        /**
+</span>         * @cfg {Function} getGroupString This function will be passed to the {@link #grouper} configuration as it's groupFn.
+         * Note that this configuration is deprecated and grouper: {groupFn: yourFunction}} is preferred.
+         * @deprecated
+         * @accessor
+         */
+        getGroupString: null,
+
+<span id='Ext-data-Store-cfg-pageSize'>        /**
+</span>         * @cfg {Number} pageSize
+         * The number of records considered to form a 'page'. This is used to power the built-in
+         * paging using the nextPage and previousPage functions. Defaults to 25.
+         * @accessor
+         */
+        pageSize: 25,
+
+<span id='Ext-data-Store-cfg-totalCount'>        /**
+</span>         * @cfg {Number} totalCount The total number of records in the full dataset, as indicated by a server. If the
+         * server-side dataset contains 5000 records but only returns pages of 50 at a time, totalCount will be set to
+         * 5000 and {@link #getCount} will return 50
+         */
+        totalCount: null,
+
+<span id='Ext-data-Store-cfg-clearOnPageLoad'>        /**
+</span>         * @cfg {Boolean} clearOnPageLoad True to empty the store when loading another page via {@link #loadPage},
+         * {@link #nextPage} or {@link #previousPage} (defaults to true). Setting to false keeps existing records, allowing
+         * large data sets to be loaded one page at a time but rendered all together.
+         * @accessor
+         */
+        clearOnPageLoad: true,
+
+        modelDefaults: {},
+
+<span id='Ext-data-Store-cfg-autoDestroy'>        /**
+</span>         * @cfg {Boolean} autoDestroy This is a private configuration used in the framework whether this Store
+         * can be destroyed.
+         * @private
+         */
+        autoDestroy: false,
+
+<span id='Ext-data-Store-cfg-syncRemovedRecords'>        /**
+</span>         * @cfg {Boolean} syncRemovedRecords This configuration allows you to disable the synchronization of
+         * removed records on this Store. By default, when you call removeAll or remove, records will be added
+         * to an internal removed array. When you then sync the Store, we send a destroy request for these records.
+         * If you don't want this to happen, you can set this configuration to false.
+         */
+        syncRemovedRecords: true
+    },
+
+<span id='Ext-data-Store-property-currentPage'>    /**
+</span>     * @property {Number} currentPage
+     * The page that the Store has most recently loaded (see {@link #loadPage})
+     */
+    currentPage: 1,
+
+    constructor: function(config) {
+        config = config || {};
+
+        this.data = this._data = this.createDataCollection();
+
+        this.data.setSortRoot('data');
+        this.data.setFilterRoot('data');
+
+        this.removed = [];
+
+        if (config.id &amp;&amp; !config.storeId) {
+            config.storeId = config.id;
+            delete config.id;
+        }
+
+        // &lt;deprecated product=touch since=2.0&gt;
+        // &lt;debug&gt;
+        if (config.hasOwnProperty('sortOnLoad')) {
+            Ext.Logger.deprecate(
+                '[Ext.data.Store] sortOnLoad is always activated in Sencha Touch 2 so your Store is always fully ' +
+                'sorted after loading. The only expection is if you are using remoteSort and change sorting after ' +
+                'the Store as loaded, in which case you need to call store.load() to fetch the sorted data from the server.'
+            );
+        }
+
+        if (config.hasOwnProperty('filterOnLoad')) {
+            Ext.Logger.deprecate(
+                '[Ext.data.Store] filterOnLoad is always activated in Sencha Touch 2 so your Store is always fully ' +
+                'sorted after loading. The only expection is if you are using remoteFilter and change filtering after ' +
+                'the Store as loaded, in which case you need to call store.load() to fetch the filtered data from the server.'
+            );
+        }
+
+        if (config.hasOwnProperty('sortOnFilter')) {
+            Ext.Logger.deprecate(
+                '[Ext.data.Store] sortOnFilter is deprecated and is always effectively true when sorting and filtering locally'
+            );
+        }
+        // &lt;/debug&gt;
+        // &lt;/deprecated&gt;
+
+        this.initConfig(config);
+    },
+
+    createDataCollection: function() {
+        return new Ext.util.Collection(function(record) {
+            return record.getId();
+        });
+    },
+
+    applyStoreId: function(storeId) {
+        if (storeId === undefined || storeId === null) {
+            storeId = this.getUniqueId();
+        }
+        return storeId;
+    },
+
+    updateStoreId: function(storeId, oldStoreId) {
+        if (oldStoreId) {
+            Ext.data.StoreManager.unregister(this);
+        }
+        if (storeId) {
+            Ext.data.StoreManager.register(this);
+        }
+    },
+
+    applyModel: function(model) {
+        if (typeof model == 'string') {
+            var registeredModel = Ext.data.ModelManager.getModel(model);
+            if (!registeredModel) {
+                Ext.Logger.error('Model with name &quot;' + model + '&quot; does not exist.');
+            }
+            model = registeredModel;
+        }
+
+        if (model &amp;&amp; !model.prototype.isModel &amp;&amp; Ext.isObject(model)) {
+            model = Ext.data.ModelManager.registerType(model.storeId || model.id || Ext.id(), model);
+        }
+
+        if (!model) {
+            var fields = this.getFields(),
+                data = this.config.data;
+
+            if (!fields &amp;&amp; data &amp;&amp; data.length) {
+                fields = Ext.Object.getKeys(data[0]);
+            }
+
+            if (fields) {
+                model = Ext.define('Ext.data.Store.ImplicitModel-' + (this.getStoreId() || Ext.id()), {
+                    extend: 'Ext.data.Model',
+                    config: {
+                        fields: fields,
+                        proxy: this.getProxy()
+                    }
+                });
+
+                this.implicitModel = true;
+            }
+        }
+        if (!model &amp;&amp; this.getProxy()) {
+            model = this.getProxy().getModel();
+        }
+
+        // &lt;debug&gt;
+        if (!model) {
+            Ext.Logger.warn('Unless you define your model through metadata, a store needs to have a model defined on either itself or on its proxy');
+        }
+        // &lt;/debug&gt;
+
+        return model;
+    },
+
+    updateModel: function(model) {
+        var proxy = this.getProxy();
+
+        if (proxy &amp;&amp; !proxy.getModel()) {
+            proxy.setModel(model);
+        }
+    },
+
+    applyProxy: function(proxy, currentProxy) {
+        proxy = Ext.factory(proxy, Ext.data.Proxy, currentProxy, 'proxy');
+
+        if (!proxy &amp;&amp; this.getModel()) {
+            proxy = this.getModel().getProxy();
+
+            if (!proxy) {
+                proxy = new Ext.data.proxy.Memory({
+                    model: this.getModel()
+                });
+            }
+        }
+
+        return proxy;
+    },
+
+    updateProxy: function(proxy) {
+        if (proxy) {
+            if (!proxy.getModel()) {
+                proxy.setModel(this.getModel());
+            }
+            proxy.on('metachange', this.onMetaChange, this);
+        }
+    },
+
+<span id='Ext-data-Store-method-applyData'>    /**
+</span>     * We are using applyData so that we can return nothing and prevent the this.data
+     * property to be overridden.
+     * @param data
+     */
+    applyData: function(data) {
+        var me = this,
+            proxy;
+        if (data) {
+            proxy = me.getProxy();
+            if (proxy instanceof Ext.data.proxy.Memory) {
+                proxy.setData(data);
+                me.load();
+            } else {
+                // We make it silent because we don't want to fire a refresh event
+                me.removeAll(true);
+
+                // This means we have to fire a clear event though
+                me.fireEvent('clear', me);
+
+                // We don't want to fire addrecords event since we will be firing
+                // a refresh event later which will already take care of updating
+                // any views bound to this store
+                me.suspendEvents();
+                me.add(data);
+                me.resumeEvents();
+
+                // We set this to true so isAutoLoading to try
+                me.dataLoaded = true;
+            }
+        } else {
+            me.removeAll(true);
+
+            // This means we have to fire a clear event though
+            me.fireEvent('clear', me);
+        }
+
+        me.fireEvent('refresh', me, me.data);
+    },
+
+    clearData: function() {
+        this.setData(null);
+    },
+
+    addData: function(data) {
+        var reader = this.getProxy().getReader(),
+            resultSet = reader.read(data),
+            records = resultSet.getRecords();
+
+        this.add(records);
+    },
+
+    updateAutoLoad: function(autoLoad) {
+        var proxy = this.getProxy();
+        if (autoLoad &amp;&amp; (proxy &amp;&amp; !proxy.isMemoryProxy)) {
+            this.load(Ext.isObject(autoLoad) ? autoLoad : null);
+        }
+    },
+
+<span id='Ext-data-Store-method-isAutoLoading'>    /**
+</span>     * Returns true if the Store is set to autoLoad or is a type which loads upon instantiation.
+     * @return {Boolean}
+     */
+    isAutoLoading: function() {
+        var proxy = this.getProxy();
+        return (this.getAutoLoad() || (proxy &amp;&amp; proxy.isMemoryProxy) || this.dataLoaded);
+    },
+
+    updateGroupField: function(groupField) {
+        var grouper = this.getGrouper();
+        if (groupField) {
+            if (!grouper) {
+                this.setGrouper({
+                    property: groupField,
+                    direction: this.getGroupDir() || 'ASC'
+                });
+            } else {
+                grouper.setProperty(groupField);
+            }
+        } else if (grouper) {
+            this.setGrouper(null);
+        }
+    },
+
+    updateGroupDir: function(groupDir) {
+        var grouper = this.getGrouper();
+        if (grouper) {
+            grouper.setDirection(groupDir);
+        }
+    },
+
+    applyGetGroupString: function(getGroupStringFn) {
+        var grouper = this.getGrouper();
+        if (getGroupStringFn) {
+            // &lt;debug&gt;
+            Ext.Logger.warn('Specifying getGroupString on a store has been deprecated. Please use grouper: {groupFn: yourFunction}');
+            // &lt;/debug&gt;
+
+            if (grouper) {
+                grouper.setGroupFn(getGroupStringFn);
+            } else {
+                this.setGrouper({
+                    groupFn: getGroupStringFn
+                });
+            }
+        } else if (grouper) {
+            this.setGrouper(null);
+        }
+    },
+
+    applyGrouper: function(grouper) {
+        if (typeof grouper == 'string') {
+            grouper = {
+                property: grouper
+            };
+        }
+        else if (typeof grouper == 'function') {
+            grouper = {
+                groupFn: grouper
+            };
+        }
+
+        grouper = Ext.factory(grouper, Ext.util.Grouper, this.getGrouper());
+        return grouper;
+    },
+
+    updateGrouper: function(grouper, oldGrouper) {
+        var data = this.data;
+        if (oldGrouper) {
+            data.removeSorter(oldGrouper);
+            if (!grouper) {
+                data.getSorters().removeSorter('isGrouper');
+            }
+        }
+        if (grouper) {
+            data.insertSorter(0, grouper);
+            if (!oldGrouper) {
+                data.getSorters().addSorter({
+                    direction: 'DESC',
+                    property: 'isGrouper',
+                    transform: function(value) {
+                        return (value === true) ? 1 : -1;
+                    }
+                });
+            }
+        }
+    },
+
+<span id='Ext-data-Store-method-isGrouped'>    /**
+</span>     * This method tells you if this store has a grouper defined on it.
+     * @return {Boolean} true if this store has a grouper defined.
+     */
+    isGrouped: function() {
+        return !!this.getGrouped();
+    },
+
+    updateSorters: function(sorters) {
+        var grouper = this.getGrouper(),
+            data = this.data,
+            autoSort = data.getAutoSort();
+
+        // While we remove/add sorters we don't want to automatically sort because we still need
+        // to apply any field sortTypes as transforms on the Sorters after we have added them.
+        data.setAutoSort(false);
+
+        data.setSorters(sorters);
+        if (grouper) {
+            data.insertSorter(0, grouper);
+        }
+
+        this.updateSortTypes();
+
+        // Now we put back autoSort on the Collection to the value it had before. If it was
+        // auto sorted, setting this back will cause it to sort right away.
+        data.setAutoSort(autoSort);
+    },
+
+    updateSortTypes: function() {
+        var model = this.getModel(),
+            fields = model &amp;&amp; model.getFields(),
+            data = this.data;
+
+        // We loop over each sorter and set it's transform method to the every field's sortType.
+        if (fields) {
+            data.getSorters().each(function(sorter) {
+                var property = sorter.getProperty(),
+                    field;
+
+                if (!sorter.isGrouper &amp;&amp; property &amp;&amp; !sorter.getTransform()) {
+                    field = fields.get(property);
+                    if (field) {
+                        sorter.setTransform(field.getSortType());
+                    }
+                }
+            });
+        }
+    },
+
+    updateFilters: function(filters) {
+        this.data.setFilters(filters);
+    },
+
+<span id='Ext-data-Store-method-add'>    /**
+</span>     * Adds Model instance to the Store. This method accepts either:
+     *
+     * - An array of Model instances or Model configuration objects.
+     * - Any number of Model instance or Model configuration object arguments.
+     *
+     * The new Model instances will be added at the end of the existing collection.
+     *
+     * Sample usage:
+     *
+     *     myStore.add({some: 'data2'}, {some: 'other data2'});
+     *
+     * @param {Ext.data.Model[]/Ext.data.Model...} model An array of Model instances
+     * or Model configuration objects, or variable number of Model instance or config arguments.
+     * @return {Ext.data.Model[]} The model instances that were added
+     */
+    add: function(records) {
+        //accept both a single-argument array of records, or any number of record arguments
+        if (!Ext.isArray(records)) {
+            records = Array.prototype.slice.apply(arguments);
+        }
+
+        return this.insert(this.data.length, records);
+    },
+
+<span id='Ext-data-Store-method-insert'>    /**
+</span>     * Inserts Model instances into the Store at the given index and fires the {@link #add} event.
+     * See also &lt;code&gt;{@link #add}&lt;/code&gt;.
+     * @param {Number} index The start index at which to insert the passed Records.
+     * @param {Ext.data.Model[]} records An Array of Ext.data.Model objects to add to the cache.
+     */
+    insert: function(index, records) {
+        if (!Ext.isArray(records)) {
+            records = Array.prototype.slice.call(arguments, 1);
+        }
+
+        var me = this,
+            sync = false,
+            ln = records.length,
+            Model = this.getModel(),
+            modelDefaults = me.getModelDefaults(),
+            i, record, added = false;
+
+        records = records.slice();
+
+        for (i = 0; i &lt; ln; i++) {
+            record = records[i];
+            if (!record.isModel) {
+                record = new Model(record);
+            }
+            // If we are adding a record that is already an instance which was still in the
+            // removed array, then we remove it from the removed array
+            else if (this.removed.indexOf(record) != -1) {
+                Ext.Array.remove(this.removed, record);
+            }
+
+            record.set(modelDefaults);
+
+            // reassign the model in the array in case it wasn't created yet
+            records[i] = record;
+            record.join(me);
+
+            // If this is a newly created record, then we might want to sync it later
+            sync = sync || (record.phantom === true);
+        }
+
+        // Now we insert all these records in one go to the collection. Saves many function
+        // calls to data.insert. Does however create two loops over the records we are adding.
+        if (ln === 1) {
+            added = this.data.insert(index, records[0]);
+            if (added) {
+                added = [added];
+            }
+        } else {
+            added = this.data.insertAll(index, records);
+        }
+
+        if (added) {
+            me.fireEvent('addrecords', me, added);
+        }
+
+        if (me.getAutoSync() &amp;&amp; sync) {
+            me.sync();
+        }
+
+        return records;
+    },
+
+<span id='Ext-data-Store-method-remove'>    /**
+</span>     * Removes the given record from the Store, firing the 'removerecords' event passing all the instances that are removed.
+     * @param {Ext.data.Model/Ext.data.Model[]} records Model instance or array of instances to remove
+     */
+    remove: function(records) {
+        if (records.isModel) {
+            records = [records];
+        }
+
+        var me = this,
+            sync = false,
+            i = 0,
+            autoSync = this.getAutoSync(),
+            ln = records.length,
+            indices = [],
+            removed = [],
+            isPhantom,
+            items = me.data.items,
+            record, index, j;
+
+        for (; i &lt; ln; i++) {
+            record = records[i];
+
+            if (me.data.contains(record)) {
+                isPhantom = (record.phantom === true);
+
+                index = items.indexOf(record);
+                if (index !== -1) {
+                    removed.push(record);
+                    indices.push(index);
+                }
+
+                if (!isPhantom &amp;&amp; me.getSyncRemovedRecords()) {
+                     // don't push phantom records onto removed
+                     me.removed.push(record);
+                }
+
+                record.unjoin(me);
+
+                me.data.remove(record);
+                sync = sync || !isPhantom;
+            }
+        }
+
+        me.fireEvent('removerecords', me, removed, indices);
+
+        if (autoSync &amp;&amp; sync) {
+            me.sync();
+        }
+    },
+
+<span id='Ext-data-Store-method-removeAt'>    /**
+</span>     * Removes the model instance at the given index
+     * @param {Number} index The record index
+     */
+    removeAt: function(index) {
+        var record = this.getAt(index);
+
+        if (record) {
+            this.remove(record);
+        }
+    },
+
+<span id='Ext-data-Store-method-removeAll'>    /**
+</span>     * Remove all items from the store.
+     * @param {Boolean} silent Prevent the `clear` event from being fired.
+     */
+    removeAll: function(silent) {
+        if (silent !== true) {
+            this.fireAction('clear', [this], 'doRemoveAll');
+        } else {
+            this.doRemoveAll.call(this, true);
+        }
+    },
+
+    doRemoveAll: function(silent) {
+        var me = this;
+        me.data.each(function(record) {
+            record.unjoin(me);
+        });
+        if (me.getSyncRemovedRecords()) {
+            me.removed = me.removed.concat(me.data.items);
+        }
+        me.data.clear();
+
+        if (silent !== true) {
+            me.fireEvent('refresh', me, me.data);
+        }
+
+        if (me.getAutoSync()) {
+            this.sync();
+        }
+    },
+
+<span id='Ext-data-Store-method-each'>    /**
+</span>     * Calls the specified function for each of the {@link Ext.data.Model Records} in the cache.
+     * @param {Function} fn The function to call. The {@link Ext.data.Model Record} is passed as the first parameter.
+     * Returning &lt;tt&gt;false&lt;/tt&gt; aborts and exits the iteration.
+     * @param {Object} scope (optional) The scope (&lt;code&gt;this&lt;/code&gt; reference) in which the function is executed.
+     * Defaults to the current {@link Ext.data.Model Record} in the iteration.
+     */
+    each: function(fn, scope) {
+        this.data.each(fn, scope);
+    },
+
+<span id='Ext-data-Store-method-getCount'>    /**
+</span>     * Gets the number of cached records.
+     * If using paging, this may not be the total size of the dataset.
+     * @return {Number} The number of Records in the Store's cache.
+     */
+    getCount: function() {
+        return this.data.length || 0;
+    },
+
+<span id='Ext-data-Store-method-getAt'>    /**
+</span>     * Get the Record at the specified index.
+     * @param {Number} index The index of the Record to find.
+     * @return {Ext.data.Model} The Record at the passed index. Returns undefined if not found.
+     */
+    getAt: function(index) {
+        return this.data.getAt(index);
+    },
+
+<span id='Ext-data-Store-method-getRange'>    /**
+</span>     * Returns a range of Records between specified indices.
+     * @param {Number} startIndex (optional) The starting index (defaults to 0)
+     * @param {Number} endIndex (optional) The ending index (defaults to the last Record in the Store)
+     * @return {Ext.data.Model[]} An array of Records
+     */
+    getRange: function(start, end) {
+        return this.data.getRange(start, end);
+    },
+
+<span id='Ext-data-Store-method-getById'>    /**
+</span>     * Get the Record with the specified id.
+     * @param {String} id The id of the Record to find.
+     * @return {Ext.data.Model} The Record with the passed id. Returns undefined if not found.
+     */
+    getById: function(id) {
+        return this.data.findBy(function(record) {
+            return record.getId() == id;
+        });
+    },
+
+<span id='Ext-data-Store-method-indexOf'>    /**
+</span>     * Get the index within the cache of the passed Record.
+     * @param {Ext.data.Model} record The Ext.data.Model object to find.
+     * @return {Number} The index of the passed Record. Returns -1 if not found.
+     */
+    indexOf: function(record) {
+        return this.data.indexOf(record);
+    },
+
+<span id='Ext-data-Store-method-indexOfId'>    /**
+</span>     * Get the index within the cache of the Record with the passed id.
+     * @param {String} id The id of the Record to find.
+     * @return {Number} The index of the Record. Returns -1 if not found.
+     */
+    indexOfId: function(id) {
+        return this.data.indexOfKey(id);
+    },
+
+<span id='Ext-data-Store-method-afterEdit'>    /**
+</span>     * @private
+     * A model instance should call this method on the Store it has been {@link Ext.data.Model#join joined} to.
+     * @param {Ext.data.Model} record The model instance that was edited
+     * @param {String[]} modifiedFieldNames Array of field names changed during edit.
+     */
+    afterEdit: function(record, modifiedFieldNames, modified) {
+        var me = this,
+            data = me.data,
+            currentId = modified[record.getIdProperty()] || record.getId(),
+            currentIndex = data.keys.indexOf(currentId),
+            newIndex;
+
+        if (currentIndex === -1 &amp;&amp; data.map[currentId] === undefined) {
+            return;
+        }
+
+        if (me.getAutoSync()) {
+            me.sync();
+        }
+
+        if (currentId !== record.getId()) {
+            data.replace(currentId, record);
+        } else {
+            data.replace(record);
+        }
+
+        newIndex = data.indexOf(record);
+        if (currentIndex === -1 &amp;&amp; newIndex !== -1) {
+            me.fireEvent('addrecords', me, [record]);
+        }
+        else if (currentIndex !== -1 &amp;&amp; newIndex === -1) {
+            me.fireEvent('removerecords', me, [record], [currentIndex]);
+        }
+        else if (newIndex !== -1) {
+            me.fireEvent('updaterecord', me, record, newIndex, currentIndex, modifiedFieldNames, modified);
+        }
+    },
+
+<span id='Ext-data-Store-method-afterReject'>    /**
+</span>     * @private
+     * A model instance should call this method on the Store it has been {@link Ext.data.Model#join joined} to..
+     * @param {Ext.data.Model} record The model instance that was edited
+     */
+    afterReject: function(record) {
+        var index = this.data.indexOf(record);
+        this.fireEvent('updaterecord', this, record, index, index, [], {});
+    },
+
+<span id='Ext-data-Store-method-afterCommit'>    /**
+</span>     * @private
+     * A model instance should call this method on the Store it has been {@link Ext.data.Model#join joined} to.
+     * @param {Ext.data.Model} record The model instance that was edited
+     */
+    afterCommit: function(record, modifiedFieldNames, modified) {
+        var me = this,
+            data = me.data,
+            currentId = modified[record.getIdProperty()] || record.getId(),
+            currentIndex = data.keys.indexOf(currentId),
+            newIndex;
+
+        if (currentIndex === -1 &amp;&amp; data.map[currentId] === undefined) {
+            return;
+        }
+
+        if (currentId !== record.getId()) {
+            data.replace(currentId, record);
+        } else {
+            data.replace(record);
+        }
+
+        newIndex = data.indexOf(record);
+        if (currentIndex === -1 &amp;&amp; newIndex !== -1) {
+            me.fireEvent('addrecords', me, [record]);
+        }
+        else if (currentIndex !== -1 &amp;&amp; newIndex === -1) {
+            me.fireEvent('removerecords', me, [record], [currentIndex]);
+        }
+        else if (newIndex !== -1) {
+            me.fireEvent('updaterecord', me, record, newIndex, currentIndex, modifiedFieldNames, modified);
+        }
+    },
+
+<span id='Ext-data-Store-method-afterErase'>    /**
+</span>     * This gets called by a record after is gets erased from the server.
+     * @param record
+     * @private
+     */
+    afterErase: function(record) {
+        var me = this,
+            data = me.data,
+            index = data.indexOf(record);
+
+        if (index !== -1) {
+            data.remove(record);
+            me.fireEvent('removerecords', me, [record], [index]);
+        }
+    },
+
+    updateRemoteFilter: function(remoteFilter) {
+        this.data.setAutoFilter(!remoteFilter);
+    },
+
+    updateRemoteSort: function(remoteSort) {
+        this.data.setAutoSort(!remoteSort);
+    },
+
+<span id='Ext-data-Store-method-sort'>    /**
+</span>     * Sorts the data in the Store by one or more of its properties. Example usage:
+     *
+     *     // sort by a single field
+     *     myStore.sort('myField', 'DESC');
+     *
+     *     // sorting by multiple fields
+     *     myStore.sort([
+     *         {
+     *             property : 'age',
+     *             direction: 'ASC'
+     *         },
+     *         {
+     *             property : 'name',
+     *             direction: 'DESC'
+     *         }
+     *     ]);
+     *
+     * Internally, Store converts the passed arguments into an array of {@link Ext.util.Sorter} instances, and delegates
+     * the actual sorting to its internal {@link Ext.util.Collection}.
+     *
+     * When passing a single string argument to sort, Store maintains a ASC/DESC toggler per field, so this code:
+     *
+     *     store.sort('myField');
+     *     store.sort('myField');
+     *
+     * is equivalent to this code:
+     *
+     *     store.sort('myField', 'ASC');
+     *     store.sort('myField', 'DESC');
+     *
+     * because Store handles the toggling automatically.
+     *
+     * If the {@link #remoteSort} configuration has been set to true, you will have to manually call the {@link #method-load}
+     * method after you sort to retrieve the sorted data from the server.
+     *
+     * @param {String/Ext.util.Sorter[]} sorters Either a string name of one of the fields in this Store's configured
+     * {@link Ext.data.Model Model}, or an array of sorter configurations.
+     * @param {String} defaultDirection The default overall direction to sort the data by. Defaults to &quot;ASC&quot;.
+     * @param {String} where (Optional) This can be either 'prepend' or 'append'. If you leave this undefined
+     * it will clear the current sorters.
+     */
+    sort: function(sorters, defaultDirection, where) {
+        var data = this.data,
+            grouper = this.getGrouper(),
+            autoSort = data.getAutoSort();
+
+        if (sorters) {
+            // While we are adding sorters we dont want to sort right away
+            // since we need to update sortTypes on the sorters.
+            data.setAutoSort(false);
+            if (typeof where === 'string') {
+                if (where == 'prepend') {
+                    data.insertSorters(grouper ? 1 : 0, sorters, defaultDirection);
+                } else {
+                    data.addSorters(sorters, defaultDirection);
+                }
+            } else {
+                data.setSorters(null);
+                if (grouper) {
+                    data.addSorters(grouper);
+                }
+                data.addSorters(sorters, defaultDirection);
+            }
+            this.updateSortTypes();
+            // Setting back autoSort to true (if it was like that before) will
+            // instantly sort the data again.
+            data.setAutoSort(autoSort);
+        }
+
+        if (!this.getRemoteSort()) {
+            // If we havent added any new sorters we have to manually call sort
+            if (!sorters) {
+                this.data.sort();
+            }
+
+            this.fireEvent('sort', this, this.data, this.data.getSorters());
+            if (data.length) {
+                this.fireEvent('refresh', this, this.data);
+            }
+        }
+    },
+
+<span id='Ext-data-Store-method-filter'>    /**
+</span>     * Filters the loaded set of records by a given set of filters.
+     *
+     * Filtering by single field:
+     *
+     *     store.filter(&quot;email&quot;, /\.com$/);
+     *
+     * Using multiple filters:
+     *
+     *     store.filter([
+     *         {property: &quot;email&quot;, value: /\.com$/},
+     *         {filterFn: function(item) { return item.get(&quot;age&quot;) &gt; 10; }}
+     *     ]);
+     *
+     * Using Ext.util.Filter instances instead of config objects
+     * (note that we need to specify the {@link Ext.util.Filter#root root} config option in this case):
+     *
+     *     store.filter([
+     *         Ext.create('Ext.util.Filter', {property: &quot;email&quot;, value: /\.com$/, root: 'data'}),
+     *         Ext.create('Ext.util.Filter', {filterFn: function(item) { return item.get(&quot;age&quot;) &gt; 10; }, root: 'data'})
+     *     ]);
+     *
+     * If the {@link #remoteFilter} configuration has been set to true, you will have to manually call the {@link #method-load}
+     * method after you filter to retrieve the filtered data from the server.
+     *
+     * @param {Object[]/Ext.util.Filter[]/String} filters The set of filters to apply to the data.
+     * These are stored internally on the store, but the filtering itself is done on the Store's
+     * {@link Ext.util.MixedCollection MixedCollection}. See MixedCollection's
+     * {@link Ext.util.MixedCollection#filter filter} method for filter syntax.
+     * Alternatively, pass in a property string.
+     * @param {String} [value] value to filter by (only if using a property string as the first argument).
+     * @param {Boolean} [anyMatch=false] True to allow any match, false to anchor regex beginning with `^`.
+     * @param {Boolean} [caseSensitive=false] True to make the filtering regex case sensitive.
+     */
+    filter: function(property, value, anyMatch, caseSensitive) {
+        var data = this.data,
+            ln = data.length;
+
+        if (this.getRemoteFilter()) {
+            if (property) {
+                if (Ext.isString(property)) {
+                    data.addFilters({
+                        property     : property,
+                        value        : value,
+                        anyMatch     : anyMatch,
+                        caseSensitive: caseSensitive
+                    });
+                }
+                else if (Ext.isArray(property) || property.isFilter) {
+                    data.addFilters(property);
+                }
+            }
+        } else {
+            data.filter(property, value, anyMatch, caseSensitive);
+            this.fireEvent('filter', this, data, data.getFilters());
+
+            if (data.length !== ln) {
+                this.fireEvent('refresh', this, data);
+            }
+        }
+    },
+
+<span id='Ext-data-Store-method-filterBy'>    /**
+</span>     * Filter by a function. The specified function will be called for each
+     * Record in this Store. If the function returns &lt;tt&gt;true&lt;/tt&gt; the Record is included,
+     * otherwise it is filtered out.
+     * @param {Function} fn The function to be called. It will be passed the following parameters:&lt;ul&gt;
+     * &lt;li&gt;&lt;b&gt;record&lt;/b&gt; : Ext.data.Model&lt;p class=&quot;sub-desc&quot;&gt;The {@link Ext.data.Model record}
+     * to test for filtering. Access field values using {@link Ext.data.Model#get}.&lt;/p&gt;&lt;/li&gt;
+     * &lt;li&gt;&lt;b&gt;id&lt;/b&gt; : Object&lt;p class=&quot;sub-desc&quot;&gt;The ID of the Record passed.&lt;/p&gt;&lt;/li&gt;
+     * &lt;/ul&gt;
+     * @param {Object} scope (optional) The scope (&lt;code&gt;this&lt;/code&gt; reference) in which the function is executed. Defaults to this Store.
+     */
+    filterBy: function(fn, scope) {
+        var me = this,
+            data = me.data,
+            ln = data.length;
+
+        data.filter({
+            filterFn: fn,
+            scope: scope
+        });
+
+        this.fireEvent('filter', this, data, data.getFilters());
+
+        if (data.length !== ln) {
+            this.fireEvent('refresh', this, data);
+        }
+    },
+
+<span id='Ext-data-Store-method-queryBy'>    /**
+</span>     * Query the cached records in this Store using a filtering function. The specified function
+     * will be called with each record in this Store. If the function returns &lt;tt&gt;true&lt;/tt&gt; the record is
+     * included in the results.
+     * @param {Function} fn The function to be called. It will be passed the following parameters:&lt;ul&gt;
+     * &lt;li&gt;&lt;b&gt;record&lt;/b&gt; : Ext.data.Model&lt;p class=&quot;sub-desc&quot;&gt;The {@link Ext.data.Model record}
+     * to test for filtering. Access field values using {@link Ext.data.Model#get}.&lt;/p&gt;&lt;/li&gt;
+     * &lt;li&gt;&lt;b&gt;id&lt;/b&gt; : Object&lt;p class=&quot;sub-desc&quot;&gt;The ID of the Record passed.&lt;/p&gt;&lt;/li&gt;
+     * &lt;/ul&gt;
+     * @param {Object} scope (optional) The scope (&lt;code&gt;this&lt;/code&gt; reference) in which the function is executed. Defaults to this Store.
+     * @return {Ext.util.MixedCollection} Returns an Ext.util.MixedCollection of the matched records
+     **/
+    queryBy: function(fn, scope) {
+        return this.data.filterBy(fn, scope || this);
+    },
+
+<span id='Ext-data-Store-method-clearFilter'>    /**
+</span>     * Reverts to a view of the Record cache with no filtering applied.
+     * @param {Boolean} [suppressEvent=false] True to clear silently without firing the `refresh` event.
+     */
+    clearFilter: function(suppressEvent) {
+        var ln = this.data.length;
+        if (suppressEvent) {
+            this.suspendEvents();
+        }
+        this.data.setFilters(null);
+        if (suppressEvent) {
+            this.resumeEvents();
+        } else if (ln !== this.data.length) {
+            this.fireEvent('refresh', this, this.data);
+        }
+    },
+
+<span id='Ext-data-Store-method-isFiltered'>    /**
+</span>     * Returns true if this store is currently filtered
+     * @return {Boolean}
+     */
+    isFiltered: function() {
+        return this.data.filtered;
+    },
+
+    getSorters: function() {
+        var sorters = this.data.getSorters();
+        return (sorters) ? sorters.items : [];
+    },
+
+    getFilters: function() {
+        var filters = this.data.getFilters();
+        return (filters) ? filters.items : [];
+    },
+
+<span id='Ext-data-Store-method-getGroups'>    /**
+</span>     * Returns an array containing the result of applying the grouper to the records in this store. See {@link #groupField},
+     * {@link #groupDir} and {@link #grouper}. Example for a store containing records with a color field:
+     *
+     *     var myStore = Ext.create('Ext.data.Store', {
+     *         groupField: 'color',
+     *         groupDir  : 'DESC'
+     *     });
+     *
+     *     myStore.getGroups(); //returns:
+     *     [
+     *        {
+     *            name: 'yellow',
+     *            children: [
+     *                //all records where the color field is 'yellow'
+     *            ]
+     *        },
+     *        {
+     *            name: 'red',
+     *            children: [
+     *                //all records where the color field is 'red'
+     *            ]
+     *        }
+     *     ]
+     *
+     * @param {String} groupName (Optional) Pass in an optional groupName argument to access a specific group as defined by {@link #grouper}
+     * @return {Object/Object[]} The grouped data
+     */
+    getGroups: function(requestGroupString) {
+        var records = this.data.items,
+            length = records.length,
+            grouper = this.getGrouper(),
+            groups = [],
+            pointers = {},
+            record,
+            groupStr,
+            group,
+            i;
+
+        // &lt;debug&gt;
+        if (!grouper) {
+            Ext.Logger.error('Trying to get groups for a store that has no grouper');
+        }
+        // &lt;/debug&gt;
+
+        for (i = 0; i &lt; length; i++) {
+            record = records[i];
+            groupStr = grouper.getGroupString(record);
+            group = pointers[groupStr];
+
+            if (group === undefined) {
+                group = {
+                    name: groupStr,
+                    children: []
+                };
+
+                groups.push(group);
+                pointers[groupStr] = group;
+            }
+
+            group.children.push(record);
+        }
+
+        return requestGroupString ? pointers[requestGroupString] : groups;
+    },
+
+    getGroupString: function(record) {
+        var grouper = this.getGrouper();
+        if (grouper) {
+            return grouper.getGroupString(record);
+        }
+        return null;
+    },
+
+<span id='Ext-data-Store-method-find'>    /**
+</span>     * Finds the index of the first matching Record in this store by a specific field value.
+     * @param {String} fieldName The name of the Record field to test.
+     * @param {String/RegExp} value Either a string that the field value
+     * should begin with, or a RegExp to test against the field.
+     * @param {Number} startIndex (optional) The index to start searching at
+     * @param {Boolean} anyMatch (optional) True to match any part of the string, not just the beginning
+     * @param {Boolean} caseSensitive (optional) True for case sensitive comparison
+     * @param {Boolean} exactMatch (optional) True to force exact match (^ and $ characters added to the regex). Defaults to false.
+     * @return {Number} The matched index or -1
+     */
+    find: function(fieldName, value, startIndex, anyMatch, caseSensitive, exactMatch) {
+        var filter = Ext.create('Ext.util.Filter', {
+            property: fieldName,
+            value: value,
+            anyMatch: anyMatch,
+            caseSensitive: caseSensitive,
+            exactMatch: exactMatch,
+            root: 'data'
+        });
+        return this.data.findIndexBy(filter.getFilterFn(), null, startIndex);
+    },
+
+<span id='Ext-data-Store-method-findRecord'>    /**
+</span>     * Finds the first matching Record in this store by a specific field value.
+     * @param {String} fieldName The name of the Record field to test.
+     * @param {String/RegExp} value Either a string that the field value
+     * should begin with, or a RegExp to test against the field.
+     * @param {Number} startIndex (optional) The index to start searching at
+     * @param {Boolean} anyMatch (optional) True to match any part of the string, not just the beginning
+     * @param {Boolean} caseSensitive (optional) True for case sensitive comparison
+     * @param {Boolean} exactMatch (optional) True to force exact match (^ and $ characters added to the regex). Defaults to false.
+     * @return {Ext.data.Model} The matched record or null
+     */
+    findRecord: function() {
+        var me = this,
+            index = me.find.apply(me, arguments);
+        return index !== -1 ? me.getAt(index) : null;
+    },
+
+<span id='Ext-data-Store-method-findExact'>    /**
+</span>     * Finds the index of the first matching Record in this store by a specific field value.
+     * @param {String} fieldName The name of the Record field to test.
+     * @param {Object} value The value to match the field against.
+     * @param {Number} startIndex (optional) The index to start searching at
+     * @return {Number} The matched index or -1
+     */
+    findExact: function(fieldName, value, startIndex) {
+        return this.data.findIndexBy(function(record) {
+            return record.get(fieldName) === value;
+        }, this, startIndex);
+    },
+
+<span id='Ext-data-Store-method-findBy'>    /**
+</span>     * Find the index of the first matching Record in this Store by a function.
+     * If the function returns &lt;tt&gt;true&lt;/tt&gt; it is considered a match.
+     * @param {Function} fn The function to be called. It will be passed the following parameters:&lt;ul&gt;
+     * &lt;li&gt;&lt;b&gt;record&lt;/b&gt; : Ext.data.Model&lt;p class=&quot;sub-desc&quot;&gt;The {@link Ext.data.Model record}
+     * to test for filtering. Access field values using {@link Ext.data.Model#get}.&lt;/p&gt;&lt;/li&gt;
+     * &lt;li&gt;&lt;b&gt;id&lt;/b&gt; : Object&lt;p class=&quot;sub-desc&quot;&gt;The ID of the Record passed.&lt;/p&gt;&lt;/li&gt;
+     * &lt;/ul&gt;
+     * @param {Object} scope (optional) The scope (&lt;code&gt;this&lt;/code&gt; reference) in which the function is executed. Defaults to this Store.
+     * @param {Number} startIndex (optional) The index to start searching at
+     * @return {Number} The matched index or -1
+     */
+    findBy: function(fn, scope, startIndex) {
+        return this.data.findIndexBy(fn, scope, startIndex);
+    },
+
+<span id='Ext-data-Store-method-load'>    /**
+</span>     * Loads data into the Store via the configured {@link #proxy}. This uses the Proxy to make an
+     * asynchronous call to whatever storage backend the Proxy uses, automatically adding the retrieved
+     * instances into the Store and calling an optional callback if required. Example usage:
+     *
+     *     store.load({
+     *         callback: function(records, operation, success) {
+     *             // the {@link Ext.data.Operation operation} object contains all of the details of the load operation
+     *             console.log(records);
+     *         },
+     *         scope: this
+     *     });
+     *
+     * If only the callback and scope options need to be specified, then one can call it simply like so:
+     *
+     *     store.load(function(records, operation, success) {
+     *         console.log('loaded records');
+     *     }, this);
+     *
+     * @param {Object/Function} [options] config object, passed into the Ext.data.Operation object before loading.
+     * @param {Object} [scope] Scope for the function.
+     */
+    load: function(options, scope) {
+        var me = this,
+            operation,
+            currentPage = me.currentPage,
+            pageSize = me.getPageSize();
+
+        options = options || {};
+
+        if (Ext.isFunction(options)) {
+            options = {
+                callback: options,
+                scope: scope || this
+            };
+        }
+
+        if (me.getRemoteSort()) {
+            options.sorters = options.sorters || this.getSorters();
+        }
+
+        if (me.getRemoteFilter()) {
+            options.filters = options.filters || this.getFilters();
+        }
+
+        if (me.getRemoteGroup()) {
+            options.grouper = options.grouper || this.getGrouper();
+        }
+
+        Ext.applyIf(options, {
+            page: currentPage,
+            start: (currentPage - 1) * pageSize,
+            limit: pageSize,
+            addRecords: false,
+            action: 'read',
+            model: this.getModel()
+        });
+
+        operation = Ext.create('Ext.data.Operation', options);
+
+        if (me.fireEvent('beforeload', me, operation) !== false) {
+            me.loading = true;
+            me.getProxy().read(operation, me.onProxyLoad, me);
+        }
+
+        return me;
+    },
+
+<span id='Ext-data-Store-method-isLoading'>    /**
+</span>     * Returns true if the Store is currently performing a load operation
+     * @return {Boolean} True if the Store is currently loading
+     */
+    isLoading: function() {
+        return Boolean(this.loading);
+    },
+
+<span id='Ext-data-Store-method-isLoaded'>    /**
+</span>     * Returns true if the Store has been loaded.
+     * @return {Boolean} True if the Store has been loaded
+     */
+    isLoaded: function() {
+        return Boolean(this.loaded);
+    },
+
+<span id='Ext-data-Store-method-sync'>    /**
+</span>     * Synchronizes the Store with its Proxy. This asks the Proxy to batch together any new, updated
+     * and deleted records in the store, updating the Store's internal representation of the records
+     * as each operation completes.
+     */
+    sync: function() {
+        var me = this,
+            operations = {},
+            toCreate = me.getNewRecords(),
+            toUpdate = me.getUpdatedRecords(),
+            toDestroy = me.getRemovedRecords(),
+            needsSync = false;
+
+        if (toCreate.length &gt; 0) {
+            operations.create = toCreate;
+            needsSync = true;
+        }
+
+        if (toUpdate.length &gt; 0) {
+            operations.update = toUpdate;
+            needsSync = true;
+        }
+
+        if (toDestroy.length &gt; 0) {
+            operations.destroy = toDestroy;
+            needsSync = true;
+        }
+
+        if (needsSync &amp;&amp; me.fireEvent('beforesync', this, operations) !== false) {
+            me.getProxy().batch({
+                operations: operations,
+                listeners: me.getBatchListeners()
+            });
+        }
+
+        return {
+            added: toCreate,
+            updated: toUpdate,
+            removed: toDestroy
+        };
+    },
+
+<span id='Ext-data-Store-method-first'>    /**
+</span>     * Convenience function for getting the first model instance in the store
+     * @return {Ext.data.Model/undefined} The first model instance in the store, or undefined
+     */
+    first: function() {
+        return this.data.first();
+    },
+
+<span id='Ext-data-Store-method-last'>    /**
+</span>     * Convenience function for getting the last model instance in the store
+     * @return {Ext.data.Model/undefined} The last model instance in the store, or undefined
+     */
+    last: function() {
+        return this.data.last();
+    },
+
+<span id='Ext-data-Store-method-sum'>    /**
+</span>     * Sums the value of &lt;tt&gt;property&lt;/tt&gt; for each {@link Ext.data.Model record} between &lt;tt&gt;start&lt;/tt&gt;
+     * and &lt;tt&gt;end&lt;/tt&gt; and returns the result.
+     * @param {String} field The field in each record
+     * @return {Number} The sum
+     */
+    sum: function(field) {
+        var total = 0,
+            i = 0,
+            records = this.data.items,
+            len = records.length;
+
+        for (; i &lt; len; ++i) {
+            total += records[i].get(field);
+        }
+
+        return total;
+    },
+
+<span id='Ext-data-Store-method-min'>    /**
+</span>     * Gets the minimum value in the store.
+     * @param {String} field The field in each record
+     * @return {Object} The minimum value, if no items exist, undefined.
+     */
+    min: function(field) {
+        var i = 1,
+            records = this.data.items,
+            len = records.length,
+            value, min;
+
+        if (len &gt; 0) {
+            min = records[0].get(field);
+        }
+
+        for (; i &lt; len; ++i) {
+            value = records[i].get(field);
+            if (value &lt; min) {
+                min = value;
+            }
+        }
+        return min;
+    },
+
+<span id='Ext-data-Store-method-max'>    /**
+</span>     * Gets the maximum value in the store.
+     * @param {String} field The field in each record
+     * @return {Object} The maximum value, if no items exist, undefined.
+     */
+    max: function(field) {
+        var i = 1,
+            records = this.data.items,
+            len = records.length,
+            value,
+            max;
+
+        if (len &gt; 0) {
+            max = records[0].get(field);
+        }
+
+        for (; i &lt; len; ++i) {
+            value = records[i].get(field);
+            if (value &gt; max) {
+                max = value;
+            }
+        }
+        return max;
+    },
+
+<span id='Ext-data-Store-method-average'>    /**
+</span>     * Gets the average value in the store.
+     * @param {String} field The field in each record you want to get the average for.
+     * @return {Object} The average value, if no items exist, 0.
+     */
+    average: function(field) {
+        var i = 0,
+            records = this.data.items,
+            len = records.length,
+            sum = 0;
+
+        if (records.length &gt; 0) {
+            for (; i &lt; len; ++i) {
+                sum += records[i].get(field);
+            }
+            return sum / len;
+        }
+        return 0;
+    },
+
+<span id='Ext-data-Store-method-getBatchListeners'>    /**
+</span>     * @private
+     * Returns an object which is passed in as the listeners argument to proxy.batch inside this.sync.
+     * This is broken out into a separate function to allow for customisation of the listeners
+     * @return {Object} The listeners object
+     */
+    getBatchListeners: function() {
+        return {
+            scope: this,
+            exception: this.onBatchException,
+            complete: this.onBatchComplete
+        };
+    },
+
+<span id='Ext-data-Store-method-onBatchComplete'>    /**
+</span>     * @private
+     * Attached as the 'complete' event listener to a proxy's Batch object. Iterates over the batch operations
+     * and updates the Store's internal data MixedCollection.
+     */
+    onBatchComplete: function(batch) {
+        var me = this,
+            operations = batch.operations,
+            length = operations.length,
+            i;
+
+        for (i = 0; i &lt; length; i++) {
+            me.onProxyWrite(operations[i]);
+        }
+    },
+
+    onBatchException: function(batch, operation) {
+        // //decide what to do... could continue with the next operation
+        // batch.start();
+        //
+        // //or retry the last operation
+        // batch.retry();
+    },
+
+<span id='Ext-data-Store-method-onProxyLoad'>    /**
+</span>     * @private
+     * Called internally when a Proxy has completed a load request
+     */
+    onProxyLoad: function(operation) {
+        var me = this,
+            records = operation.getRecords(),
+            resultSet = operation.getResultSet(),
+            successful = operation.wasSuccessful();
+
+        if (resultSet) {
+            me.setTotalCount(resultSet.getTotal());
+        }
+
+        if (successful) {
+            this.fireAction('datarefresh', [this, this.data, operation], 'doDataRefresh');
+        }
+
+        me.loaded = true;
+        me.loading = false;
+        me.fireEvent('load', this, records, successful, operation);
+
+        //this is a callback that would have been passed to the 'read' function and is optional
+        Ext.callback(operation.getCallback(), operation.getScope() || me, [records, operation, successful]);
+    },
+
+    doDataRefresh: function(store, data, operation) {
+        var records = operation.getRecords(),
+            me = this;
+
+        if (operation.getAddRecords() !== true) {
+            data.each(function(record) {
+                record.unjoin(me);
+            });
+            data.clear();
+
+            // This means we have to fire a clear event though
+            me.fireEvent('clear', this);
+        }
+
+        if (records &amp;&amp; records.length) {
+            // Now lets add the records without firing an addrecords event
+            me.suspendEvents();
+            me.add(records);
+            me.resumeEvents();
+        }
+
+        this.fireEvent('refresh', this, this.data);
+    },
+
+<span id='Ext-data-Store-method-onProxyWrite'>    /**
+</span>     * @private
+     * Callback for any write Operation over the Proxy. Updates the Store's MixedCollection to reflect
+     * the updates provided by the Proxy
+     */
+    onProxyWrite: function(operation) {
+        var me = this,
+            success = operation.wasSuccessful(),
+            records = operation.getRecords();
+
+        switch (operation.getAction()) {
+            case 'create':
+                me.onCreateRecords(records, operation, success);
+                break;
+            case 'update':
+                me.onUpdateRecords(records, operation, success);
+                break;
+            case 'destroy':
+                me.onDestroyRecords(records, operation, success);
+                break;
+        }
+
+        if (success) {
+            me.fireEvent('write', me, operation);
+        }
+        //this is a callback that would have been passed to the 'create', 'update' or 'destroy' function and is optional
+        Ext.callback(operation.getCallback(), operation.getScope() || me, [records, operation, success]);
+    },
+
+    // These methods are now just template methods since updating the records etc is all taken care of
+    // by the operation itself.
+    onCreateRecords: function(records, operation, success) {},
+    onUpdateRecords: function(records, operation, success) {},
+
+    onDestroyRecords: function(records, operation, success) {
+        this.removed = [];
+    },
+
+    onMetaChange: function(data) {
+        var model = this.getProxy().getModel();
+        if (!this.getModel() &amp;&amp; model) {
+            this.setModel(model);
+        }
+
+<span id='Ext-data-Store-event-metachange'>        /**
+</span>         * @event metachange
+         * Fires whenever the server has sent back new metadata to reconfigure the Reader.
+         * @param {Ext.data.Store} this
+         * @param {Object} data The metadata sent back from the server
+         */
+        this.fireEvent('metachange', this, data);
+    },
+
+<span id='Ext-data-Store-method-getNewRecords'>    /**
+</span>     * Returns all Model instances that are either currently a phantom (e.g. have no id), or have an ID but have not
+     * yet been saved on this Store (this happens when adding a non-phantom record from another Store into this one).
+     * @return {Ext.data.Model[]} The Model instances.
+     */
+    getNewRecords: function() {
+        return this.data.filterBy(function(item) {
+            // only want phantom records that are valid
+            return item.phantom === true &amp;&amp; item.isValid();
+        }).items;
+    },
+
+<span id='Ext-data-Store-method-getUpdatedRecords'>    /**
+</span>     * Returns all Model instances that have been updated in the Store but not yet synchronized with the Proxy.
+     * @return {Ext.data.Model[]} The updated Model instances.
+     */
+    getUpdatedRecords: function() {
+        return this.data.filterBy(function(item) {
+            // only want dirty records, not phantoms that are valid
+            return item.dirty === true &amp;&amp; item.phantom !== true &amp;&amp; item.isValid();
+        }).items;
+    },
+
+<span id='Ext-data-Store-method-getRemovedRecords'>    /**
+</span>     * Returns any records that have been removed from the store but not yet destroyed on the proxy.
+     * @return {Ext.data.Model[]} The removed Model instances
+     */
+    getRemovedRecords: function() {
+        return this.removed;
+    },
+
+    // PAGING METHODS
+<span id='Ext-data-Store-method-loadPage'>    /**
+</span>     * Loads a given 'page' of data by setting the start and limit values appropriately. Internally this just causes a normal
+     * load operation, passing in calculated 'start' and 'limit' params
+     * @param {Number} page The number of the page to load
+     * @param {Object} options See options for {@link #method-load}
+     */
+    loadPage: function(page, options, scope) {
+        if (typeof options === 'function') {
+            options = {
+                callback: options,
+                scope: scope || this
+            };
+
+        }
+        var me = this,
+            pageSize = me.getPageSize(),
+            clearOnPageLoad = me.getClearOnPageLoad();
+
+        options = Ext.apply({}, options);
+
+        me.currentPage = page;
+
+        me.load(Ext.applyIf(options, {
+            page: page,
+            start: (page - 1) * pageSize,
+            limit: pageSize,
+            addRecords: !clearOnPageLoad
+        }));
+    },
+
+<span id='Ext-data-Store-method-nextPage'>    /**
+</span>     * Loads the next 'page' in the current data set
+     * @param {Object} options See options for {@link #method-load}
+     */
+    nextPage: function(options) {
+        this.loadPage(this.currentPage + 1, options);
+    },
+
+<span id='Ext-data-Store-method-previousPage'>    /**
+</span>     * Loads the previous 'page' in the current data set
+     * @param {Object} options See options for {@link #method-load}
+     */
+    previousPage: function(options) {
+        this.loadPage(this.currentPage - 1, options);
+    }
+
+    // &lt;deprecated product=touch since=2.0&gt;
+    ,onClassExtended: function(cls, data) {
+        var prototype = this.prototype,
+            defaultConfig = prototype.config,
+            config = data.config || {},
+            key;
+
+        // Convert deprecated properties in application into a config object
+        for (key in defaultConfig) {
+            if (key != &quot;control&quot; &amp;&amp; key in data) {
+                config[key] = data[key];
+                delete data[key];
+                // &lt;debug warn&gt;
+                Ext.Logger.deprecate(key + ' is deprecated as a property directly on the ' + this.$className +
+                    ' prototype. Please put it inside the config object.');
+                // &lt;/debug&gt;
+            }
+        }
+
+        data.config = config;
+    }
+}, function() {
+<span id='Ext-data-Store-method-loadData'>    /**
+</span>     * Loads an array of data straight into the Store
+     * @param {Ext.data.Model[]/Object[]} data Array of data to load. Any non-model instances will be cast into model instances first
+     * @param {Boolean} append True to add the records to the existing records in the store, false to remove the old ones first
+     * @deprecated 2.0 Please use #add or #setData instead.
+     * @method loadData
+     */
+    this.override({
+        loadData: function(data, append) {
+            Ext.Logger.deprecate(&quot;loadData is deprecated, please use either add or setData&quot;);
+            if (append) {
+                this.add(data);
+            } else {
+                this.setData(data);
+            }
+        },
+
+        //@private
+        doAddListener: function(name, fn, scope, options, order) {
+            // &lt;debug&gt;
+            switch(name) {
+                case 'update':
+                    Ext.Logger.warn('The update event on Store has been removed. Please use the updaterecord event from now on.');
+                    return this;
+                case 'add':
+                    Ext.Logger.warn('The add event on Store has been removed. Please use the addrecords event from now on.');
+                    return this;
+                case 'remove':
+                    Ext.Logger.warn('The remove event on Store has been removed. Please use the removerecords event from now on.');
+                    return this;
+                case 'datachanged':
+                    Ext.Logger.warn('The datachanged event on Store has been removed. Please use the refresh event from now on.');
+                    return this;
+                break;
+            }
+            // &lt;/debug&gt;
+
+            return this.callParent(arguments);
+        }
+    });
+
+<span id='Ext-data-Store-method-loadRecords'>    /**
+</span>     * @member Ext.data.Store
+     * @method loadRecords
+     * @inheritdoc Ext.data.Store#add
+     * @deprecated 2.0.0 Please use {@link #add} instead.
+     */
+    Ext.deprecateMethod(this, 'loadRecords', 'add', &quot;Ext.data.Store#loadRecords has been deprecated. Please use the add method.&quot;);
+
+    // &lt;/deprecated&gt;
+});
+</pre>
+</body>
+</html>

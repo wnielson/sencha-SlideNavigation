@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-Date'>/**
+</span> *
+ */
+Ext.Date = {
+    now: Date.now,
+
+<span id='Ext-Date-method-toString'>    /**
+</span>     * @private
+     * Private for now
+     */
+    toString: function(date) {
+        if (!date) {
+            date = new Date();
+        }
+
+        var pad = Ext.String.leftPad;
+
+        return date.getFullYear() + &quot;-&quot;
+            + pad(date.getMonth() + 1, 2, '0') + &quot;-&quot;
+            + pad(date.getDate(), 2, '0') + &quot;T&quot;
+            + pad(date.getHours(), 2, '0') + &quot;:&quot;
+            + pad(date.getMinutes(), 2, '0') + &quot;:&quot;
+            + pad(date.getSeconds(), 2, '0');
+    }
+};
+
+//&lt;deprecated product=touch since=&quot;2.0&quot;&gt;
+Ext.merge(Ext, {
+	util: {
+		Date: Ext.Date
+	}
+});
+//&lt;/deprecated&gt;
+</pre>
+</body>
+</html>

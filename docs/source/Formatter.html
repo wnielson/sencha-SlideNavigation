@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">//&lt;feature logger&gt;
+Ext.define('Ext.log.formatter.Formatter', {
+    extend: 'Ext.log.Base',
+
+    config: {
+        messageFormat: &quot;{message}&quot;
+    },
+
+    format: function(event) {
+        return this.substitute(this.getMessageFormat(), event);
+    },
+
+    substitute: function(template, data) {
+        var name, value;
+
+        for (name in data) {
+            if (data.hasOwnProperty(name)) {
+                value = data[name];
+
+                template = template.replace(new RegExp(&quot;\\{&quot; + name + &quot;\\}&quot;, &quot;g&quot;), value);
+            }
+        }
+
+        return template;
+    }
+});
+//&lt;/feature&gt;
+</pre>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-data-identifier-Simple'>/**
+</span> * @author Tommy Maintz
+ *
+ * This class is the simple default id generator for Model instances.
+ *
+ * An example of a configured simple generator would be:
+ *
+ *     Ext.define('MyApp.data.MyModel', {
+ *         extend: 'Ext.data.Model',
+ *         config: {
+ *             identifier: {
+ *                 type: 'simple',
+ *                 prefix: 'ID_'
+ *             }
+ *         }
+ *     });
+ *     // assign id's of ID_1, ID_2, ID_3, etc.
+ *
+ */
+Ext.define('Ext.data.identifier.Simple', {
+    alias: 'data.identifier.simple',
+    
+    statics: {
+        AUTO_ID: 1
+    },
+
+    config: {
+        prefix: 'ext-record-'
+    },
+
+    constructor: function(config) {
+        this.initConfig(config);
+    },
+
+    generate: function(record) {
+        return this._prefix + this.self.AUTO_ID++;
+    }
+});</pre>
+</body>
+</html>

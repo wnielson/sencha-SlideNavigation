@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-data-Error'>/**
+</span> * @author Ed Spencer
+ * @class Ext.data.Error
+ *
+ * &lt;p&gt;This is used when validating a record. The validate method will return an Ext.data.Errors collection
+ * containing Ext.data.Error instances. Each error has a field and a message.&lt;/p&gt;
+ *
+ * &lt;p&gt;Usually this class does not need to be instantiated directly - instances are instead created
+ * automatically when {@link Ext.data.Model#validate validate} on a model instance.&lt;/p&gt;
+ */
+
+Ext.define('Ext.data.Error', {
+    config: {
+<span id='Ext-data-Error-cfg-field'>        /**
+</span>         * @cfg {String} field
+         * The name of the field this error belongs to.
+         */
+        field: null,
+
+<span id='Ext-data-Error-cfg-message'>        /**
+</span>         * @cfg {String} message
+         * The message containing the description of the error.
+         */
+        message: ''
+    },
+
+    constructor: function(config) {
+        this.initConfig(config);
+    }
+});
+</pre>
+</body>
+</html>

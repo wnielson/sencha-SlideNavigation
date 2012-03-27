@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-data-JsonP'>/**
+</span> * @aside guide ajax
+ * @singleton
+ *
+ * This class is used to create JsonP requests. JsonP is a mechanism that allows for making requests for data cross
+ * domain. More information is available [here](http://en.wikipedia.org/wiki/JSONP).
+ *
+ * ## Example
+ *
+ *     @example preview
+ *     Ext.Viewport.add({
+ *         xtype: 'button',
+ *         text: 'Make JsonP Request',
+ *         centered: true,
+ *         handler: function(button) {
+ *             // Mask the viewport
+ *             Ext.Viewport.mask();
+ *
+ *             // Remove the button
+ *             button.destroy();
+ *
+ *             // Make the JsonP request
+ *             Ext.data.JsonP.request({
+ *                 url: 'http://free.worldweatheronline.com/feed/weather.ashx',
+ *                 callbackKey: 'callback',
+ *                 params: {
+ *                     key: '23f6a0ab24185952101705',
+ *                     q: '94301', // Palo Alto
+ *                     format: 'json',
+ *                     num_of_days: 5
+ *                 },
+ *                 success: function(result) {
+ *                     // Unmask the viewport
+ *                     Ext.Viewport.unmask();
+ *
+ *                     // Get the weather data from the json object result
+ *                     var weather = result.data.weather;
+ *                     if (weather) {
+ *                         // Style the viewport html, and set the html of the max temperature
+ *                         Ext.Viewport.setStyleHtmlContent(true);
+ *                         Ext.Viewport.setHtml('The temperature in Palo Alto is &lt;b&gt;' + weather[0].tempMaxF + '° F&lt;b/&gt;');
+ *                     }
+ *                 }
+ *             });
+ *         }
+ *     });
+ *
+ * See the {@link #request} method for more details on making a JsonP request.
+ */
+Ext.define('Ext.data.JsonP', {
+    alternateClassName: 'Ext.util.JSONP',
+
+    /* Begin Definitions */
+
+    singleton: true,
+
+    statics: {
+        requestCount: 0,
+        requests: {}
+    },
+
+    /* End Definitions */
+
+<span id='Ext-data-JsonP-property-timeout'>    /**
+</span>     * @property {Number} [timeout=30000]
+     * A default timeout for any JsonP requests. If the request has not completed in this time the failure callback will
+     * be fired. The timeout is in ms. Defaults to 30000.
+     */
+    timeout: 30000,
+
+<span id='Ext-data-JsonP-property-disableCaching'>    /**
+</span>     * @property {Boolean} [disableCaching=true]
+     * True to add a unique cache-buster param to requests. Defaults to true.
+     */
+    disableCaching: true,
+
+<span id='Ext-data-JsonP-property-disableCachingParam'>    /**
+</span>     * @property {String} [disableCachingParam=&quot;_dc&quot;]
+     * Change the parameter which is sent went disabling caching through a cache buster. Defaults to '_dc'.
+     */
+    disableCachingParam: '_dc',
+
+<span id='Ext-data-JsonP-property-callbackKey'>    /**
+</span>     * @property {String} [callbackKey=&quot;callback&quot;]
+     * Specifies the GET parameter that will be sent to the server containing the function name to be executed when the
+     * request completes. Defaults to callback. Thus, a common request will be in the form of
+     * url?callback=Ext.data.JsonP.callback1
+     */
+    callbackKey: 'callback',
+
+<span id='Ext-data-JsonP-method-request'>    /**
+</span>     * Makes a JSONP request.
+     * @param {Object} options An object which may contain the following properties. Note that options will take
+     * priority over any defaults that are specified in the class.
+     *
+     * @param {String} options.url  The URL to request.
+     * @param {Object} [options.params]  An object containing a series of key value pairs that will be sent along with the request.
+     * @param {Number} [options.timeout]  See {@link #timeout}
+     * @param {String} [options.callbackKey]  See {@link #callbackKey}
+     * @param {String} [options.callbackName]  See {@link #callbackKey}
+     *   The function name to use for this request. By default this name will be auto-generated: Ext.data.JsonP.callback1,
+     *   Ext.data.JsonP.callback2, etc. Setting this option to &quot;my_name&quot; will force the function name to be
+     *   Ext.data.JsonP.my_name. Use this if you want deterministic behavior, but be careful - the callbackName should be
+     *   different in each JsonP request that you make.
+     * @param {Boolean}  [options.disableCaching]  See {@link #disableCaching}
+     * @param {String}   [options.disableCachingParam]  See {@link #disableCachingParam}
+     * @param {Function} [options.success]  A function to execute if the request succeeds.
+     * @param {Function} [options.failure]  A function to execute if the request fails.
+     * @param {Function} [options.callback]  A function to execute when the request completes, whether it is a success or failure.
+     * @param {Object}   [options.scope]  The scope in which to execute the callbacks: The &quot;this&quot; object for the
+     *   callback function. Defaults to the browser window.
+     *
+     * @return {Object}  request An object containing the request details.
+     */
+    request: function(options){
+        options = Ext.apply({}, options);
+
+        //&lt;debug&gt;
+        if (!options.url) {
+            Ext.Logger.error('A url must be specified for a JSONP request.');
+        }
+        //&lt;/debug&gt;
+
+        var me = this,
+            disableCaching = Ext.isDefined(options.disableCaching) ? options.disableCaching : me.disableCaching,
+            cacheParam = options.disableCachingParam || me.disableCachingParam,
+            id = ++me.statics().requestCount,
+            callbackName = options.callbackName || 'callback' + id,
+            callbackKey = options.callbackKey || me.callbackKey,
+            timeout = Ext.isDefined(options.timeout) ? options.timeout : me.timeout,
+            params = Ext.apply({}, options.params),
+            url = options.url,
+            name = Ext.isSandboxed ? Ext.getUniqueGlobalNamespace() : 'Ext',
+            request,
+            script;
+
+        params[callbackKey] = name + '.data.JsonP.' + callbackName;
+        if (disableCaching) {
+            params[cacheParam] = new Date().getTime();
+        }
+
+        script = me.createScript(url, params, options);
+
+        me.statics().requests[id] = request = {
+            url: url,
+            params: params,
+            script: script,
+            id: id,
+            scope: options.scope,
+            success: options.success,
+            failure: options.failure,
+            callback: options.callback,
+            callbackKey: callbackKey,
+            callbackName: callbackName
+        };
+
+        if (timeout &gt; 0) {
+            request.timeout = setTimeout(Ext.bind(me.handleTimeout, me, [request]), timeout);
+        }
+
+        me.setupErrorHandling(request);
+        me[callbackName] = Ext.bind(me.handleResponse, me, [request], true);
+        me.loadScript(request);
+        return request;
+    },
+
+<span id='Ext-data-JsonP-method-abort'>    /**
+</span>     * Abort a request. If the request parameter is not specified all open requests will be aborted.
+     * @param {Object/String} request The request to abort
+     */
+    abort: function(request){
+        var requests = this.statics().requests,
+            key;
+
+        if (request) {
+            if (!request.id) {
+                request = requests[request];
+            }
+            this.abort(request);
+        } else {
+            for (key in requests) {
+                if (requests.hasOwnProperty(key)) {
+                    this.abort(requests[key]);
+                }
+            }
+        }
+    },
+
+<span id='Ext-data-JsonP-method-setupErrorHandling'>    /**
+</span>     * Sets up error handling for the script
+     * @private
+     * @param {Object} request The request
+     */
+    setupErrorHandling: function(request){
+        request.script.onerror = Ext.bind(this.handleError, this, [request]);
+    },
+
+<span id='Ext-data-JsonP-method-handleAbort'>    /**
+</span>     * Handles any aborts when loading the script
+     * @private
+     * @param {Object} request The request
+     */
+    handleAbort: function(request){
+        request.errorType = 'abort';
+        this.handleResponse(null, request);
+    },
+
+<span id='Ext-data-JsonP-method-handleError'>    /**
+</span>     * Handles any script errors when loading the script
+     * @private
+     * @param {Object} request The request
+     */
+    handleError: function(request){
+        request.errorType = 'error';
+        this.handleResponse(null, request);
+    },
+
+<span id='Ext-data-JsonP-method-cleanupErrorHandling'>    /**
+</span>     * Cleans up anu script handling errors
+     * @private
+     * @param {Object} request The request
+     */
+    cleanupErrorHandling: function(request){
+        request.script.onerror = null;
+    },
+
+<span id='Ext-data-JsonP-method-handleTimeout'>    /**
+</span>     * Handle any script timeouts
+     * @private
+     * @param {Object} request The request
+     */
+    handleTimeout: function(request){
+        request.errorType = 'timeout';
+        this.handleResponse(null, request);
+    },
+
+<span id='Ext-data-JsonP-method-handleResponse'>    /**
+</span>     * Handle a successful response
+     * @private
+     * @param {Object} result The result from the request
+     * @param {Object} request The request
+     */
+    handleResponse: function(result, request){
+        var success = true;
+
+        if (request.timeout) {
+            clearTimeout(request.timeout);
+        }
+
+        delete this[request.callbackName];
+        delete this.statics()[request.id];
+
+        this.cleanupErrorHandling(request);
+        Ext.fly(request.script).destroy();
+
+        if (request.errorType) {
+            success = false;
+            Ext.callback(request.failure, request.scope, [request.errorType]);
+        } else {
+            Ext.callback(request.success, request.scope, [result]);
+        }
+        Ext.callback(request.callback, request.scope, [success, result, request.errorType]);
+    },
+
+<span id='Ext-data-JsonP-method-createScript'>    /**
+</span>     * Create the script tag given the specified url, params and options. The options
+     * parameter is passed to allow an override to access it.
+     * @private
+     * @param {String} url The url of the request
+     * @param {Object} params Any extra params to be sent
+     * @param {Object} options The object passed to {@link #request}.
+     */
+    createScript: function(url, params, options) {
+        var script = document.createElement('script');
+        script.setAttribute(&quot;src&quot;, Ext.urlAppend(url, Ext.Object.toQueryString(params)));
+        script.setAttribute(&quot;async&quot;, true);
+        script.setAttribute(&quot;type&quot;, &quot;text/javascript&quot;);
+        return script;
+    },
+
+<span id='Ext-data-JsonP-method-loadScript'>    /**
+</span>     * Loads the script for the given request by appending it to the HEAD element. This is
+     * its own method so that users can override it (as well as {@link #createScript}).
+     * @private
+     * @param request The request object.
+     */
+    loadScript: function (request) {
+        Ext.getHead().appendChild(request.script);
+    }
+});
+</pre>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-event-Dom'>/**
+</span> * @private
+ * @extends Object
+ * DOM event. This class really extends Ext.event.Event, but for documentation
+ * purposes it's members are listed inside Ext.event.Event.
+ */
+Ext.define('Ext.event.Dom', {
+    extend: 'Ext.event.Event',
+
+    constructor: function(event) {
+        var target = event.target,
+            touches;
+
+        if (target &amp;&amp; target.nodeType !== 1) {
+            target = target.parentNode;
+        }
+        touches = event.changedTouches;
+        if (touches) {
+            touches = touches[0];
+            this.pageX = touches.pageX;
+            this.pageY = touches.pageY;
+        }
+        else {
+            this.pageX = event.pageX;
+            this.pageY = event.pageY;
+        }
+
+        this.browserEvent = this.event = event;
+        this.target = this.delegatedTarget = target;
+        this.type = event.type;
+
+        this.timeStamp = this.time = event.timeStamp;
+
+        if (typeof this.time != 'number') {
+            this.time = new Date(this.time).getTime();
+        }
+
+        return this;
+    },
+
+<span id='Ext-event-Dom-property-distance'>    /**
+</span>     * @property {Number} distance
+     * The distance of the event.
+     *
+     * **This is only available when the event type is `swipe` and `pinch`**
+     */
+
+<span id='Ext-event-Dom-property-target'>    /**
+</span>     * @property {HTMLElement} target
+     * The target HTMLElement for this event. For example; if you are listening to a tap event and you tap on a `&lt;div&gt;` element,
+     * this will return that `&lt;div&gt;` element.
+     */
+
+<span id='Ext-event-Dom-property-pageX'>    /**
+</span>     * @property {Number} pageX The browsers x coordinate of the event.
+     */
+
+<span id='Ext-event-Dom-property-pageY'>    /**
+</span>     * @property {Number} pageY The browsers y coordinate of the event.
+     */
+
+    stopEvent: function() {
+        this.preventDefault();
+
+        return this.callParent();
+    },
+
+<span id='Ext-event-Dom-method-preventDefault'>    /**
+</span>     * Prevents the browsers default handling of the event.
+     */
+    preventDefault: function() {
+        this.browserEvent.preventDefault();
+    },
+
+<span id='Ext-event-Dom-method-getPageX'>    /**
+</span>     * Gets the x coordinate of the event.
+     * @deprecated 2.0 Please use {@link #pageX} property directly.
+     */
+    getPageX: function() {
+        return this.browserEvent.pageX;
+    },
+
+<span id='Ext-event-Dom-method-getPageY'>    /**
+</span>     * Gets the y coordinate of the event.
+     * @deprecated 2.0 Please use {@link #pageX} property directly.
+     */
+    getPageY: function() {
+        return this.browserEvent.pageY;
+    },
+
+<span id='Ext-event-Dom-method-getXY'>    /**
+</span>     * Gets the X and Y coordinates of the event.
+     * @deprecated 2.0 Please use the {@link #pageX} and {@link #pageY} properties directly.
+     */
+    getXY: function() {
+        if (!this.xy) {
+            this.xy = [this.getPageX(), this.getPageY()];
+        }
+
+        return this.xy;
+    },
+
+<span id='Ext-event-Dom-method-getTarget'>    /**
+</span>     * Gets the target for the event. Unlike {@link #target}, this returns the main element for your event. So if you are
+     * listening to a tap event on Ext.Viewport.element, and you tap on an inner element of Ext.Viewport.element, this will
+     * return Ext.Viewport.element.
+     *
+     * If you want the element you tapped on, then use {@link #target}.
+     *
+     * @param {String} selector (optional) A simple selector to filter the target or look for an ancestor of the target
+     * @param {Number/Mixed} maxDepth (optional) The max depth to
+     search as a number or element (defaults to 10 || document.body)
+     * @param {Boolean} returnEl (optional) True to return a Ext.Element object instead of DOM node
+     * @return {HTMLElement}
+     */
+    getTarget: function(selector, maxDepth, returnEl) {
+        if (arguments.length === 0) {
+            return this.delegatedTarget;
+        }
+
+        return selector ? Ext.fly(this.target).findParent(selector, maxDepth, returnEl) : (returnEl ? Ext.get(this.target) : this.target);
+    },
+
+<span id='Ext-event-Dom-method-getTime'>    /**
+</span>     * Returns the time of the event.
+     * @return {Date}
+     */
+    getTime: function() {
+        return this.time;
+    },
+
+    setDelegatedTarget: function(target) {
+        this.delegatedTarget = target;
+    },
+
+    makeUnpreventable: function() {
+        this.browserEvent.preventDefault = Ext.emptyFn;
+    }
+});
+</pre>
+</body>
+</html>
