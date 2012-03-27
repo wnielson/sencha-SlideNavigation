@@ -2,9 +2,11 @@ Slide Navigation
 ================
 
 This is an attempt to make a Facebook-like navigation panel for Sencha Touch 2.
-To see a current working demo, visit http://wnielson.github.com/sencha-SlideNavigation/
-on a mobile device.  To see the navigation menu in the example, "flick" the toolbar
-(at the top) to the right; the opposite action can be used to close the menu.
+To see a current working demo, visit `this page`_ on a mobile device.  To see the
+navigation menu in the example, "flick" the toolbar (at the top) to the right; the
+opposite action can be used to close the menu.
+
+.. _`this page`: http://wnielson.github.com/sencha-SlideNavigation/
 
 This is a work in progress and still needs quite a bit of work, but it is usable.
 
@@ -53,4 +55,12 @@ So far this has been tested on:
   * Android 4.0.3
   * Android 3.2 (tablet)
   * Android 2.3.3
+
+Documentation
+-------------
+
+You can read the docs online here_.
+
+.. _here: http://wnielson.github.com/sencha-SlideNavigation/docs/
+
 	
