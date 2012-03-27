@@ -12,25 +12,25 @@ Getting Started
 ---------------
 
 Using the SlideNavigation view in your project is now easier than before.
-Simply add the following at the beginning of your app:
+Simply add the following at the beginning of your app::
 
     Ext.Loader.setConfig({enabled:true});
     Ext.Loader.setPath('Ext.ux', './ux');
 
-Then in whatever component you wish to use the view, add:
+Then in whatever component you wish to use the view, add::
 
     requires = [
         'Ext.ux.slidenavigation.View',
     ]
 
-or simply extend the 'Ext.ux.slidenavigation.View' class.
+or simply extend the `Ext.ux.slidenavigation.View` class.
 
-For a more complete example, see "app/view/Main.js".
+For a more complete example, see `app/view/Main.js`.
 
 Building the Example Application
 --------------------------------
 
-To build the example you need to put Sencha Touch into a folder named sdk.  Then run:
+To build the example you need to put Sencha Touch into a folder named sdk.  Then run::
 
     ./sdk/commands/sencha app build -e testing
 
@@ -42,8 +42,8 @@ Notes
 
 So far this has been tested on:
 
-	* iOS 5 (iPhone and iPad)
-	* Android 4.0.3
-	* Android 3.2 (tablet)
-	* Android 2.3.3
+  * iOS 5 (iPhone and iPad)
+  * Android 4.0.3
+  * Android 3.2 (tablet)
+  * Android 2.3.3
 	
