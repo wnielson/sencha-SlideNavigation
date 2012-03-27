@@ -61,6 +61,6 @@ Documentation
 
 You can read the docs online here_.
 
-.. _here: http://wnielson.github.com/sencha-SlideNavigation/docs/
+.. _here: http://wnielson.github.com/sencha-SlideNavigation/docs/#!/api/Ext.ux.slidenavigation.View
 
 	
