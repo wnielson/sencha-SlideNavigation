@@ -328,7 +328,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
      *  Closes the container.  See ``moveContainer`` for more details.
      */
     closeContainer: function(duration) {
-        var duration = duration || this.config.slideDuration;
+        var duration = duration || this.getSlideDuration();
         this.moveContainer(0, duration);
     },
     
@@ -342,7 +342,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
     },
     
     toggleContainer: function(duration) {
-        var duration = Ext.isNumber(duration) ? duration : this.config.slideDuration;
+        var duration = Ext.isNumber(duration) ? duration : this.getSlideDuration();
         if (this.isClosed()) {
             this.openContainer(duration);
         } else {
@@ -358,7 +358,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
      *  provided, the default in ``config.slideDuration`` is used.
      */
     moveContainer: function(offsetX, duration) {
-        var duration = duration || this.config.slideDuration,
+        var duration = duration || this.getSlideDuration(),
             draggable = this.container.draggableBehavior.draggable;
         
         draggable.setOffset(offsetX, 0, {
