@@ -1,7 +1,6 @@
 //<debug>
 Ext.Loader.setPath({
-    'Ext':      'sdk/src',
-    'Ext.ux':   './ux'
+    'Ext.ux': 'ux'
 });
 //</debug>
 
@@ -25,6 +24,10 @@ Ext.application({
     
     phoneStartupScreen: 'resources/loading/Homescreen.jpg',
     tabletStartupScreen: 'resources/loading/Homescreen~ipad.jpg',
+
+	viewport: {
+        autoMaximize: true
+    },
 
     launch: function() {
         // Destroy the #appLoadingIndicator element
