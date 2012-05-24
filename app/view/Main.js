@@ -9,9 +9,7 @@ Ext.define("SlideNavigationExample.view.Main", {
         'Ext.event.publisher.Dom'
     ],
     
-    config: {
-        fullscreen: true,
-         
+    config: {         
         /**
          *  Any component within the container with an 'x-toolbar' class
          *  will be draggable.  To disable draggin all together, set this
