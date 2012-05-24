@@ -16,7 +16,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
         'Ext.Toolbar',
         'Ext.data.Model',
         'Ext.data.Store',
-        'Ext.dataview.List',
+        'Ext.List',
     ],
     
     xtype: 'slidenavigationview',
@@ -414,12 +414,17 @@ Ext.define('Ext.ux.slidenavigation.View', {
      * the navigation items.
      */
     createNavigationList: function(store) {
-        return Ext.create('Ext.dataview.List', Ext.merge({}, this.config.list, {
+        return Ext.create('Ext.List', Ext.merge({}, this.getList(), {
             store: this.store,
             docked: 'left',
             cls: 'x-slidenavigation-list',
-            style: 'position: absolute; top: 0; left: 0; height: 100%;' +
-                   'width: 100% !important; z-index: 2',
+			top: 0,
+			left: 0,
+			height: '100%',
+			width: '100%',
+			zIndex: 2,
+            // style: 'position: absolute; top: 0; left: 0; height: 100%;' +
+            //         'width: 100% !important; z-index: 2',
             listeners: {
                 select: this.onSelect,
                 scope: this
@@ -433,17 +438,19 @@ Ext.define('Ext.ux.slidenavigation.View', {
      *  the navigation list.
      */
     createContainer: function() {
-        return Ext.create('Ext.Container', Ext.merge({}, this.config.container, {
+        return Ext.create('Ext.Container', Ext.merge({}, this.getContainer(), {
             docked: 'left',
             cls: 'x-slidenavigation-container',
-            style: 'width: 100%; height: 100%; position: absolute; opacity: 1; z-index: 5',
-            docked: 'left',
+			width: '100%',
+			height: '100%',
+			zIndex: 5,
+            style: 'position: absolute; opacity: 1;',
             layout: 'card',
             draggable: {
                 direction: 'horizontal',
                 constraint: {
                     min: { x: 0, y: 0 },
-                    max: { x: this.config.list.maxDrag || Math.max(screen.width, screen.height), y: 0 }
+                    max: { x: this.getList().maxDrag || Math.max(screen.width, screen.height), y: 0 }
                 },
                 listeners: {
                     dragstart: {
