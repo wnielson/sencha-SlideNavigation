@@ -247,13 +247,13 @@ Ext.define('Ext.ux.slidenavigation.View', {
         }
     },
     
-    onContainerDrag: function(draggable, e, offset, eOpts) {
-        if (offset.x < 1) {
-            this.setClosed(true);
-        } else {
-            this.setClosed(false);
-        }
-    },
+    // onContainerDrag: function(draggable, e, offset, eOpts) {
+    //     // if (offset.x < 1) {
+    //     //      this.setClosed(true);
+    //     //  } else {
+    //     //      this.setClosed(false);
+    //     //  }
+    // },
     
     onContainerDragstart: function(draggable, e, offset, eOpts) {
         if (this.config.slideSelector == false) {
@@ -458,7 +458,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
                         order: 'before',
                         scope: this
                     },
-                    drag: Ext.Function.createThrottled(this.onContainerDrag, 100, this),
+                    // drag: Ext.Function.createThrottled(this.onContainerDrag, 100, this),
                     dragend: this.onContainerDragend,
                     scope: this
                 },
