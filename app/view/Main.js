@@ -9,9 +9,7 @@ Ext.define("SlideNavigationExample.view.Main", {
         'Ext.event.publisher.Dom'
     ],
     
-    config: {
-        fullscreen: true,
-         
+    config: {         
         /**
          *  Any component within the container with an 'x-toolbar' class
          *  will be draggable.  To disable draggin all together, set this
@@ -116,7 +114,7 @@ Ext.define("SlideNavigationExample.view.Main", {
                 docked: 'top'
             },{
                 xtype: 'panel',
-                layout: 'card',
+                // layout: 'card',
                 styleHtmlContent: true,
                 html: '<p>The toolbar on this page doesn\'t have a slideButton, so you\'ll have to "slide" the toolbar to view the menu.</p><p>Donec neque augue, fermentum quis tempor quis, lacinia ut augue. Sed dictum risus id arcu vehicula sed porttitor nisi egestas. Aliquam arcu felis, sagittis vel pulvinar vitae, ultricies a augue. Praesent eget erat tellus. Aenean nec dui magna. Cras sagittis, diam vel bibendum mattis, neque purus placerat turpis, sit amet tempor neque nisl non eros. Pellentesque id orci nulla, nec eleifend quam. Proin ut magna turpis. Phasellus erat urna, faucibus in tempus bibendum, ultrices a mauris. Nulla semper ante sed est placerat sagittis. Nam ut vestibulum nulla. Sed sit amet aliquet urna. Morbi est velit, vulputate quis pretium vitae, lobortis sed ligula.</p>',
                 scrollable: true
@@ -136,7 +134,7 @@ Ext.define("SlideNavigationExample.view.Main", {
             },{
                 styleHtmlContent: true,
                 xtype: 'panel',
-                layout: 'card',
+                // layout: 'card',
                 html: '<h2>Item 4</h2><p>The toolbar for this item is at the bottom, which has a slideButton and uses a different icon.</p>'
             }]
         },{
