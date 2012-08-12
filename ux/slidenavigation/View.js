@@ -467,5 +467,18 @@ Ext.define('Ext.ux.slidenavigation.View', {
                 }
             }
         }));
+    },
+    
+    /**
+     *  Override the default method so that we actually return the active item in the list,
+     *  otherwise this will always return the same thing (the main container, not the
+     *  selected item).
+     *
+     */
+    getActiveItem: function() {
+        var selection = this.list.getSelection();
+        if (selection) {
+            return selection[0];
+        }
     }
 });
