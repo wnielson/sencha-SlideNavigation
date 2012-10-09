@@ -437,7 +437,6 @@ Ext.define('Ext.ux.slidenavigation.View', {
             docked: 'left',
             cls: 'x-slidenavigation-container',
             style: 'width: 100%; height: 100%; position: absolute; opacity: 1; z-index: 5',
-            docked: 'left',
             layout: 'card',
             draggable: {
                 direction: 'horizontal',
