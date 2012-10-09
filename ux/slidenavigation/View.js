@@ -227,7 +227,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
             if (Ext.isFunction(item.raw.handler)) {
                 me._cache[index] = item.raw.handler;
             } else {
-                me._cache[index] = container.add(Ext.merge(me.config.defaults, item.raw));
+                me._cache[index] = container.add(Ext.merge({}, me.config.defaults, item.raw));
 
                 // Add a button for controlling the slide, if desired
                 if ((item.raw.slideButton || false)) {
