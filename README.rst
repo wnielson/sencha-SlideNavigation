@@ -63,4 +63,7 @@ You can read the docs online here_.
 
 .. _here: http://wnielson.github.com/sencha-SlideNavigation/docs/#!/api/Ext.ux.slidenavigation.View
 
-	
+License
+-------
+
+This code is released under the MIT license.  See the LICENSE file for the actual license.
