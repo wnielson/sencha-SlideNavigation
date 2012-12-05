@@ -36,6 +36,20 @@ or simply extend the 'Ext.ux.slidenavigation.View' class.
 
 For a more complete example, see `app/view/Main.js`.
 
+Building with Sencha Command
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In order for the ``sencha build`` command to work properly, you need to let it know where
+to find the component.  This can be done easily by opening the following file::
+
+    .sencha/app/sencha.cfg
+
+Update the ``app.classpath`` variable to point to the ``ux`` directory, like so::
+
+   app.classpath=${app.dir}/app.js,${app.dir}/app,path/to/ux
+
+
+
 Building the Example Application
 --------------------------------
 

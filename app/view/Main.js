@@ -42,7 +42,7 @@ Ext.define("SlideNavigationExample.view.Main", {
                     centered: false,
                     width: 200,
                     left: 0
-                },
+                }
                 
                 /**
                  *  Here's an example of how to add a different type of

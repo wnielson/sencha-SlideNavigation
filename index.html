@@ -3,88 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <title>SlideNavigationExample</title>
-    
-    <!-- Android debug -->
-    <!--<script src="http://10.0.2.2:8080/target/target-script-min.js#anonymous"></script>-->
-    
     <style type="text/css">
-        /**
-         *  Example CSS for adding a drop shadow to the main container.
-         */
-        .x-slidenavigation-container.x-dragging,
-        .x-slidenavigation-container.open {
-            /**
-             *  The performance of this now seem acceptable.  If you
-             *  are experiencing a laggy sliding animation you can either
-             *   a) Turn off the slide animation (set duration to 0), or
-             *   b) Use the border-image method below
-             */
-             box-shadow: 0 0 4px 1px #999;
-             -webkit-box-shadow: 0 0 4px 1px #999;
-        }
-    
-    
-        /**
+         /**
          * Example of an initial loading indicator.
          * It is recommended to keep this as minimal as possible to provide instant feedback
          * while other resources are still being loaded for the first time
          */
         html, body {
             height: 100%;
+            background-color: #1985D0
         }
 
         #appLoadingIndicator {
             position: absolute;
             top: 50%;
-            left: 50%;
-            margin-top: -10px;
-            margin-left: -50px;
-            width: 100px;
-            height: 20px;
+            margin-top: -15px;
+            text-align: center;
+            width: 100%;
+            height: 30px;
+            -webkit-animation-name: appLoadingIndicator;
+            -webkit-animation-duration: 0.5s;
+            -webkit-animation-iteration-count: infinite;
+            -webkit-animation-direction: linear;
         }
 
         #appLoadingIndicator > * {
             background-color: #FFFFFF;
-            float: left;
-            height: 20px;
-            margin-left: 11px;
-            width: 20px;
-            -webkit-animation-name: appLoadingIndicator;
-            -webkit-border-radius: 13px;
-            -webkit-animation-duration: 0.8s;
-            -webkit-animation-iteration-count: infinite;
-            -webkit-animation-direction: linear;
-            opacity: 0.3
-        }
-
-        #appLoadingIndicator > :nth-child(1) {
-            -webkit-animation-delay: 0.18s;
-        }
-
-        #appLoadingIndicator > :nth-child(2) {
-            -webkit-animation-delay: 0.42s;
-        }
-
-        #appLoadingIndicator > :nth-child(3) {
-            -webkit-animation-delay: 0.54s;
+            display: inline-block;
+            height: 30px;
+            -webkit-border-radius: 15px;
+            margin: 0 5px;
+            width: 30px;
+            opacity: 0.8;
         }
 
         @-webkit-keyframes appLoadingIndicator{
             0% {
-                opacity: 0.3
+                opacity: 0.8
             }
-
             50% {
-                opacity: 1;
-                background-color:#1985D0
+                opacity: 0
             }
-
             100% {
-                opacity:0.3
+                opacity: 0.8
             }
         }
     </style>
-    <script id="microloader" type="text/javascript" src="sdk/microloader/development.js"></script>
+    <!-- The line below must be kept intact for Sencha Command to build your application -->
+    <script id="microloader" type="text/javascript" src="touch/microloader/development.js"></script>
 </head>
 <body>
     <div id="appLoadingIndicator">

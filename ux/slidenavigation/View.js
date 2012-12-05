@@ -12,14 +12,67 @@ Ext.define('Ext.ux.slidenavigation.View', {
         'Ext.Button',
         'Ext.Container',
         'Ext.Function',
-        'Ext.ModelManager',
         'Ext.Toolbar',
         'Ext.data.Model',
+        'Ext.data.ModelManager',
         'Ext.data.Store',
-        'Ext.dataview.List',
+        'Ext.dataview.List'
     ],
     
     xtype: 'slidenavigationview',
+
+    /**
+     * @event close
+     * @preventable moveContainer
+     * Fires whenever the container is closed
+     * @param {Ext.ux.slidenavigation.View} this The navigation View instance
+     * @param {Number} position The x-coordinate to which the container will be moved to
+     * @param {Number} duration The duration of the slide event
+     */
+
+    /**
+     * @event open
+     * @preventable moveContainer
+     * Fires whenever the container is opened
+     * @param {Ext.ux.slidenavigation.View} this The navigation View instance
+     * @param {Number} position The x-coordinate to which the container will be moved to
+     * @param {Number} duration The duration of the slide event
+     */
+
+    /**
+     * @event select
+     * @preventable setContainerItem
+     * Fires whenever an item in the menu is selected
+     * @param {Ext.ux.slidenavigation.View} this The navigation View instance
+     * @param {Ext.Component} item The selected item
+     * @param {Integer} index The index of the selected item
+     */
+
+    /**
+     * @event slideend
+     * Fires whenever the user has finished sliding the container.  This is fired once the
+     * animation is complete.
+     * @param {Ext.ux.slidenavigation.View} this The navigation View instance
+     */
+
+    /**
+     * @event slidestart
+     * Fires whenever the user has started sliding the container.  This is fired once the
+     * animation is complete.
+     * @param {Ext.ux.slidenavigation.View} this The navigation View instance
+     */
+
+    /**
+     * @event opened
+     * Fires after the container is fully opened.
+     * @param {Ext.ux.slidenavigation.View} this The navigation View instance
+     */
+
+    /**
+     * @event closed
+     * Fires after the container is fully closed.
+     * @param {Ext.ux.slidenavigation.View} this The navigation View instance
+     */
     
     config: {
         /**
@@ -88,7 +141,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
          * of the container when "flicked".  By default the animation is disable on
          * Android.
          */
-        slideDuration: Ext.os.is.Android ? 0 : 100,
+        slideDuration: Ext.os.is('Android') ? 0 : 100,
         
         /**
          * @cfg {Integer} selectSlideDuration Number of miliseconds to animate the sliding
@@ -96,13 +149,20 @@ Ext.define('Ext.ux.slidenavigation.View', {
          * value here of 300 gives a much nicer feel.  By default the animation is disable on
          * Android.
          */
-        selectSlideDuration: Ext.os.is.Android ? 0 : 300,
+        selectSlideDuration: Ext.os.is('Android') ? 0 : 300,
         
         /**
          * @cfg {Boolean} closeOnSelect Whether or not to automatically close the container
          * when an item in the list is selected.  Default is true.
          */
-        closeOnSelect: true
+        closeOnSelect: true,
+
+        /**
+         * @cfg {String} shadowStyle CSS to use for styling the shadow when the container is
+         * open.  This should be a valid CSS 'box-shadow' argument.  Set to false to disable
+         * it.
+         */
+        shadowStyle: '0 0 4px 1px #999'
     },
         
     initConfig: function() {
@@ -148,7 +208,8 @@ Ext.define('Ext.ux.slidenavigation.View', {
             listeners: {
                 release: me.toggleContainer,
                 scope: me
-            },
+            }
+
             /**
              *  To add the button into a toolbar, you can add the following
              *  to any item in your navigation list.
@@ -161,6 +222,8 @@ Ext.define('Ext.ux.slidenavigation.View', {
     },
             
     initialize: function() {
+        this.__init = false;
+
         this.callParent();
         
         this.addCls('x-slidenavigation');
@@ -172,10 +235,14 @@ Ext.define('Ext.ux.slidenavigation.View', {
             this.list,
             this.container
         ]);
+
+        this.createContainerCSS();
         
         // TODO: Make this optional, perhaps by defining
         // "selected: true" in the items list
         this.list.select(0);
+
+        this.__init = true;
     },
     
     /**
@@ -194,8 +261,31 @@ Ext.define('Ext.ux.slidenavigation.View', {
             me.store.add(item);
         });
     },
+
+    /**
+     *  @private
+     *  Construct style element for container shadow and insert into the DOM.
+     */
+    createContainerCSS: function() {
+        var shadowStyle = this.getShadowStyle(),
+            id          = this.getId();
+
+        if (shadowStyle) {
+            if (!document.getElementById(id)) {
+                style           = document.createElement('style');
+                style.type      = 'text/css';
+                style.id        = id;
+                style.innerHTML = '.x-slidenavigation-container.x-dragging, '+
+                                  '.x-slidenavigation-container.open { '+
+                                  'box-shadow: '+shadowStyle+';'+
+                                  '-webkit-box-shadow:'+shadowStyle+';';
+                document.getElementsByTagName('head')[0].appendChild(style);
+            }
+        }
+    },
     
     /**
+     *  @private
      *  Creates a button that can toggle the navigation menu.  For an example
      *  config, see ``slideButtonDefaults``.
      */
@@ -217,7 +307,8 @@ Ext.define('Ext.ux.slidenavigation.View', {
         var me = this,
             store = list.getStore(),
             index = item.raw.index,
-            container = me.container;
+            container = me.container,
+            func      = Ext.emptyFn;
         
         if (me._cache[index] == undefined) {
             //container = this.down('container[cls="x-slidenavigation-container"]');
@@ -234,17 +325,26 @@ Ext.define('Ext.ux.slidenavigation.View', {
                     me.createSlideButton(me._cache[index], item.raw.slideButton);
                 }
             }
-        }
-        
-        if (Ext.isFunction(this._cache[index])) {
-            this._cache[index]();
+        }        
+
+        if (Ext.isFunction(me._cache[index])) {
+            func = me._cache[index];
         } else {
-            container.setActiveItem(this._cache[index]);
+            func = me.setContainerItem;
+        }
+
+        if (me.__init) {
+            me.fireAction('select', [me , me._cache[index], index], func, me);
         }
         
-        if (this.config.closeOnSelect) {
-            this.closeContainer(this.config.selectSlideDuration);
+        if (me.config.closeOnSelect) {
+            me.closeContainer(this.config.selectSlideDuration);
         }
+    },
+
+    setContainerItem: function(nav, item) {
+        var container = nav.container;
+        container.setActiveItem(item);
     },
     
     onContainerDrag: function(draggable, e, offset, eOpts) {
@@ -264,6 +364,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
             node = e.target;
             while (node = node.parentNode) {
                 if (node.className && node.className.indexOf(this.config.slideSelector) > -1) {
+                    this.fireEvent('dragstart', this);
                     return true;
                 }
             }
@@ -276,18 +377,20 @@ Ext.define('Ext.ux.slidenavigation.View', {
         var velocity  = Math.abs(e.deltaX / e.deltaTime),
             direction = (e.deltaX > 0) ? "right" : "left",
             offset    = Ext.clone(draggable.offset),
-            threshold = parseInt(this.config.list.width * .70);
+            threshold = parseInt(this.config.list.minWidth * .70);
         
         switch (direction) {
             case "right":
-                offset.x = (velocity > 0.75 || offset.x > threshold) ? this.config.list.width : 0;
+                offset.x = (velocity > 0.75 || offset.x > threshold) ? this.config.list.minWidth : 0;
                 break;
             case "left":
-                offset.x = (velocity > 0.75 || offset.x < threshold) ? 0 : this.config.list.width;
+                offset.x = (velocity > 0.75 || offset.x < threshold) ? 0 : this.config.list.minWidth;
                 break;
         }
+
+        this.fireEvent('dragend', this);
         
-        this.moveContainer(offset.x);
+        this.moveContainer(this, offset.x);
     },
     
     /**
@@ -328,17 +431,25 @@ Ext.define('Ext.ux.slidenavigation.View', {
      *  Closes the container.  See ``moveContainer`` for more details.
      */
     closeContainer: function(duration) {
-        var duration = duration || this.config.slideDuration;
-        this.moveContainer(0, duration);
+        var me       = this,
+            duration = duration || this.config.slideDuration;
+        
+        if (me.__init) {
+            me.fireAction('close', [me, 0, duration], 'moveContainer', me);
+        }
     },
     
     /**
      *  Opens the container.  See ``moveContainer`` for more details.
      */
     openContainer: function(duration) {
-        var duration = duration || this.config.slideDuration;
-        this.container.addCls('open');
-        this.moveContainer(this.config.list.width, duration);
+        var me       = this,
+            duration = duration || this.config.slideDuration,
+            offsetX  = this.config.list.minWidth;
+
+        if (me.__init) {
+            me.fireAction('open', [me, offsetX, duration], 'moveContainer', me);
+        }
     },
     
     toggleContainer: function(duration) {
@@ -357,10 +468,14 @@ Ext.define('Ext.ux.slidenavigation.View', {
      *  number of milliseconds to animate the slide effect.  If no duration is
      *  provided, the default in ``config.slideDuration`` is used.
      */
-    moveContainer: function(offsetX, duration) {
-        var duration = duration || this.config.slideDuration,
+    moveContainer: function(nav, offsetX, duration) {
+        var duration  = duration || this.config.slideDuration,
             draggable = this.container.draggableBehavior.draggable;
         
+        if (offsetX > 0) {
+            this.container.addCls('open');
+        }
+
         draggable.setOffset(offsetX, 0, {
             duration: duration
         });
@@ -372,6 +487,10 @@ Ext.define('Ext.ux.slidenavigation.View', {
      */
     isClosed: function() {
         return (this.container.draggableBehavior.draggable.offset.x == 0);
+    },
+
+    isOpened: function() {
+        return (this.container.draggableBehavior.draggable.offset.x == this.config.list.minWidth);
     },
     
     /**
@@ -389,7 +508,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
          
         if (closed) {
             this.container.removeCls('open');
-            
+
             /*
             Ext.each(this.container.getActiveItem().getItems().items, function(item) {
                 if (item.maskOnSlide) {
@@ -399,6 +518,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
             */
         } else {
             this.container.addCls('open');
+
             /*
             Ext.each(this.container.getActiveItem().getItems().items, function(item) {
                 if (item.maskOnSlide) {
@@ -414,12 +534,24 @@ Ext.define('Ext.ux.slidenavigation.View', {
      * the navigation items.
      */
     createNavigationList: function(store) {
-        return Ext.create('Ext.dataview.List', Ext.merge({}, this.config.list, {
+        var listConfig = this.getList();
+
+        // The width of the list needs to be set to 100%, so we copy
+        // the width value (if set) to minWidth and then delete it.
+        if (listConfig.width) {
+            if (!listConfig.minWidth) {
+                listConfig.minWidth = listConfig.width;
+            }
+            delete listConfig.width;
+        }
+
+        return Ext.create('Ext.dataview.List', Ext.merge({}, listConfig, {
             store: this.store,
             docked: 'left',
             cls: 'x-slidenavigation-list',
             style: 'position: absolute; top: 0; left: 0; height: 100%;' +
-                   'width: 100% !important; z-index: 2',
+                   'z-index: 2',
+            width: '100%',
             listeners: {
                 select: this.onSelect,
                 scope: this
@@ -433,7 +565,9 @@ Ext.define('Ext.ux.slidenavigation.View', {
      *  the navigation list.
      */
     createContainer: function() {
-        return Ext.create('Ext.Container', Ext.merge({}, this.config.container, {
+        var me = this;
+
+        return Ext.create('Ext.Container', Ext.merge({}, me.config.container, {
             docked: 'left',
             cls: 'x-slidenavigation-container',
             style: 'width: 100%; height: 100%; position: absolute; opacity: 1; z-index: 5',
@@ -442,26 +576,42 @@ Ext.define('Ext.ux.slidenavigation.View', {
                 direction: 'horizontal',
                 constraint: {
                     min: { x: 0, y: 0 },
-                    max: { x: this.config.list.maxDrag || Math.max(screen.width, screen.height), y: 0 }
+                    max: { x: me.config.list.maxDrag || Math.max(screen.width, screen.height), y: 0 }
                 },
                 listeners: {
                     dragstart: {
-                        fn: this.onContainerDragstart,
+                        fn:    me.onContainerDragstart,
                         order: 'before',
-                        scope: this
+                        scope: me
                     },
-                    drag: Ext.Function.createThrottled(this.onContainerDrag, 100, this),
-                    dragend: this.onContainerDragend,
-                    scope: this
+                    drag:    Ext.Function.createThrottled(me.onContainerDrag, 100, me),
+                    dragend: me.onContainerDragend,
+                    scope:   me
                 },
                 translatable: {
                     listeners: {
+                        animationstart: function() {
+                            me.fireEvent('slidestart', me);
+                        },
                         animationend: function(translatable, b, c) {
+                            // Fire the event now that the animation is done.
+                            if (me.__init) {
+                                me.fireEvent('slideend', me);
+                            }
+
+                            if (me.isOpened()) {
+                                me.fireEvent('opened', me);
+                            }
+
+                            else if (me.isClosed()) {
+                                me.fireEvent('closed', me);
+                            }
+
                             // Remove the class when the animation is finished, but only
                             // if we're "closed"
-                            this.setClosed(this.isClosed());
+                            me.setClosed(me.isClosed());
                         },
-                        scope: this // The "x-slidenavigation" container
+                        scope: me // The "x-slidenavigation" container
                     }
                 }
             }
