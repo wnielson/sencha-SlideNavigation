@@ -15,41 +15,89 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-fx-easing-Linear'>/**
-</span> * @private
- */
-Ext.define('Ext.fx.easing.Linear', {
+  <pre class="prettyprint lang-js"><span id='Ext-draw-gradient-Linear'>/**
+</span> * Linear gradient.
+ *
+ *      @example preview miniphone
+ *  new Ext.draw.Component({
+ *      fullscreen: true,
+ *      items: [
+ *          {
+ *              type: 'circle',
+ *              cx: 100,
+ *              cy: 100,
+ *              r: 25,
+ *              fillStyle: {
+ *                  type: 'linear',
+ *                  degrees: 90,
+ *                  stops: [
+ *                      {
+ *                          offset: 0,
+ *                          color: 'green'
+ *                      },
+ *                      {
+ *                          offset: 1,
+ *                          color: 'blue'
+ *                      }
+ *                  ]
+ *              }
+ *          }
+ *      ]
+ *  });
+*/
 
-    extend: 'Ext.fx.easing.Abstract',
-
-    alias: 'easing.linear',
-
-    config: {
-        duration: 0,
-        endValue: 0
+Ext.define(&quot;Ext.draw.gradient.Linear&quot;, {
+    extend: 'Ext.draw.gradient.Gradient',
+<span id='Ext-draw-gradient-Linear-property-type'>    type: 'linear',
+</span>    config: {
+<span id='Ext-draw-gradient-Linear-cfg-The'>        /**
+</span>         * @cfg {Number} The degree of rotation of the gradient.
+         */
+        degrees: 0
     },
 
-    updateStartValue: function(startValue) {
-        this.distance = this.getEndValue() - startValue;
+<span id='Ext-draw-gradient-Linear-method-setAngle'>    setAngle: function (angle) {
+</span>        this.setDegrees(angle);
     },
 
-    updateEndValue: function(endValue) {
-        this.distance = endValue - this.getStartValue();
+<span id='Ext-draw-gradient-Linear-method-updateDegrees'>    updateDegrees: function () {
+</span>        this.clearCache();
     },
 
-    getValue: function() {
-        var deltaTime = Ext.Date.now() - this.getStartTime(),
-            duration = this.getDuration();
+<span id='Ext-draw-gradient-Linear-method-updateStops'>    updateStops: function () {
+</span>        this.clearCache();
+    },
 
-        if (deltaTime &gt; duration) {
-            this.isEnded = true;
-            return this.getEndValue();
+<span id='Ext-draw-gradient-Linear-method-generateGradient'>    /**
+</span>     * @inheritdoc
+     */
+    generateGradient: function (ctx, bbox) {
+        var angle = Ext.draw.Draw.rad(this.getDegrees()),
+            cos = Math.cos(angle),
+            sin = Math.sin(angle),
+            w = bbox.width,
+            h = bbox.height,
+            cx = bbox.x + w * 0.5,
+            cy = bbox.y + h * 0.5,
+            stops = this.getStops(),
+            ln = stops.length,
+            gradient,
+            l, i;
+
+        if (!isNaN(cx) &amp;&amp; !isNaN(cy) &amp;&amp; h &gt; 0 &amp;&amp; w &gt; 0) {
+            l = (Math.sqrt(h * h + w * w) * Math.abs(Math.cos(angle - Math.atan(h / w)))) / 2;
+            gradient = ctx.createLinearGradient(
+                cx + cos * l, cy + sin * l,
+                cx - cos * l, cy - sin * l
+            );
+
+            for (i = 0; i &lt; ln; i++) {
+                gradient.addColorStop(stops[i].offset, stops[i].color);
+            }
+            return gradient;
         }
-        else {
-            return this.getStartValue() + ((deltaTime / duration) * this.distance);
-        }
+        return 'none';
     }
-});
-</pre>
+});</pre>
 </body>
 </html>

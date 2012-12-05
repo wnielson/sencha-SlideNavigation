@@ -41,7 +41,6 @@
  *             }
  *         ]
  *     });
- *
  */
 Ext.define('Ext.field.Select', {
     extend: 'Ext.field.Text',
@@ -52,7 +51,7 @@ Ext.define('Ext.field.Select', {
         'Ext.picker.Picker',
         'Ext.data.Store',
         'Ext.data.StoreManager',
-        'Ext.List'
+        'Ext.dataview.List'
     ],
 
 <span id='Ext-field-Select-event-change'>    /**
@@ -61,6 +60,17 @@ Ext.define('Ext.field.Select', {
      * @param {Ext.field.Select} this
      * @param {Mixed} newValue The new value
      * @param {Mixed} oldValue The old value
+     */
+
+<span id='Ext-field-Select-event-focus'>    /**
+</span>     * @event focus
+     * Fires when this field receives input focus. This happens both when you tap on the field and when you focus on the field by using
+     * 'next' or 'tab' on a keyboard.
+     *
+     * Please note that this event is not very reliable on Android. For example, if your Select field is second in your form panel,
+     * you cannot use the Next button to get to this select field. This functionality works as expected on iOS.
+     * @param {Ext.field.Select} this This field
+     * @param {Ext.event.Event} e
      */
 
     config: {
@@ -77,7 +87,7 @@ Ext.define('Ext.field.Select', {
 
 <span id='Ext-field-Select-cfg-valueField'>        /**
 </span>         * @cfg {String/Number} valueField The underlying {@link Ext.data.Field#name data value name} (or numeric Array index) to bind to this
-         * Select control. (defaults to 'value')
+         * Select control.
          * @accessor
          */
         valueField: 'value',
@@ -85,34 +95,34 @@ Ext.define('Ext.field.Select', {
 <span id='Ext-field-Select-cfg-displayField'>        /**
 </span>         * @cfg {String/Number} displayField The underlying {@link Ext.data.Field#name data value name} (or numeric Array index) to bind to this
          * Select control. This resolved value is the visibly rendered value of the available selection options.
-         * (defaults to 'text')
          * @accessor
          */
         displayField: 'text',
 
 <span id='Ext-field-Select-cfg-store'>        /**
-</span>         * @cfg {Ext.data.Store} store (Optional) store instance used to provide selection options data.
+</span>         * @cfg {Ext.data.Store/Object/String} store The store to provide selection options data.
+         * Either a Store instance, configuration object or store ID.
          * @accessor
          */
         store: null,
 
 <span id='Ext-field-Select-cfg-options'>        /**
-</span>         * @cfg {Array} options (Optional) An array of select options.
-    &lt;pre&gt;&lt;code&gt;
-        [
-            {text: 'First Option',  value: 'first'},
-            {text: 'Second Option', value: 'second'},
-            {text: 'Third Option',  value: 'third'}
-        ]
-    &lt;/code&gt;&lt;/pre&gt;
-         * Note: option object member names should correspond with defined {@link #valueField valueField} and {@link #displayField displayField} values.
-         * This config will be ignore if a {@link #store store} instance is provided
+</span>         * @cfg {Array} options An array of select options.
+         *
+         *     [
+         *         {text: 'First Option',  value: 'first'},
+         *         {text: 'Second Option', value: 'second'},
+         *         {text: 'Third Option',  value: 'third'}
+         *     ]
+         *
+         * __Note:__ Option object member names should correspond with defined {@link #valueField valueField} and {@link #displayField displayField} values.
+         * This config will be ignored if a {@link #store store} instance is provided.
          * @accessor
          */
         options: null,
 
 <span id='Ext-field-Select-cfg-hiddenName'>        /**
-</span>         * @cfg {String} hiddenName Specify a hiddenName if you're using the {@link Ext.form.Panel#standardSubmit standardSubmit} option.
+</span>         * @cfg {String} hiddenName Specify a `hiddenName` if you're using the {@link Ext.form.Panel#standardSubmit standardSubmit} option.
          * This name will be used to post the underlying value of the select to the server.
          * @accessor
          */
@@ -142,15 +152,22 @@ Ext.define('Ext.field.Select', {
          */
         usePicker: 'auto',
 
+<span id='Ext-field-Select-cfg-autoSelect'>        /**
+</span>         * @cfg {Boolean} autoSelect
+         * `true` to auto select the first value in the {@link #store} or {@link #options} when they are changed. Only happens when
+         * the {@link #value} is set to `null`.
+         */
+        autoSelect: true,
+
 <span id='Ext-field-Select-cfg-defaultPhonePickerConfig'>        /**
 </span>         * @cfg {Object} defaultPhonePickerConfig
-         * The default configuration for the picker component when you are on a phone
+         * The default configuration for the picker component when you are on a phone.
          */
         defaultPhonePickerConfig: null,
 
 <span id='Ext-field-Select-cfg-defaultTabletPickerConfig'>        /**
 </span>         * @cfg {Object} defaultTabletPickerConfig
-         * The default configuration for the picker component when you are on a tablet
+         * The default configuration for the picker component when you are on a tablet.
          */
         defaultTabletPickerConfig: null,
 
@@ -161,19 +178,8 @@ Ext.define('Ext.field.Select', {
         name: 'picker'
     },
 
-    // @private
-    constructor: function(config) {
-        config = config || {};
-
-        if (!config.store) {
-            config.store = true;
-        }
-
-        this.callParent([config]);
-    },
-
-    // @private
-    initialize: function() {
+<span id='Ext-field-Select-method-initialize'>    // @private
+</span>    initialize: function() {
         var me = this,
             component = me.getComponent();
 
@@ -184,7 +190,9 @@ Ext.define('Ext.field.Select', {
             masktap: 'onMaskTap'
         });
 
-        component.input.dom.disabled = true;
+        if (Ext.os.is.Android2) {
+            component.input.dom.disabled = true;
+        }
     },
 
 <span id='Ext-field-Select-method-updateDefaultPhonePickerConfig'>    /**
@@ -220,46 +228,43 @@ Ext.define('Ext.field.Select', {
         return Boolean(usePicker);
     },
 
-    syncEmptyCls: Ext.emptyFn,
-
+<span id='Ext-field-Select-method-syncEmptyCls'>    syncEmptyCls: Ext.emptyFn,
+</span>
 <span id='Ext-field-Select-method-applyValue'>    /**
 </span>     * @private
      */
     applyValue: function(value) {
         var record = value,
-            index;
+            index, store;
 
         //we call this so that the options configruation gets intiailized, so that a store exists, and we can
         //find the correct value
         this.getOptions();
 
-        if (!(value instanceof Ext.data.Model)) {
-            index = this.getStore().find(this.getValueField(), value, null, null, null, true);
+        store = this.getStore();
+
+        if ((value != undefined &amp;&amp; !value.isModel) &amp;&amp; store) {
+            index = store.find(this.getValueField(), value, null, null, null, true);
 
             if (index == -1) {
-                index = this.getStore().find(this.getDisplayField(), value, null, null, null, true);
+                index = store.find(this.getDisplayField(), value, null, null, null, true);
             }
 
-            record = this.getStore().getAt(index);
+            record = store.getAt(index);
         }
 
         return record;
     },
 
-    updateValue: function(newValue, oldValue) {
-        this.previousRecord = oldValue;
-        this.record = newValue;
+<span id='Ext-field-Select-method-updateValue'>    updateValue: function(newValue, oldValue) {
+</span>        this.record = newValue;
 
-        this.callParent([newValue ? newValue.get(this.getDisplayField()) : '']);
-
-        if (oldValue !== newValue &amp;&amp; this.initialized) {
-            this.fireEvent('change', this, newValue, oldValue);
-        }
+        this.callParent([(newValue &amp;&amp; newValue.isModel) ? newValue.get(this.getDisplayField()) : '']);
     },
 
-    getValue: function() {
-        var record = this.record;
-        return (record) ? record.get(this.getValueField()) : null;
+<span id='Ext-field-Select-method-getValue'>    getValue: function() {
+</span>        var record = this.record;
+        return (record &amp;&amp; record.isModel) ? record.get(this.getValueField()) : null;
     },
 
 <span id='Ext-field-Select-method-getRecord'>    /**
@@ -270,8 +275,8 @@ Ext.define('Ext.field.Select', {
         return this.record;
     },
 
-    // @private
-    getPhonePicker: function() {
+<span id='Ext-field-Select-method-getPhonePicker'>    // @private
+</span>    getPhonePicker: function() {
         var config = this.getDefaultPhonePickerConfig();
 
         if (!this.picker) {
@@ -294,21 +299,24 @@ Ext.define('Ext.field.Select', {
         return this.picker;
     },
 
-    // @private
-    getTabletPicker: function() {
+<span id='Ext-field-Select-method-getTabletPicker'>    // @private
+</span>    getTabletPicker: function() {
         var config = this.getDefaultTabletPickerConfig();
 
         if (!this.listPanel) {
             this.listPanel = Ext.create('Ext.Panel', Ext.apply({
-                centered: true,
+                left: 0,
+                top: 0,
                 modal: true,
                 cls: Ext.baseCSSPrefix + 'select-overlay',
                 layout: 'fit',
                 hideOnMaskTap: true,
+                width: Ext.os.is.Phone ? '14em' : '18em',
+                height: Ext.os.is.Phone ? '12.5em' : '22em',
                 items: {
                     xtype: 'list',
                     store: this.getStore(),
-                    itemTpl: '&lt;span class=&quot;x-list-label&quot;&gt;{' + this.getDisplayField() + '}&lt;/span&gt;',
+                    itemTpl: '&lt;span class=&quot;x-list-label&quot;&gt;{' + this.getDisplayField() + ':htmlEncode}&lt;/span&gt;',
                     listeners: {
                         select : this.onListSelect,
                         itemtap: this.onListTap,
@@ -321,13 +329,13 @@ Ext.define('Ext.field.Select', {
         return this.listPanel;
     },
 
-    // @private
-    onMaskTap: function() {
+<span id='Ext-field-Select-method-onMaskTap'>    // @private
+</span>    onMaskTap: function() {
         if (this.getDisabled()) {
             return false;
         }
 
-        this.showPicker();
+        this.onFocus();
 
         return false;
     },
@@ -337,8 +345,9 @@ Ext.define('Ext.field.Select', {
      * {@link Ext.List list}.
      */
     showPicker: function() {
+        var store = this.getStore();
         //check if the store is empty, if it is, return
-        if (this.getStore().getCount() === 0) {
+        if (!store || store.getCount() === 0) {
             return;
         }
 
@@ -348,16 +357,12 @@ Ext.define('Ext.field.Select', {
 
         this.isFocused = true;
 
-        //hide the keyboard
-        //the causes https://sencha.jira.com/browse/TOUCH-1679
-        // Ext.Viewport.hideKeyboard();
-
         if (this.getUsePicker()) {
             var picker = this.getPhonePicker(),
                 name   = this.getName(),
                 value  = {};
 
-            value[name] = this.record.get(this.getValueField());
+            value[name] = this.getValue();
             picker.setValue(value);
             if (!picker.getParent()) {
                 Ext.Viewport.add(picker);
@@ -366,9 +371,11 @@ Ext.define('Ext.field.Select', {
         } else {
             var listPanel = this.getTabletPicker(),
                 list = listPanel.down('list'),
-                store = list.getStore(),
-                index = store.find(this.getValueField(), this.getValue(), null, null, null, true),
-                record = store.getAt((index == -1) ? 0 : index);
+                index, record;
+
+            store = list.getStore();
+            index = store.find(this.getValueField(), this.getValue(), null, null, null, true);
+            record = store.getAt((index == -1) ? 0 : index);
 
             if (!listPanel.getParent()) {
                 Ext.Viewport.add(listPanel);
@@ -379,24 +386,24 @@ Ext.define('Ext.field.Select', {
         }
     },
 
-    // @private
-    onListSelect: function(item, record) {
+<span id='Ext-field-Select-method-onListSelect'>    // @private
+</span>    onListSelect: function(item, record) {
         var me = this;
         if (record) {
             me.setValue(record);
         }
     },
 
-    onListTap: function() {
-        this.listPanel.hide({
+<span id='Ext-field-Select-method-onListTap'>    onListTap: function() {
+</span>        this.listPanel.hide({
             type : 'fade',
             out  : true,
             scope: this
         });
     },
 
-    // @private
-    onPickerChange: function(picker, value) {
+<span id='Ext-field-Select-method-onPickerChange'>    // @private
+</span>    onPickerChange: function(picker, value) {
         var me = this,
             newValue = value[me.getName()],
             store = me.getStore(),
@@ -406,22 +413,39 @@ Ext.define('Ext.field.Select', {
         me.setValue(record);
     },
 
+<span id='Ext-field-Select-method-onChange'>    onChange: function(component, newValue, oldValue) {
+</span>        var me = this,
+            store = me.getStore(),
+            index = (store) ? store.find(me.getDisplayField(), oldValue) : -1,
+            valueField = me.getValueField(),
+            record = (store) ? store.getAt(index) : null;
+
+        oldValue = (record) ? record.get(valueField) : null;
+
+        me.fireEvent('change', me, me.getValue(), oldValue);
+    },
+
 <span id='Ext-field-Select-method-updateOptions'>    /**
-</span>     * Updates the underlying &amp;lt;options&amp;gt; list with new values.
+</span>     * Updates the underlying `&lt;options&gt;` list with new values.
      * @param {Array} options An array of options configurations to insert or append.
-&lt;pre&gt;&lt;code&gt;
-selectBox.setOptions(
-    [   {text: 'First Option',  value: 'first'},
-        {text: 'Second Option', value: 'second'},
-        {text: 'Third Option',  value: 'third'}
-    ]).setValue('third');
-&lt;/code&gt;&lt;/pre&gt;
-     * Note: option object member names should correspond with defined {@link #valueField valueField} and
+     *
+     *     selectBox.setOptions([
+     *         {text: 'First Option',  value: 'first'},
+     *         {text: 'Second Option', value: 'second'},
+     *         {text: 'Third Option',  value: 'third'}
+     *     ]).setValue('third');
+     *
+     * __Note:__ option object member names should correspond with defined {@link #valueField valueField} and
      * {@link #displayField displayField} values.
      * @return {Ext.field.Select} this
      */
     updateOptions: function(newOptions) {
         var store = this.getStore();
+
+        if (!store) {
+            this.setStore(true);
+            store = this._store;
+        }
 
         if (!newOptions) {
             store.clearData();
@@ -430,12 +454,14 @@ selectBox.setOptions(
             store.setData(newOptions);
             this.onStoreDataChanged(store);
         }
+        return this;
     },
 
-    applyStore: function(store) {
-        if (store === true) {
+<span id='Ext-field-Select-method-applyStore'>    applyStore: function(store) {
+</span>        if (store === true) {
             store = Ext.create('Ext.data.Store', {
-                fields: [this.getValueField(), this.getDisplayField()]
+                fields: [this.getValueField(), this.getDisplayField()],
+                autoDestroy: true
             });
         }
 
@@ -444,30 +470,36 @@ selectBox.setOptions(
 
             store.on({
                 scope: this,
-                addrecords: this.onStoreDataChanged,
-                removerecords: this.onStoreDataChanged,
-                updaterecord: this.onStoreDataChanged,
-                refresh: this.onStoreDataChanged
+                addrecords: 'onStoreDataChanged',
+                removerecords: 'onStoreDataChanged',
+                updaterecord: 'onStoreDataChanged',
+                refresh: 'onStoreDataChanged'
             });
         }
 
         return store;
     },
 
-    updateStore: function(newStore) {
-        if (newStore) {
+<span id='Ext-field-Select-method-updateStore'>    updateStore: function(newStore) {
+</span>        if (newStore) {
             this.onStoreDataChanged(newStore);
+        }
+
+        if (this.getUsePicker() &amp;&amp; this.picker) {
+            this.picker.down('pickerslot').setStore(newStore);
+        } else if (this.listPanel) {
+            this.listPanel.down('dataview').setStore(newStore);
         }
     },
 
 <span id='Ext-field-Select-method-onStoreDataChanged'>    /**
-</span>     * Called when the internal {@link #store}'s data has changed
+</span>     * Called when the internal {@link #store}'s data has changed.
      */
     onStoreDataChanged: function(store) {
         var initialConfig = this.getInitialConfig(),
             value = this.getValue();
 
-        if (Ext.isDefined(value)) {
+        if (value || value == 0) {
             this.updateValue(this.applyValue(value));
         }
 
@@ -476,7 +508,7 @@ selectBox.setOptions(
                 this.setValue(initialConfig.value);
             }
 
-            if (this.getValue() === null) {
+            if (this.getValue() === null &amp;&amp; this.getAutoSelect()) {
                 if (store.getCount() &gt; 0) {
                     this.setValue(store.getAt(0));
                 }
@@ -501,6 +533,7 @@ selectBox.setOptions(
 <span id='Ext-field-Select-method-reset'>    /**
 </span>     * Resets the Select field to the value of the first record in the store.
      * @return {Ext.field.Select} this
+     * @chainable
      */
     reset: function() {
         var store = this.getStore(),
@@ -513,17 +546,27 @@ selectBox.setOptions(
         return this;
     },
 
-    onFocus: function(e) {
+<span id='Ext-field-Select-method-onFocus'>    onFocus: function(e) {
+</span>        var component = this.getComponent();
         this.fireEvent('focus', this, e);
+
+        if (Ext.os.is.Android4) {
+            component.input.dom.focus();
+        }
+        component.input.dom.blur();
 
         this.isFocused = true;
 
         this.showPicker();
     },
 
-    destroy: function() {
-        this.callParent(arguments);
-        Ext.destroy(this.listPanel, this.picker, this.hiddenField);
+<span id='Ext-field-Select-method-destroy'>    destroy: function () {
+</span>        this.callParent(arguments);
+        var store = this.getStore();
+
+        if (store &amp;&amp; store.getAutoDestroy()) {
+            Ext.destroy(store);
+        }
     }
 });
 </pre>

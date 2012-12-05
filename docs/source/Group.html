@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-draw-Group'>/**
+</span> * @deprecated
+ * A collection of sprites that delegates sprite functions to its elements.
+ * 
+ * Avoid using this multiple groups in a surface as it is error prone.
+ * The group notion may be remove in future releases.
+ * 
+ */
+Ext.define(&quot;Ext.draw.Group&quot;, {
+    mixins: {
+        observable: 'Ext.mixin.Observable'
+    },
+
+    config: {
+<span id='Ext-draw-Group-cfg-surface'>        surface: null
+</span>    },
+
+    statics: {
+<span id='Ext-draw-Group-method-createRelayEvent'>        /**
+</span>         * @private
+         * @param name
+         * @return {Function}
+         */
+        createRelayEvent: function (name) {
+            return (function (e) {
+                this.fireEvent(name, e);
+            });
+        },
+
+<span id='Ext-draw-Group-method-createDispatcherMethod'>        /**
+</span>         * @private
+         * @param name
+         * @return {Function}
+         */
+        createDispatcherMethod: function (name) {
+            return function () {
+                var args = Array.prototype.slice.call(arguments, 0), items = this.items, i = 0, ln = items.length, item;
+                while (i &lt; ln) {
+                    item = items[i++];
+                    item[name].apply(item, args);
+                }
+            };
+        }
+    },
+
+<span id='Ext-draw-Group-property-autoDestroy'>    autoDestroy: false,
+</span>
+<span id='Ext-draw-Group-method-constructor'>    constructor: function (config) {
+</span>        this.initConfig(config);
+        this.map = {};
+        this.items = [];
+        this.length = 0;
+    },
+
+<span id='Ext-draw-Group-method-add'>    /**
+</span>     * Add sprite to group.
+     * @param {Ext.draw.sprite.Sprite} sprite
+     */
+    add: function (sprite) {
+        var id = sprite.getId(),
+            oldSprite = this.map[id];
+        if (!oldSprite) {
+            sprite.group.push(this.id);
+            this.map[id] = sprite;
+            this.items.push(sprite);
+            this.length++;
+        } else if (sprite !== oldSprite) {
+            Ext.Logger.error('Sprite with duplicated id.');
+        }
+    },
+
+<span id='Ext-draw-Group-method-remove'>    /**
+</span>     * Remote sprite from group.
+     * @param {Ext.draw.sprite.Sprite} sprite
+     * @param {Boolean} [destroySprite]
+     */
+    remove: function (sprite, destroySprite) {
+        var id = sprite.getId(),
+            oldSprite = this.map[id];
+
+        destroySprite = destroySprite || this.autoDestroy;
+        if (oldSprite) {
+            if (oldSprite === sprite) {
+                delete this.map[id];
+                this.length--;
+                Ext.Array.remove(this.items, sprite);
+                if (destroySprite) {
+                    oldSprite.destroy();
+                } else {
+                    Ext.Array.remove(sprite.group, this);
+                }
+            } else if (sprite !== oldSprite) {
+                Ext.Logger.error('Sprite with duplicated id.');
+            }
+        }
+    },
+
+<span id='Ext-draw-Group-method-addAll'>    /**
+</span>     * Add a list of sprites to group.
+     * @param {Array|Ext.draw.sprite.Sprite} sprites
+     */
+    addAll: function (sprites) {
+        if (sprites.isSprite) {
+            this.add(sprites);
+        } else if (Ext.isArray(sprites)) {
+            var i = 0;
+            while (i &lt; sprites.length) {
+                this.add(sprites[i++]);
+            }
+        }
+    },
+
+<span id='Ext-draw-Group-method-each'>    /**
+</span>     * Iterate all sprites with specific function.
+     * __Note:__ Avoid using this for performance consideration.
+     * @param {Function} fn Function to iterate.
+     */
+    each: function (fn) {
+        var i = 0,
+            items = this.items,
+            ln = items.length;
+        while (i &lt; ln) {
+            if (false === fn(items[i])) {
+                return;
+            }
+        }
+    },
+
+<span id='Ext-draw-Group-method-clear'>    /**
+</span>     * Clear the group
+     * @param {Boolean} [destroySprite]
+     */
+    clear: function (destroySprite) {
+        var i, ln, sprite, items;
+
+        if (destroySprite || this.autoDestroy) {
+            items = this.items.slice(0);
+            for (i = 0, ln = items.length; i &lt; ln; i++) {
+                items[i].destroy();
+            }
+        } else {
+            items = this.items.slice(0);
+            for (i = 0, ln = items.length; i &lt; ln; i++) {
+                sprite = items[i];
+                Ext.Array.remove(sprite.group, this);
+            }
+        }
+        this.length = 0;
+        this.map = {};
+        this.items.length = 0;
+    },
+
+<span id='Ext-draw-Group-method-getAt'>    /**
+</span>     * Get the i-th sprite of the group.
+     * __Note:__ Do not reply on the order of the sprite. It could be changed by {@link Ext.draw.Surface#stableSort}. 
+     * @param {Number}  index
+     * @return {Ext.draw.sprite.Sprite}
+     */
+    getAt: function (index) {
+        return this.items[index];
+    },
+
+<span id='Ext-draw-Group-method-get'>    /**
+</span>     * Get the sprite with id or index.
+     * It will first find sprite with given id, otherwise will try to use the id as an index.
+     * @param {String|Number} id
+     * @return {Ext.draw.sprite.Sprite}
+     */
+    get: function (id) {
+        return this.map[id] || this.items[id];
+    },
+
+<span id='Ext-draw-Group-method-destroy'>    /**
+</span>     * Destroy the group and remove it from surface.
+     */
+    destroy: function () {
+        this.clear();
+        this.getSurface().getGroups().remove(this);
+    }
+}, function () {
+
+    this.addMembers({
+<span id='Ext-draw-Group-method-setAttributes'>        /**
+</span>         * Set attributes to all sprites in the group.
+         *
+         * @param {Object} o Sprite attribute options just like in {@link Ext.draw.sprite.Sprite}.
+         * @method
+         */
+        setAttributes: this.createDispatcherMethod('setAttributes'),
+
+<span id='Ext-draw-Group-method-show'>        /**
+</span>         * Display all sprites in the group.
+         *
+         * @param {Boolean} o Whether to re-render the frame.
+         * @method
+         */
+        show: this.createDispatcherMethod('show'),
+
+<span id='Ext-draw-Group-method-hide'>        /**
+</span>         * Hide all sprites in the group.
+         *
+         * @param {Boolean} o Whether to re-render the frame.
+         * @method
+         */
+        hide: this.createDispatcherMethod('hide'),
+
+<span id='Ext-draw-Group-method-setDirty'>        /**
+</span>         * Set dirty flag for all sprites in the group
+         * @method
+         */
+        setDirty: this.createDispatcherMethod('setDirty'),
+
+<span id='Ext-draw-Group-method-getBBox'>        /**
+</span>         * Return the minimal bounding box that contains all the sprites bounding boxes in this group.
+         * 
+         * Bad performance. Avoid using it.
+         */
+        getBBox: function (isWithTransform) {
+            if (this.length === 0) {
+                return {x: 0, y: 0, width: 0, height: 0};
+            }
+            var i, ln, l = Infinity, r = -Infinity, t = Infinity, b = -Infinity, bbox;
+            for (i = 0, ln = this.items.length; i &lt; ln; i++) {
+                bbox = this.items[i].getBBox(isWithTransform);
+                if (!bbox) {
+                    continue;
+                }
+                if (bbox.x + bbox.width &gt; r) {
+                    r = bbox.x + bbox.width;
+                }
+                if (bbox.x &lt; l) {
+                    l = bbox.x;
+                }
+                if (bbox.y + bbox.height &gt; b) {
+                    b = bbox.y + bbox.height;
+                }
+                if (bbox.y &lt; t) {
+                    t = bbox.y;
+                }
+            }
+            return {
+                x: l,
+                y: t,
+                height: b - t,
+                width: r - l
+            };
+        }
+    });
+});</pre>
+</body>
+</html>

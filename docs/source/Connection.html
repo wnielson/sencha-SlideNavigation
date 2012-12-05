@@ -26,8 +26,8 @@
  * # File Uploads
  *
  * File uploads are not performed using normal &quot;Ajax&quot; techniques, that is they are not performed using XMLHttpRequests.
- * Instead the form is submitted in the standard manner with the DOM &amp;lt;form&amp;gt; element temporarily modified to have its
- * target set to refer to a dynamically generated, hidden &amp;lt;iframe&amp;gt; which is inserted into the document but removed
+ * Instead the form is submitted in the standard manner with the DOM `&lt;form&gt;` element temporarily modified to have its
+ * target set to refer to a dynamically generated, hidden `&lt;iframe&gt;` which is inserted into the document but removed
  * after the return data has been gathered.
  *
  * The server response is parsed by the browser to create the document for the IFRAME. If the server is using JSON to
@@ -44,7 +44,7 @@
  * (notably JEE) may require some custom processing in order to retrieve parameter names and parameter values from the
  * packet content.
  *
- * Also note that it's not possible to check the response code of the hidden iframe, so the success handler will ALWAYS fire.
+ * __Note:__ It is not possible to check the response code of the hidden iframe, so the success handler will _always_ fire.
  */
 Ext.define('Ext.data.Connection', {
     mixins: {
@@ -52,8 +52,8 @@ Ext.define('Ext.data.Connection', {
     },
 
     statics: {
-        requestId: 0
-    },
+<span id='Ext-data-Connection-property-requestId'>        requestId: 0
+</span>    },
 
     config: {
 <span id='Ext-data-Connection-cfg-url'>        /**
@@ -63,23 +63,24 @@ Ext.define('Ext.data.Connection', {
          */
         url: null,
 
-        async: true,
-
+<span id='Ext-data-Connection-cfg-async'>        async: true,
+</span>
 <span id='Ext-data-Connection-cfg-method'>        /**
 </span>         * @cfg {String} [method=undefined]
-         * The default HTTP method to be used for requests. Note that this is case-sensitive and
-         * should be all caps.
+         * The default HTTP method to be used for requests.
          *
-         * Defaults to undefined; if not set but params are present will use &quot;POST&quot;, otherwise &quot;GET&quot;.
+         * __Note:__ This is case-sensitive and should be all caps.
+         *
+         * Defaults to `undefined`; if not set but params are present will use &quot;POST&quot;, otherwise &quot;GET&quot;.
          */
         method: null,
 
-        username: '',
-        password: '',
-
+<span id='Ext-data-Connection-cfg-username'>        username: '',
+</span><span id='Ext-data-Connection-cfg-password'>        password: '',
+</span>
 <span id='Ext-data-Connection-cfg-disableCaching'>        /**
 </span>         * @cfg {Boolean} disableCaching
-         * True to add a unique cache-buster param to GET requests.
+         * `true` to add a unique cache-buster param to GET requests.
          * @accessor
          */
         disableCaching: true,
@@ -112,20 +113,33 @@ Ext.define('Ext.data.Connection', {
          */
         defaultHeaders: null,
 
-        useDefaultHeader : true,
-        defaultPostHeader : 'application/x-www-form-urlencoded; charset=UTF-8',
+<span id='Ext-data-Connection-cfg-useDefaultHeader'>        useDefaultHeader : true,
+</span><span id='Ext-data-Connection-cfg-defaultPostHeader'>        defaultPostHeader : 'application/x-www-form-urlencoded; charset=UTF-8',
+</span>
+<span id='Ext-data-Connection-cfg-useDefaultXhrHeader'>        /**
+</span>         * @cfg {Boolean} useDefaultXhrHeader
+         * Set this to false to not send the default Xhr header (X-Requested-With) with every request.
+         * This should be set to false when making CORS (cross-domain) requests.
+         * @accessor
+         */
         useDefaultXhrHeader : true,
+
+<span id='Ext-data-Connection-cfg-defaultXhrHeader'>        /**
+</span>         * @cfg {String} defaultXhrHeader
+         * The value of the default Xhr header (X-Requested-With). This is only used when {@link #useDefaultXhrHeader}
+         * is set to `true`.
+         */
         defaultXhrHeader : 'XMLHttpRequest',
 
-        autoAbort: false
-    },
+<span id='Ext-data-Connection-cfg-autoAbort'>        autoAbort: false
+</span>    },
 
-    textAreaRe: /textarea/i,
-    multiPartRe: /multipart\/form-data/i,
-    lineBreakRe: /\r\n/g,
-
-    constructor : function(config) {
-        this.initConfig(config);
+<span id='Ext-data-Connection-property-textAreaRe'>    textAreaRe: /textarea/i,
+</span><span id='Ext-data-Connection-property-multiPartRe'>    multiPartRe: /multipart\/form-data/i,
+</span><span id='Ext-data-Connection-property-lineBreakRe'>    lineBreakRe: /\r\n/g,
+</span>
+<span id='Ext-data-Connection-method-constructor'>    constructor : function(config) {
+</span>        this.initConfig(config);
 
 <span id='Ext-data-Connection-event-beforerequest'>        /**
 </span>         * @event beforerequest
@@ -177,7 +191,7 @@ Ext.define('Ext.data.Connection', {
      * @param {Object} options An object which may contain the following properties:
      *
      * (The options object may also contain any other property which might be needed to perform
-     * postprocessing in a callback because it is passed to callback functions.)
+     * post-processing in a callback because it is passed to callback functions.)
      *
      * @param {String/Function} options.url The URL to which to send the request, or a function
      * to call which returns a URL string. The scope of the function is specified by the `scope` option.
@@ -189,13 +203,14 @@ Ext.define('Ext.data.Connection', {
      *
      * @param {String} options.method The HTTP method to use
      * for the request. Defaults to the configured method, or if no method was configured,
-     * &quot;GET&quot; if no parameters are being sent, and &quot;POST&quot; if parameters are being sent.  Note that
-     * the method name is case-sensitive and should be all caps.
+     * &quot;GET&quot; if no parameters are being sent, and &quot;POST&quot; if parameters are being sent.
+     *
+     * __Note:__ The method name is case-sensitive and should be all caps.
      *
      * @param {Function} options.callback The function to be called upon receipt of the HTTP response.
      * The callback is called regardless of success or failure and is passed the following parameters:
      * @param {Object} options.callback.options The parameter to the request call.
-     * @param {Boolean} options.callback.success True if the request succeeded.
+     * @param {Boolean} options.callback.success `true` if the request succeeded.
      * @param {Object} options.callback.response The XMLHttpRequest object containing the response data.
      * See [www.w3.org/TR/XMLHttpRequest/](http://www.w3.org/TR/XMLHttpRequest/) for details about
      * accessing elements of the response.
@@ -205,7 +220,7 @@ Ext.define('Ext.data.Connection', {
      * @param {Object} options.success.response The XMLHttpRequest object containing the response data.
      * @param {Object} options.success.options The parameter to the request call.
      *
-     * @param {Function} options.failure The function to be called upon success of the request.
+     * @param {Function} options.failure The function to be called upon failure of the request.
      * The callback is passed the following parameters:
      * @param {Object} options.failure.response The XMLHttpRequest object containing the response data.
      * @param {Object} options.failure.options The parameter to the request call.
@@ -215,8 +230,7 @@ Ext.define('Ext.data.Connection', {
      * draw values, then this also serves as the scope for those function calls. Defaults to the browser
      * window.
      *
-     * @param {Number} options.timeout The timeout in milliseconds to be used for this request.
-     * Defaults to 30 seconds.
+     * @param {Number} [options.timeout=30000] The timeout in milliseconds to be used for this request.
      *
      * @param {HTMLElement/HTMLElement/String} options.form The `&lt;form&gt;` Element or the id of the `&lt;form&gt;`
      * to pull parameters from.
@@ -250,15 +264,19 @@ Ext.define('Ext.data.Connection', {
      *
      * @param {Object} options.headers Request headers to set for the request.
      *
-     * @param {Object} options.xmlData XML document to use for the post. Note: This will be used instead
+     * @param {Object} options.xmlData XML document to use for the post.
+     *
+     * __Note:__ This will be used instead
      * of params for the post data. Any params will be appended to the URL.
      *
-     * @param {Object/String} options.jsonData JSON data to use as the post. Note: This will be used
+     * @param {Object/String} options.jsonData JSON data to use as the post.
+     *
+     * __Note:__ This will be used
      * instead of params for the post data. Any params will be appended to the URL.
      *
      * @param {Boolean} options.disableCaching True to add a unique cache-buster param to GET requests.
      *
-     * @return {Object} The request object. This may be used to cancel the request.
+     * @return {Object/null} The request object. This may be used to cancel the request.
      */
     request : function(options) {
         options = options || {};
@@ -297,7 +315,7 @@ Ext.define('Ext.data.Connection', {
 
             // create the transaction object
             request = {
-                id: ++this.self.requestId,
+                id: ++Ext.data.Connection.requestId,
                 xhr: xhr,
                 headers: headers,
                 options: options,
@@ -328,10 +346,10 @@ Ext.define('Ext.data.Connection', {
 
 <span id='Ext-data-Connection-method-upload'>    /**
 </span>     * Uploads a form using a hidden iframe.
-     * @param {String/HTMLElement/Ext.Element} form The form to upload
-     * @param {String} url The url to post to
-     * @param {String} params Any extra parameters to pass
-     * @param {Object} options The initial options
+     * @param {String/HTMLElement/Ext.Element} form The form to upload.
+     * @param {String} url The url to post to.
+     * @param {String} params Any extra parameters to pass.
+     * @param {Object} options The initial options.
      */
     upload: function(form, url, params, options) {
         form = Ext.getDom(form);
@@ -359,9 +377,9 @@ Ext.define('Ext.data.Connection', {
         }, hiddenItem;
 
         /*
-         * Originally this behaviour was modified for Opera 10 to apply the secure URL after
+         * Originally this behavior was modified for Opera 10 to apply the secure URL after
          * the frame had been added to the document. It seems this has since been corrected in
-         * Opera so the behaviour has been reverted, the URL will be set before being added.
+         * Opera so the behavior has been reverted, the URL will be set before being added.
          */
         Ext.fly(frame).set({
             id: id,
@@ -407,8 +425,8 @@ Ext.define('Ext.data.Connection', {
         });
     },
 
-    onUploadComplete: function(frame, options) {
-        var me = this,
+<span id='Ext-data-Connection-method-onUploadComplete'>    onUploadComplete: function(frame, options) {
+</span>        var me = this,
             // bogus response object
             response = {
                 responseText: '',
@@ -456,18 +474,18 @@ Ext.define('Ext.data.Connection', {
 <span id='Ext-data-Connection-method-getForm'>    /**
 </span>     * Gets the form object from options.
      * @private
-     * @param {Object} options The request options
-     * @return {HTMLElement} The form, null if not passed
+     * @param {Object} options The request options.
+     * @return {HTMLElement/null} The form, `null` if not passed.
      */
     getForm: function(options) {
         return Ext.getDom(options.form) || null;
     },
 
 <span id='Ext-data-Connection-method-setOptions'>    /**
-</span>     * Sets various options such as the url, params for the request
-     * @param {Object} options The initial options
-     * @param {Object} scope The scope to execute in
-     * @return {Object} The params for the request
+</span>     * Sets various options such as the url, params for the request.
+     * @param {Object} options The initial options.
+     * @param {Object} scope The scope to execute in.
+     * @return {Object} The params for the request.
      */
     setOptions: function(options, scope) {
         var me = this,
@@ -525,8 +543,9 @@ Ext.define('Ext.data.Connection', {
 
 
         disableCache = options.disableCaching !== false ? (options.disableCaching || me.getDisableCaching()) : false;
-        // if the method is get append date to prevent caching
-        if (method === 'GET' &amp;&amp; disableCache) {
+
+        // append date to prevent caching
+        if (disableCache) {
             url = Ext.urlAppend(url, (options.disableCachingParam || me.getDisableCachingParam()) + '=' + (new Date().getTime()));
         }
 
@@ -549,7 +568,7 @@ Ext.define('Ext.data.Connection', {
     },
 
 <span id='Ext-data-Connection-method-setupUrl'>    /**
-</span>     * Template method for overriding url
+</span>     * Template method for overriding url.
      * @private
      * @param {Object} options
      * @param {String} url
@@ -565,11 +584,11 @@ Ext.define('Ext.data.Connection', {
 
 
 <span id='Ext-data-Connection-method-setupParams'>    /**
-</span>     * Template method for overriding params
+</span>     * Template method for overriding params.
      * @private
      * @param {Object} options
      * @param {String} params
-     * @return {String} The modified params
+     * @return {String} The modified params.
      */
     setupParams: function(options, params) {
         var form = this.getForm(options),
@@ -582,11 +601,11 @@ Ext.define('Ext.data.Connection', {
     },
 
 <span id='Ext-data-Connection-method-setupMethod'>    /**
-</span>     * Template method for overriding method
+</span>     * Template method for overriding method.
      * @private
      * @param {Object} options
      * @param {String} method
-     * @return {String} The modified method
+     * @return {String} The modified method.
      */
     setupMethod: function(options, method) {
         if (this.isFormUpload(options)) {
@@ -596,12 +615,12 @@ Ext.define('Ext.data.Connection', {
     },
 
 <span id='Ext-data-Connection-method-setupHeaders'>    /**
-</span>     * Setup all the headers for the request
+</span>     * Setup all the headers for the request.
      * @private
-     * @param {Object} xhr The xhr object
-     * @param {Object} options The options for the request
-     * @param {Object} data The data for the request
-     * @param {Object} params The params for the request
+     * @param {Object} xhr The xhr object.
+     * @param {Object} options The options for the request.
+     * @param {Object} data The data for the request.
+     * @param {Object} params The params for the request.
      */
     setupHeaders: function(xhr, options, data, params) {
         var me = this,
@@ -627,7 +646,7 @@ Ext.define('Ext.data.Connection', {
             headers['Content-Type'] = contentType;
         }
 
-        if (me.getUseDefaultXhrHeader() &amp;&amp; !headers['X-Requested-With']) {
+        if (((me.getUseDefaultXhrHeader() &amp;&amp; options.useDefaultXhrHeader !== false) || options.useDefaultXhrHeader) &amp;&amp; !headers['X-Requested-With']) {
             headers['X-Requested-With'] = me.getDefaultXhrHeader();
         }
         // set up all the request headers on the xhr object
@@ -680,7 +699,7 @@ Ext.define('Ext.data.Connection', {
 
 <span id='Ext-data-Connection-method-isLoading'>    /**
 </span>     * Determines whether this object has a request outstanding.
-     * @param {Object} request The request to check
+     * @param {Object} request The request to check.
      * @return {Boolean} True if there is an outstanding request.
      */
     isLoading : function(request) {
@@ -694,7 +713,7 @@ Ext.define('Ext.data.Connection', {
 
 <span id='Ext-data-Connection-method-abort'>    /**
 </span>     * Aborts any outstanding request.
-     * @param {Object} request (Optional) defaults to the last request
+     * @param {Object} request (Optional) Defaults to the last request.
      */
     abort : function(request) {
         var me = this,
@@ -725,14 +744,14 @@ Ext.define('Ext.data.Connection', {
     },
 
 <span id='Ext-data-Connection-method-abortAll'>    /**
-</span>     * Aborts all outstanding requests
+</span>     * Aborts all outstanding requests.
      */
     abortAll: function() {
         this.abort();
     },
 
 <span id='Ext-data-Connection-method-onStateChange'>    /**
-</span>     * Fires when the state of the xhr changes
+</span>     * Fires when the state of the XHR changes.
      * @private
      * @param {Object} request The request
      */
@@ -745,7 +764,7 @@ Ext.define('Ext.data.Connection', {
     },
 
 <span id='Ext-data-Connection-method-clearTimeout'>    /**
-</span>     * Clears the timeout on the request
+</span>     * Clears the timeout on the request.
      * @private
      * @param {Object} The request
      */
@@ -755,9 +774,9 @@ Ext.define('Ext.data.Connection', {
     },
 
 <span id='Ext-data-Connection-method-cleanup'>    /**
-</span>     * Cleans up any left over information from the request
+</span>     * Cleans up any left over information from the request.
      * @private
-     * @param {Object} The request
+     * @param {Object} The request.
      */
     cleanup: function(request) {
         request.xhr = null;
@@ -765,10 +784,10 @@ Ext.define('Ext.data.Connection', {
     },
 
 <span id='Ext-data-Connection-method-onComplete'>    /**
-</span>     * To be called when the request has come back from the server
+</span>     * To be called when the request has come back from the server.
      * @private
      * @param {Object} request
-     * @return {Object} The response
+     * @return {Object} The response.
      */
     onComplete : function(request) {
         var me = this,
@@ -778,7 +797,7 @@ Ext.define('Ext.data.Connection', {
             response;
 
         try {
-            result = me.parseStatus(request.xhr.status);
+            result = me.parseStatus(request.xhr.status, request.xhr);
 
             if (request.timedout) {
                 result.success = false;
@@ -811,15 +830,16 @@ Ext.define('Ext.data.Connection', {
     },
 
 <span id='Ext-data-Connection-method-parseStatus'>    /**
-</span>     * Checks if the response status was successful
-     * @param {Number} status The status code
-     * @return {Object} An object containing success/status state
+</span>     * Checks if the response status was successful.
+     * @param {Number} status The status code.
+     * @param xhr
+     * @return {Object} An object containing success/status state.
      */
-    parseStatus: function(status) {
+    parseStatus: function(status, xhr) {
         // see: https://prototype.lighthouseapp.com/projects/8886/tickets/129-ie-mangles-http-response-status-code-204-to-1223
         status = status == 1223 ? 204 : status;
 
-        var success = (status &gt;= 200 &amp;&amp; status &lt; 300) || status == 304 || status == 0,
+        var success = (status &gt;= 200 &amp;&amp; status &lt; 300) || status == 304 || (status == 0 &amp;&amp; xhr.responseText.length &gt; 0),
             isException = false;
 
         if (!success) {
@@ -841,7 +861,7 @@ Ext.define('Ext.data.Connection', {
     },
 
 <span id='Ext-data-Connection-method-createResponse'>    /**
-</span>     * Creates the response object
+</span>     * Creates the response object.
      * @private
      * @param {Object} request
      */
@@ -898,7 +918,7 @@ Ext.define('Ext.data.Connection', {
     },
 
 <span id='Ext-data-Connection-method-createException'>    /**
-</span>     * Creates the exception object
+</span>     * Creates the exception object.
      * @private
      * @param {Object} request
      */

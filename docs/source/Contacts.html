@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-device-Contacts'>/**
+</span> * This device API allows you to access a users contacts using a {@link Ext.data.Store}. This allows you to search, filter
+ * and sort through all the contacts using its methods.
+ *
+ * To use this API, all you need to do is require this class (`Ext.device.Contacts`) and then use `Ext.device.Contacts.getContacts()`
+ * to retrieve an array of contacts.
+ *
+ * **Please note that this will *only* work using the Sencha Native Packager.**
+ * 
+ * # Example
+ *
+ *     Ext.application({
+ *         name: 'Sencha',
+ *         requires: 'Ext.device.Contacts',
+ *
+ *         launch: function() {
+ *             Ext.Viewport.add({
+ *                 xtype: 'list',
+ *                 itemTpl: '{First} {Last}',
+ *                 store: {
+ *                     fields: ['First', 'Last'],
+ *                     data: Ext.device.Contacts.getContacts()
+ *                 }
+ *             });
+ *         }
+ *     });
+ *
+ * @mixins Ext.device.contacts.Abstract
+ * @mixins Ext.device.contacts.Sencha
+ *
+ * @aside guide native_apis
+ */
+Ext.define('Ext.device.Contacts', {
+    singleton: true,
+
+    requires: [
+        'Ext.device.Communicator',
+        'Ext.device.contacts.Sencha'
+    ],
+
+<span id='Ext-device-Contacts-method-constructor'>    constructor: function() {
+</span>        var browserEnv = Ext.browser.is;
+
+        if (browserEnv.WebView &amp;&amp; !browserEnv.PhoneGap) {
+            return Ext.create('Ext.device.contacts.Sencha');
+        } else {
+            return Ext.create('Ext.device.contacts.Abstract');
+        }
+    }
+});
+</pre>
+</body>
+</html>

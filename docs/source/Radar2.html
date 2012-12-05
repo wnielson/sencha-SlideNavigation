@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-chart-series-sprite-Radar'>/**
+</span> * @class Ext.chart.series.sprite.Radar
+ * @extends Ext.chart.series.sprite.Polar
+ * 
+ * Radar series sprite.
+ */
+Ext.define(&quot;Ext.chart.series.sprite.Radar&quot;, {
+    alias: 'sprite.radar',
+    extend: 'Ext.chart.series.sprite.Polar',
+
+<span id='Ext-chart-series-sprite-Radar-method-render'>    render: function (surface, ctx) {
+</span>        var me = this,
+            attr = me.attr,
+            centerX = attr.centerX,
+            centerY = attr.centerY,
+            matrix = attr.matrix,
+            minX = attr.dataMinX,
+            maxX = attr.dataMaxX,
+            maxY = attr.dataMaxY,
+            dataX = attr.dataX,
+            dataY = attr.dataY,
+            endRho = attr.endRho,
+            startRho = attr.startRho,
+            baseRotation = attr.baseRotation,
+            i, length = dataX.length,
+            markerCfg = {},
+            surfaceMatrix = me.surfaceMatrix,
+            x, y, r, th;
+        ctx.beginPath();
+        for (i = 0; i &lt; length; i++) {
+            th = (dataX[i] - minX) / (maxX - minX + 1) * 2 * Math.PI + baseRotation;
+            r = dataY[i] / maxY * (endRho - startRho) + startRho;
+            x = matrix.x(centerX + Math.cos(th) * r, centerY + Math.sin(th) * r);
+            y = matrix.y(centerX + Math.cos(th) * r, centerY + Math.sin(th) * r);
+            ctx.lineTo(x, y);
+            markerCfg.translationX = surfaceMatrix.x(x, y);
+            markerCfg.translationY = surfaceMatrix.y(x, y);
+            me.putMarker(&quot;markers&quot;, markerCfg, i, true);
+        }
+        ctx.closePath();
+        ctx.fillStroke(attr);
+    }
+});</pre>
+</body>
+</html>

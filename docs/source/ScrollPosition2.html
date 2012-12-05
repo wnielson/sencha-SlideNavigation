@@ -21,23 +21,20 @@
  * Scroll position implementation
  */
 Ext.define('Ext.util.translatable.ScrollPosition', {
-    extend: 'Ext.util.translatable.Abstract',
+    extend: 'Ext.util.translatable.Dom',
 
-    wrapperWidth: 0,
-
-    wrapperHeight: 0,
-
-    baseCls: 'x-translatable',
-
+<span id='Ext-util-translatable-ScrollPosition-property-wrapperWidth'>    wrapperWidth: 0,
+</span>
+<span id='Ext-util-translatable-ScrollPosition-property-wrapperHeight'>    wrapperHeight: 0,
+</span>
     config: {
-        useWrapper: true
-    },
+<span id='Ext-util-translatable-ScrollPosition-cfg-useWrapper'>        useWrapper: true
+</span>    },
 
-    getWrapper: function() {
-        var wrapper = this.wrapper,
-            baseCls = this.baseCls,
+<span id='Ext-util-translatable-ScrollPosition-method-getWrapper'>    getWrapper: function() {
+</span>        var wrapper = this.wrapper,
             element = this.getElement(),
-            nestedStretcher, container;
+            container;
 
         if (!wrapper) {
             container = element.getParent();
@@ -47,29 +44,19 @@ Ext.define('Ext.util.translatable.ScrollPosition', {
             }
 
             if (this.getUseWrapper()) {
-                wrapper = element.wrap({
-                    className: baseCls + '-wrapper'
-                }, true);
+                wrapper = element.wrap();
             }
             else {
-                wrapper = container.dom;
+                wrapper = container;
             }
 
-            wrapper.appendChild(Ext.Element.create({
-                className: baseCls + '-stretcher'
-            }, true));
+            element.addCls('x-translatable');
+            wrapper.addCls('x-translatable-container');
 
-            this.nestedStretcher = nestedStretcher = Ext.Element.create({
-                className: baseCls + '-nested-stretcher'
-            }, true);
-
-            element.appendChild(nestedStretcher);
-
-            element.addCls(baseCls);
-            container.addCls(baseCls + '-container');
-
-            this.container = container;
             this.wrapper = wrapper;
+
+            wrapper.on('resize', 'onWrapperResize', this);
+            wrapper.on('painted', 'refresh', this);
 
             this.refresh();
         }
@@ -77,48 +64,51 @@ Ext.define('Ext.util.translatable.ScrollPosition', {
         return wrapper;
     },
 
-    doTranslate: function(x, y) {
-        var wrapper = this.getWrapper();
+<span id='Ext-util-translatable-ScrollPosition-method-doTranslate'>    doTranslate: function(x, y) {
+</span>        var wrapper = this.getWrapper(),
+            dom;
 
         if (wrapper) {
+            dom = wrapper.dom;
+
             if (typeof x == 'number') {
-                wrapper.scrollLeft = this.wrapperWidth - x;
+                dom.scrollLeft = this.wrapperWidth - x;
             }
 
             if (typeof y == 'number') {
-                wrapper.scrollTop = this.wrapperHeight - y;
+                dom.scrollTop = this.wrapperHeight - y;
             }
         }
-
-        return this.callParent(arguments);
     },
 
-    refresh: function() {
-        var wrapper = this.getWrapper();
+<span id='Ext-util-translatable-ScrollPosition-method-onWrapperResize'>    onWrapperResize: function(wrapper, info) {
+</span>        this.wrapperWidth = info.width;
+        this.wrapperHeight = info.height;
+
+        this.refresh();
+    },
+
+<span id='Ext-util-translatable-ScrollPosition-method-destroy'>    destroy: function() {
+</span>        var element = this.getElement(),
+            wrapper = this.wrapper;
 
         if (wrapper) {
-            this.wrapperWidth = wrapper.offsetWidth;
-            this.wrapperHeight = wrapper.offsetHeight;
-
-            this.callParent(arguments);
-        }
-    },
-
-    destroy: function() {
-        var element = this.getElement(),
-            baseCls = this.baseCls;
-
-        if (this.wrapper) {
-            if (this.getUseWrapper()) {
-                element.unwrap();
+            if (!element.isDestroyed) {
+                if (this.getUseWrapper()) {
+                    wrapper.doReplaceWith(element);
+                }
+                element.removeCls('x-translatable');
             }
 
-            this.container.removeCls(baseCls + '-container');
-            element.removeCls(baseCls);
-            element.removeChild(this.nestedStretcher);
+            wrapper.removeCls('x-translatable-container');
+            wrapper.un('resize', 'onWrapperResize', this);
+            wrapper.un('painted', 'refresh', this);
+
+            delete this.wrapper;
+            delete this._element;
         }
 
-        this.callParent(arguments);
+        this.callSuper();
     }
 
 });

@@ -18,24 +18,27 @@
   <pre class="prettyprint lang-js"><span id='Ext-ComponentManager'>/**
 </span> * @private
  *
- * &lt;p&gt;Provides a registry of all Components (instances of {@link Ext.Component} or any subclass
+ * Provides a registry of all Components (instances of {@link Ext.Component} or any subclass
  * thereof) on a page so that they can be easily accessed by {@link Ext.Component component}
- * {@link Ext.Component#getId id} (see {@link #get}, or the convenience method {@link Ext#getCmp Ext.getCmp}).&lt;/p&gt;
- * &lt;p&gt;This object also provides a registry of available Component &lt;i&gt;classes&lt;/i&gt;
+ * {@link Ext.Component#getId id} (see {@link #get}, or the convenience method {@link Ext#getCmp Ext.getCmp}).
+ *
+ * This object also provides a registry of available Component _classes_
  * indexed by a mnemonic code known as the Component's `xtype`.
- * The &lt;code&gt;xtype&lt;/code&gt; provides a way to avoid instantiating child Components
- * when creating a full, nested config object for a complete Ext page.&lt;/p&gt;
- * &lt;p&gt;A child Component may be specified simply as a &lt;i&gt;config object&lt;/i&gt;
+ * The `xtype` provides a way to avoid instantiating child Components
+ * when creating a full, nested config object for a complete Ext page.
+ *
+ * A child Component may be specified simply as a _config object_
  * as long as the correct `xtype` is specified so that if and when the Component
- * needs rendering, the correct type can be looked up for lazy instantiation.&lt;/p&gt;
- * &lt;p&gt;For a list of all available `xtype`, see {@link Ext.Component}.&lt;/p&gt;
+ * needs rendering, the correct type can be looked up for lazy instantiation.
+ *
+ * For a list of all available `xtype`, see {@link Ext.Component}.
  */
 Ext.define('Ext.ComponentManager', {
     alternateClassName: 'Ext.ComponentMgr',
     singleton: true,
 
-    constructor: function() {
-        var map = {};
+<span id='Ext-ComponentManager-method-constructor'>    constructor: function() {
+</span>        var map = {};
 
         // The sole reason for this is just to support the old code of ComponentQuery
         this.all = {
@@ -57,8 +60,8 @@ Ext.define('Ext.ComponentManager', {
     },
 
 <span id='Ext-ComponentManager-method-register'>    /**
-</span>     * Registers an item to be managed
-     * @param {Object} component The item to register
+</span>     * Registers an item to be managed.
+     * @param {Object} component The item to register.
      */
     register: function(component) {
         var id = component.getId();
@@ -73,8 +76,8 @@ Ext.define('Ext.ComponentManager', {
     },
 
 <span id='Ext-ComponentManager-method-unregister'>    /**
-</span>     * Unregisters an item by removing it from this manager
-     * @param {Object} component The item to unregister
+</span>     * Unregisters an item by removing it from this manager.
+     * @param {Object} component The item to unregister.
      */
     unregister: function(component) {
         delete this.map[component.getId()];
@@ -82,7 +85,7 @@ Ext.define('Ext.ComponentManager', {
 
 <span id='Ext-ComponentManager-method-isRegistered'>    /**
 </span>     * Checks if an item type is registered.
-     * @param {String} component The mnemonic string by which the class may be looked up
+     * @param {String} component The mnemonic string by which the class may be looked up.
      * @return {Boolean} Whether the type is registered.
      */
     isRegistered : function(component){
@@ -92,8 +95,8 @@ Ext.define('Ext.ComponentManager', {
 <span id='Ext-ComponentManager-method-get'>    /**
 </span>     * Returns an item by id.
      * For additional details see {@link Ext.util.HashMap#get}.
-     * @param {String} id The id of the item
-     * @return {Object} The item, undefined if not found.
+     * @param {String} id The `id` of the item.
+     * @return {Object} The item, or `undefined` if not found.
      */
     get: function(id) {
         return this.map[id];
@@ -101,10 +104,10 @@ Ext.define('Ext.ComponentManager', {
 
 <span id='Ext-ComponentManager-method-create'>    /**
 </span>     * Creates a new Component from the specified config object using the
-     * config object's xtype to determine the class to instantiate.
+     * config object's `xtype` to determine the class to instantiate.
      * @param {Object} config A configuration object for the Component you wish to create.
      * @param {Function} defaultType (optional) The constructor to provide the default Component type if
-     * the config object does not contain a &lt;code&gt;xtype&lt;/code&gt;. (Optional if the config contains a &lt;code&gt;xtype&lt;/code&gt;).
+     * the config object does not contain a `xtype`. (Optional if the config contains an `xtype`).
      * @return {Ext.Component} The newly instantiated Component.
      */
     create: function(component, defaultType) {
@@ -121,8 +124,8 @@ Ext.define('Ext.ComponentManager', {
         }
     },
 
-    registerType: Ext.emptyFn
-});
+<span id='Ext-ComponentManager-method-registerType'>    registerType: Ext.emptyFn
+</span>});
 </pre>
 </body>
 </html>

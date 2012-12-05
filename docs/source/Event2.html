@@ -58,18 +58,18 @@
  *         }
  *     });
  *
- * ## Recgonisers
+ * ## Recognizers
  *
- * Sencha Touch includes a bunch of default event recognisers to know when a user taps, swipes, etc.
+ * Sencha Touch includes a bunch of default event recognizers to know when a user taps, swipes, etc.
  *
- * For a full list of default recognisers, and more information, please view the {@link Ext.event.recognizer.Recognizer} documentation
+ * For a full list of default recognizers, and more information, please view the {@link Ext.event.recognizer.Recognizer} documentation.
  */
 Ext.define('Ext.event.Event', {
     alternateClassName: 'Ext.EventObject',
-    isStopped: false,
-
-    set: function(name, value) {
-        if (arguments.length === 1 &amp;&amp; typeof name != 'string') {
+<span id='Ext-event-Event-property-isStopped'>    isStopped: false,
+</span>
+<span id='Ext-event-Event-method-set'>    set: function(name, value) {
+</span>        if (arguments.length === 1 &amp;&amp; typeof name != 'string') {
             var info = name;
 
             for (name in info) {
@@ -84,7 +84,8 @@ Ext.define('Ext.event.Event', {
     },
 
 <span id='Ext-event-Event-method-stopEvent'>    /**
-</span>     * Stop the event (preventDefault and stopPropagation)
+</span>     * Stop the event (`preventDefault` and `{@link #stopPropagation}`).
+     * @chainable
      */
     stopEvent: function() {
         return this.stopPropagation();
@@ -92,6 +93,7 @@ Ext.define('Ext.event.Event', {
 
 <span id='Ext-event-Event-method-stopPropagation'>    /**
 </span>     * Cancels bubbling of the event.
+     * @chainable
      */
     stopPropagation: function() {
         this.isStopped = true;

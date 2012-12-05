@@ -18,17 +18,17 @@
   <pre class="prettyprint lang-js"><span id='Ext-direct-RemotingProvider'>/**
 </span> * @class Ext.direct.RemotingProvider
  *
- * &lt;p&gt;The {@link Ext.direct.RemotingProvider RemotingProvider} exposes access to
+ * The {@link Ext.direct.RemotingProvider RemotingProvider} exposes access to
  * server side methods on the client (a remote procedure call (RPC) type of
- * connection where the client can initiate a procedure on the server).&lt;/p&gt;
+ * connection where the client can initiate a procedure on the server).
  *
- * &lt;p&gt;This allows for code to be organized in a fashion that is maintainable,
+ * This allows for code to be organized in a fashion that is maintainable,
  * while providing a clear path between client and server, something that is
- * not always apparent when using URLs.&lt;/p&gt;
+ * not always apparent when using URLs.
  *
- * &lt;p&gt;To accomplish this the server-side needs to describe what classes and methods
+ * To accomplish this the server-side needs to describe what classes and methods
  * are available on the client-side. This configuration will typically be
- * outputted by the server-side Ext.Direct stack when the API description is built.&lt;/p&gt;
+ * outputted by the server-side Ext.Direct stack when the API description is built.
  */
 Ext.define('Ext.direct.RemotingProvider', {
     alias: 'direct.remotingprovider',
@@ -45,34 +45,34 @@ Ext.define('Ext.direct.RemotingProvider', {
     config: {
 <span id='Ext-direct-RemotingProvider-cfg-namespace'>        /**
 </span>         * @cfg {String/Object} namespace
-         * Namespace for the Remoting Provider (defaults to the browser global scope of &lt;i&gt;window&lt;/i&gt;).
+         * Namespace for the Remoting Provider (defaults to the browser global scope of _window_).
          * Explicitly specify the namespace Object, or specify a String to have a
          * {@link Ext#namespace namespace created} implicitly.
          */
         namespace: undefined,
 
 <span id='Ext-direct-RemotingProvider-cfg-url'>        /**
-</span>         * @cfg {String} url
-         * &lt;b&gt;Required&lt;/b&gt;. The url to connect to the {@link Ext.direct.Manager} server-side router.
+</span>         * @cfg {String} url (required) The url to connect to the {@link Ext.direct.Manager} server-side router.
          */
         url: null,
 
 <span id='Ext-direct-RemotingProvider-cfg-enableUrlEncode'>        /**
 </span>         * @cfg {String} enableUrlEncode
          * Specify which param will hold the arguments for the method.
-         * Defaults to &lt;tt&gt;'data'&lt;/tt&gt;.
          */
         enableUrlEncode: null,
 
 <span id='Ext-direct-RemotingProvider-cfg-enableBuffer'>        /**
 </span>         * @cfg {Number/Boolean} enableBuffer
-         * &lt;p&gt;&lt;tt&gt;true&lt;/tt&gt; or &lt;tt&gt;false&lt;/tt&gt; to enable or disable combining of method
+         *
+         * `true` or `false` to enable or disable combining of method
          * calls. If a number is specified this is the amount of time in milliseconds
-         * to wait before sending a batched request.&lt;/p&gt;
-         * &lt;br&gt;&lt;p&gt;Calls which are received within the specified timeframe will be
+         * to wait before sending a batched request.
+         *
+         * Calls which are received within the specified timeframe will be
          * concatenated together and sent in a single request, optimizing the
          * application by reducing the amount of round trips that have to be made
-         * to the server.&lt;/p&gt;
+         * to the server.
          */
         enableBuffer: 10,
 
@@ -93,48 +93,47 @@ Ext.define('Ext.direct.RemotingProvider', {
          * Object literal defining the server side actions and methods. For example, if
          * the Provider is configured with:
          *
-         *    actions: { // each property within the 'actions' object represents a server side Class
-         *        // array of methods within each server side Class to be stubbed out on client
-         *        TestAction: [{
-         *            name: &quot;doEcho&quot;,
-         *            len: 1
-         *        }, {
-         *            &quot;name&quot;: &quot;multiply&quot;, // name of method
-         *            &quot;len&quot;: 2            // The number of parameters that will be used to create an
-         *                                // array of data to send to the server side function.
-         *                                // Ensure the server sends back a Number, not a String.
-         *        }, {
-         *            name: &quot;doForm&quot;,
-         *            formHandler: true, // direct the client to use specialized form handling method
-         *            len: 1
-         *        }]
-         *    }
+         *     actions: { // each property within the 'actions' object represents a server side Class
+         *         // array of methods within each server side Class to be stubbed out on client
+         *         TestAction: [{
+         *             name: &quot;doEcho&quot;,
+         *             len: 1
+         *         }, {
+         *             &quot;name&quot;: &quot;multiply&quot;, // name of method
+         *             &quot;len&quot;: 2            // The number of parameters that will be used to create an
+         *                                 // array of data to send to the server side function.
+         *                                 // Ensure the server sends back a Number, not a String.
+         *         }, {
+         *             name: &quot;doForm&quot;,
+         *             formHandler: true, // direct the client to use specialized form handling method
+         *             len: 1
+         *         }]
+         *     }
          *
-         * Note that a Store is not required, a server method can be called at any time.
-         * In the following example a &lt;b&gt;client side&lt;/b&gt; handler is used to call the
+         * __Note:__ A Store is not required, a server method can be called at any time.
+         * In the following example a **client side** handler is used to call the
          * server side method &quot;multiply&quot; in the server-side &quot;TestAction&quot; Class:
          *
-         *    TestAction.multiply(
-         *        2, 4, // pass two arguments to server, so specify len=2
-         *        // callback function after the server is called
-         *        //     result: the result returned by the server
-         *        //     e: Ext.direct.RemotingEvent object
-         *        function(result, e){
-         *            var t = e.getTransaction();
-         *            var action = t.action; // server side Class called
-         *            var method = t.method; // server side method called
-         *            if (e.getStatus()) {
-         *                var answer = Ext.encode(result); // 8
-         *
-         *            } else {
-         *                var msg = e.getMessage(); // failure message
-         *            }
-         *        }
-         *    );
+         *     TestAction.multiply(
+         *         2, 4, // pass two arguments to server, so specify len=2
+         *         // callback function after the server is called
+         *         //     result: the result returned by the server
+         *         //     e: Ext.direct.RemotingEvent object
+         *         function(result, e) {
+         *             var t = e.getTransaction();
+         *             var action = t.action; // server side Class called
+         *             var method = t.method; // server side method called
+         *             if (e.getStatus()) {
+         *                 var answer = Ext.encode(result); // 8
+         *             } else {
+         *                 var msg = e.getMessage(); // failure message
+         *             }
+         *         }
+         *     );
          *
          * In the example above, the server side &quot;multiply&quot; function will be passed two
          * arguments (2 and 4).  The &quot;multiply&quot; method should return the value 8 which will be
-         * available as the &lt;tt&gt;result&lt;/tt&gt; in the example above.
+         * available as the `result` in the example above.
          */
         actions: {}
     },
@@ -142,11 +141,11 @@ Ext.define('Ext.direct.RemotingProvider', {
 <span id='Ext-direct-RemotingProvider-event-beforecall'>    /**
 </span>     * @event beforecall
      * Fires immediately before the client-side sends off the RPC call.
-     * By returning false from an event handler you can prevent the call from
+     * By returning `false` from an event handler you can prevent the call from
      * executing.
      * @param {Ext.direct.RemotingProvider} provider
      * @param {Ext.direct.Transaction} transaction
-     * @param {Object} meta The meta data
+     * @param {Object} meta The meta data.
      */
 
 <span id='Ext-direct-RemotingProvider-event-call'>    /**
@@ -155,7 +154,7 @@ Ext.define('Ext.direct.RemotingProvider', {
      * NOT fire after the response has come back from the call.
      * @param {Ext.direct.RemotingProvider} provider
      * @param {Ext.direct.Transaction} transaction
-     * @param {Object} meta The meta data
+     * @param {Object} meta The meta data.
      */
 
     constructor : function(config) {
@@ -169,8 +168,8 @@ Ext.define('Ext.direct.RemotingProvider', {
         me.callBuffer = [];
     },
 
-    applyNamespace: function(namespace) {
-        if (Ext.isString(namespace)) {
+<span id='Ext-direct-RemotingProvider-method-applyNamespace'>    applyNamespace: function(namespace) {
+</span>        if (Ext.isString(namespace)) {
             return Ext.ns(namespace);
         }
         return namespace || window;
@@ -205,9 +204,9 @@ Ext.define('Ext.direct.RemotingProvider', {
 <span id='Ext-direct-RemotingProvider-method-createHandler'>    /**
 </span>     * Create a handler function for a direct call.
      * @private
-     * @param {String} action The action the call is for
-     * @param {Object} method The details of the method
-     * @return {Function} A JS function that will kick off the call
+     * @param {String} action The action the call is for.
+     * @param {Object} method The details of the method.
+     * @return {Function} A JavaScript function that will kick off the call.
      */
     createHandler : function(action, method) {
         var me = this,
@@ -229,13 +228,13 @@ Ext.define('Ext.direct.RemotingProvider', {
         return handler;
     },
 
-    // inherit docs
-    isConnected: function() {
+<span id='Ext-direct-RemotingProvider-method-isConnected'>    // @inheritdoc
+</span>    isConnected: function() {
         return !!this.connected;
     },
 
-    // inherit docs
-    connect: function() {
+<span id='Ext-direct-RemotingProvider-method-connect'>    // @inheritdoc
+</span>    connect: function() {
         var me = this;
 
         if (me.getUrl()) {
@@ -249,8 +248,8 @@ Ext.define('Ext.direct.RemotingProvider', {
         }
     },
 
-    // inherit docs
-    disconnect: function() {
+<span id='Ext-direct-RemotingProvider-method-disconnect'>    // @inheritdoc
+</span>    disconnect: function() {
         var me = this;
 
         if (me.connected) {
@@ -285,7 +284,7 @@ Ext.define('Ext.direct.RemotingProvider', {
     },
 
 <span id='Ext-direct-RemotingProvider-method-onData'>    /**
-</span>     * React to the ajax request being completed
+</span>     * React to the AJAX request being completed.
      * @private
      */
     onData: function(options, success, response) {
@@ -331,20 +330,20 @@ Ext.define('Ext.direct.RemotingProvider', {
     },
 
 <span id='Ext-direct-RemotingProvider-method-getTransaction'>    /**
-</span>     * Get transaction from XHR options
+</span>     * Get transaction from XHR options.
      * @private
-     * @param {Object} options The options sent to the Ajax request
-     * @return {Ext.direct.Transaction} The transaction, null if not found
+     * @param {Object} options The options sent to the AJAX request.
+     * @return {Ext.direct.Transaction/null} The transaction, `null` if not found.
      */
     getTransaction: function(options) {
-        return options &amp;&amp; options.getTid() ? Ext.direct.Manager.getTransaction(options.getTid()) : null;
+        return options &amp;&amp; options.getTid ? Ext.direct.Manager.getTransaction(options.getTid()) : null;
     },
 
 <span id='Ext-direct-RemotingProvider-method-configureRequest'>    /**
-</span>     * Configure a direct request
+</span>     * Configure a direct request.
      * @private
-     * @param {String} action The action being executed
-     * @param {Object} method The being executed
+     * @param {String} action The action being executed.
+     * @param {Object} method The being executed.
      */
     configureRequest: function(action, method, args) {
         var me = this,
@@ -371,10 +370,10 @@ Ext.define('Ext.direct.RemotingProvider', {
     },
 
 <span id='Ext-direct-RemotingProvider-method-getCallData'>    /**
-</span>     * Gets the Ajax call info for a transaction
+</span>     * Gets the AJAX call info for a transaction.
      * @private
-     * @param {Ext.direct.Transaction} transaction The transaction
-     * @return {Object} The call params
+     * @param {Ext.direct.Transaction} transaction The transaction.
+     * @return {Object} The call params.
      */
     getCallData: function(transaction) {
         return {
@@ -387,9 +386,9 @@ Ext.define('Ext.direct.RemotingProvider', {
     },
 
 <span id='Ext-direct-RemotingProvider-method-sendRequest'>    /**
-</span>     * Sends a request to the server
+</span>     * Sends a request to the server.
      * @private
-     * @param {Object/Array} data The data to send
+     * @param {Object/Array} data The data to send.
      */
     sendRequest : function(data) {
         var me = this,
@@ -425,9 +424,9 @@ Ext.define('Ext.direct.RemotingProvider', {
     },
 
 <span id='Ext-direct-RemotingProvider-method-queueTransaction'>    /**
-</span>     * Add a new transaction to the queue
+</span>     * Add a new transaction to the queue.
      * @private
-     * @param {Ext.direct.Transaction} transaction The transaction
+     * @param {Ext.direct.Transaction} transaction The transaction.
      */
     queueTransaction: function(transaction) {
         var me = this,
@@ -450,7 +449,7 @@ Ext.define('Ext.direct.RemotingProvider', {
     },
 
 <span id='Ext-direct-RemotingProvider-method-combineAndSend'>    /**
-</span>     * Combine any buffered requests and send them off
+</span>     * Combine any buffered requests and send them off.
      * @private
      */
     combineAndSend : function() {
@@ -464,13 +463,13 @@ Ext.define('Ext.direct.RemotingProvider', {
     }
 
 //    /**
-//     * Configure a form submission request
+//     * Configure a form submission request.
 //     * @private
-//     * @param {String} action The action being executed
-//     * @param {Object} method The method being executed
-//     * @param {HTMLElement} form The form being submitted
-//     * @param {Function} callback (optional) A callback to run after the form submits
-//     * @param {Object} scope (optional) A scope to execute the callback in
+//     * @param {String} action The action being executed.
+//     * @param {Object} method The method being executed.
+//     * @param {HTMLElement} form The form being submitted.
+//     * @param {Function} callback (optional) A callback to run after the form submits.
+//     * @param {Object} scope (optional) A scope to execute the callback in.
 //     */
 //    configureFormRequest : function(action, method, form, callback, scope){
 //        var me = this,

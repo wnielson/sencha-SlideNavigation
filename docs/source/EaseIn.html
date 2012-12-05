@@ -24,12 +24,12 @@ Ext.define('Ext.fx.easing.EaseIn', {
     alias: 'easing.ease-in',
 
     config: {
-        exponent: 4,
-        duration: 1500
-    },
+<span id='Ext-fx-easing-EaseIn-cfg-exponent'>        exponent: 4,
+</span><span id='Ext-fx-easing-EaseIn-cfg-duration'>        duration: 1500
+</span>    },
 
-    getValue: function() {
-        var deltaTime = Ext.Date.now() - this.getStartTime(),
+<span id='Ext-fx-easing-EaseIn-method-getValue'>    getValue: function() {
+</span>        var deltaTime = Ext.Date.now() - this.getStartTime(),
             duration = this.getDuration(),
             startValue = this.getStartValue(),
             endValue = this.getEndValue(),

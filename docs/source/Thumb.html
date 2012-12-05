@@ -39,10 +39,10 @@ Ext.define('Ext.slider.Thumb', {
         }
     },
 
-    elementWidth: 0,
-
-    initialize: function() {
-        this.callParent();
+<span id='Ext-slider-Thumb-property-elementWidth'>    elementWidth: 0,
+</span>
+<span id='Ext-slider-Thumb-method-initialize'>    initialize: function() {
+</span>        this.callParent();
 
         this.getDraggable().onBefore({
             dragstart: 'onDragStart',
@@ -51,39 +51,39 @@ Ext.define('Ext.slider.Thumb', {
             scope: this
         });
 
-        this.on('painted', 'onPainted');
+        this.element.on('resize', 'onElementResize', this);
     },
 
-    onDragStart: function() {
-        if (this.isDisabled()) {
+<span id='Ext-slider-Thumb-method-onDragStart'>    onDragStart: function() {
+</span>        if (this.isDisabled()) {
             return false;
         }
 
         this.relayEvent(arguments);
     },
 
-    onDrag: function() {
-        if (this.isDisabled()) {
+<span id='Ext-slider-Thumb-method-onDrag'>    onDrag: function() {
+</span>        if (this.isDisabled()) {
             return false;
         }
 
         this.relayEvent(arguments);
     },
 
-    onDragEnd: function() {
-        if (this.isDisabled()) {
+<span id='Ext-slider-Thumb-method-onDragEnd'>    onDragEnd: function() {
+</span>        if (this.isDisabled()) {
             return false;
         }
 
         this.relayEvent(arguments);
     },
 
-    onPainted: function() {
-        this.elementWidth = this.element.dom.offsetWidth;
+<span id='Ext-slider-Thumb-method-onElementResize'>    onElementResize: function(element, info) {
+</span>        this.elementWidth = info.width;
     },
 
-    getElementWidth: function() {
-        return this.elementWidth;
+<span id='Ext-slider-Thumb-method-getElementWidth'>    getElementWidth: function() {
+</span>        return this.elementWidth;
     }
 });
 </pre>

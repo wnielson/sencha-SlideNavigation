@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-event-publisher-ElementPaint'>/**
+</span> * @private
+ */
+Ext.define('Ext.event.publisher.ElementPaint', {
+
+    extend: 'Ext.event.publisher.Publisher',
+
+    requires: [
+        'Ext.util.PaintMonitor',
+        'Ext.TaskQueue'
+    ],
+
+<span id='Ext-event-publisher-ElementPaint-property-targetType'>    targetType: 'element',
+</span>
+<span id='Ext-event-publisher-ElementPaint-property-handledEvents'>    handledEvents: ['painted'],
+</span>
+<span id='Ext-event-publisher-ElementPaint-method-constructor'>    constructor: function() {
+</span>        this.monitors = {};
+
+        this.callSuper(arguments);
+    },
+
+<span id='Ext-event-publisher-ElementPaint-method-subscribe'>    subscribe: function(target) {
+</span>        var match = target.match(this.idSelectorRegex),
+            subscribers = this.subscribers,
+            id, element;
+
+        if (!match) {
+            return false;
+        }
+
+        id = match[1];
+
+        if (subscribers.hasOwnProperty(id)) {
+            subscribers[id]++;
+            return true;
+        }
+
+        subscribers[id] = 1;
+
+        element = Ext.get(id);
+
+        this.monitors[id] = new Ext.util.PaintMonitor({
+            element: element,
+            callback: this.onElementPainted,
+            scope: this,
+            args: [target, element]
+        });
+
+        return true;
+    },
+
+<span id='Ext-event-publisher-ElementPaint-method-unsubscribe'>    unsubscribe: function(target, eventName, all) {
+</span>        var match = target.match(this.idSelectorRegex),
+            subscribers = this.subscribers,
+            id;
+
+        if (!match) {
+            return false;
+        }
+
+        id = match[1];
+
+        if (!subscribers.hasOwnProperty(id) || (!all &amp;&amp; --subscribers[id] &gt; 0)) {
+            return true;
+        }
+
+        delete subscribers[id];
+
+        this.monitors[id].destroy();
+        delete this.monitors[id];
+
+        return true;
+    },
+
+<span id='Ext-event-publisher-ElementPaint-method-onElementPainted'>    onElementPainted: function(target, element) {
+</span>        Ext.TaskQueue.requestRead('dispatch', this, [target, 'painted', [element]]);
+    }
+});
+</pre>
+</body>
+</html>

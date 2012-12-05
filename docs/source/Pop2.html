@@ -24,21 +24,21 @@ Ext.define('Ext.fx.layout.card.Pop', {
     alias: 'fx.layout.card.pop',
 
     config: {
-        duration: 500,
-
-        inAnimation: {
-            type: 'pop',
+<span id='Ext-fx-layout-card-Pop-cfg-duration'>        duration: 500,
+</span>
+<span id='Ext-fx-layout-card-Pop-cfg-inAnimation'>        inAnimation: {
+</span>            type: 'pop',
             easing: 'ease-out'
         },
-        outAnimation: {
-            type: 'pop',
+<span id='Ext-fx-layout-card-Pop-cfg-outAnimation'>        outAnimation: {
+</span>            type: 'pop',
             easing: 'ease-in',
             out: true
         }
     },
 
-    updateDuration: function(duration) {
-        var halfDuration = duration / 2,
+<span id='Ext-fx-layout-card-Pop-method-updateDuration'>    updateDuration: function(duration) {
+</span>        var halfDuration = duration / 2,
             inAnimation = this.getInAnimation(),
             outAnimation = this.getOutAnimation();
 

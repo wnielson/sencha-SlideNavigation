@@ -22,7 +22,7 @@
  *
  * When instantiated, by default this class immediately begins tracking location information,
  * firing a {@link #locationupdate} event when new location information is available.  To disable this
- * location tracking (which may be battery intensive on mobile devices), set {@link #autoUpdate} to false.
+ * location tracking (which may be battery intensive on mobile devices), set {@link #autoUpdate} to `false`.
  *
  * When this is done, only calls to {@link #updateLocation} will trigger a location retrieval.
  *
@@ -55,11 +55,13 @@ Ext.define('Ext.util.Geolocation', {
     config: {
 <span id='Ext-util-Geolocation-event-locationerror'>        /**
 </span>         * @event locationerror
-         * Raised when a location retrieval operation failed.&lt;br/&gt;
-         * In the case of calling updateLocation, this event will be raised only once.&lt;br/&gt;
-         * If {@link #autoUpdate} is set to true, this event could be raised repeatedly.
-         * The first error is relative to the moment {@link #autoUpdate} was set to true
-         * (or this {@link Ext.util.Geolocation} was initialized with the {@link #autoUpdate} config option set to true).
+         * Raised when a location retrieval operation failed.
+         *
+         * In the case of calling updateLocation, this event will be raised only once.
+         *
+         * If {@link #autoUpdate} is set to `true`, this event could be raised repeatedly.
+         * The first error is relative to the moment {@link #autoUpdate} was set to `true`
+         * (or this {@link Ext.util.Geolocation} was initialized with the {@link #autoUpdate} config option set to `true`).
          * Subsequent errors are relative to the moment when the device determines that it's position has changed.
          * @param {Ext.util.Geolocation} this
          * @param {Boolean} timeout
@@ -67,11 +69,11 @@ Ext.define('Ext.util.Geolocation', {
          * @param {Boolean} permissionDenied
          * Boolean indicating the user denied the location request
          * @param {Boolean} locationUnavailable
-         * Boolean indicating that the location of the device could not be determined.&lt;br/&gt;
+         * Boolean indicating that the location of the device could not be determined.
          * For instance, one or more of the location providers used in the location acquisition
          * process reported an internal error that caused the process to fail entirely.
-         * @param {String} message
-         * An error message describing the details of the error encountered.&lt;br/&gt;
+         * @param {String} message An error message describing the details of the error encountered.
+         *
          * This attribute is primarily intended for debugging and should not be used
          * directly in an application user interface.
          */
@@ -81,19 +83,19 @@ Ext.define('Ext.util.Geolocation', {
          * Raised when a location retrieval operation has been completed successfully.
          * @param {Ext.util.Geolocation} this
          * Retrieve the current location information from the GeoLocation object by using the read-only
-         * properties latitude, longitude, accuracy, altitude, altitudeAccuracy, heading, and speed.
+         * properties: {@link #latitude}, {@link #longitude}, {@link #accuracy}, {@link #altitude}, {@link #altitudeAccuracy}, {@link #heading}, and {@link #speed}.
          */
 
 <span id='Ext-util-Geolocation-cfg-autoUpdate'>        /**
 </span>         * @cfg {Boolean} autoUpdate
-         * When set to true, continually monitor the location of the device (beginning immediately)
-         * and fire {@link #locationupdate}/{@link #locationerror} events.
+         * When set to `true`, continually monitor the location of the device (beginning immediately)
+         * and fire {@link #locationupdate} and {@link #locationerror} events.
          */
         autoUpdate: true,
 
 <span id='Ext-util-Geolocation-cfg-frequency'>        /**
 </span>         * @cfg {Number} frequency
-         * The frequency of each update if {@link #autoUpdate} is set to true.
+         * The frequency of each update if {@link #autoUpdate} is set to `true`.
          */
         frequency: 10000,
 
@@ -101,6 +103,7 @@ Ext.define('Ext.util.Geolocation', {
 </span>         * Read-only property representing the last retrieved
          * geographical coordinate specified in degrees.
          * @type Number
+         * @readonly
          */
         latitude: null,
 
@@ -108,34 +111,42 @@ Ext.define('Ext.util.Geolocation', {
 </span>         * Read-only property representing the last retrieved
          * geographical coordinate specified in degrees.
          * @type Number
+         * @readonly
          */
         longitude: null,
 
 <span id='Ext-util-Geolocation-property-accuracy'>        /**
 </span>         * Read-only property representing the last retrieved
          * accuracy level of the latitude and longitude coordinates,
-         * specified in meters.&lt;br/&gt;
-         * This will always be a non-negative number.&lt;br/&gt;
+         * specified in meters.
+         *
+         * This will always be a non-negative number.
+         *
          * This corresponds to a 95% confidence level.
          * @type Number
+         * @readonly
          */
         accuracy: null,
 
 <span id='Ext-util-Geolocation-property-altitude'>        /**
 </span>         * Read-only property representing the last retrieved
          * height of the position, specified in meters above the ellipsoid
-         * &lt;a href=&quot;http://dev.w3.org/geo/api/spec-source.html#ref-wgs&quot;&gt;[WGS84]&lt;/a&gt;.
+         * [WGS84](http://dev.w3.org/geo/api/spec-source.html#ref-wgs).
          * @type Number
+         * @readonly
          */
         altitude: null,
 
 <span id='Ext-util-Geolocation-property-altitudeAccuracy'>        /**
 </span>         * Read-only property representing the last retrieved
-         * accuracy level of the altitude coordinate, specified in meters.&lt;br/&gt;
+         * accuracy level of the altitude coordinate, specified in meters.
+         *
          * If altitude is not null then this will be a non-negative number.
-         * Otherwise this returns null.&lt;br/&gt;
+         * Otherwise this returns `null`.
+         *
          * This corresponds to a 95% confidence level.
          * @type Number
+         * @readonly
          */
         altitudeAccuracy: null,
 
@@ -143,19 +154,24 @@ Ext.define('Ext.util.Geolocation', {
 </span>         * Read-only property representing the last retrieved
          * direction of travel of the hosting device,
          * specified in non-negative degrees between 0 and 359,
-         * counting clockwise relative to the true north.&lt;br/&gt;
-         * If speed is 0 (device is stationary), then this returns NaN
+         * counting clockwise relative to the true north.
+         *
+         * If speed is 0 (device is stationary), then this returns `NaN`.
          * @type Number
+         * @readonly
          */
         heading: null,
 
 <span id='Ext-util-Geolocation-property-speed'>        /**
 </span>         * Read-only property representing the last retrieved
-         * current ground speed of the device, specified in meters per second.&lt;br/&gt;
-         * If this feature is unsupported by the device, this returns null.&lt;br/&gt;
+         * current ground speed of the device, specified in meters per second.
+         *
+         * If this feature is unsupported by the device, this returns `null`.
+         *
          * If the device is stationary, this returns 0,
          * otherwise it returns a non-negative number.
          * @type Number
+         * @readonly
          */
         speed: null,
 
@@ -163,16 +179,17 @@ Ext.define('Ext.util.Geolocation', {
 </span>         * Read-only property representing when the last retrieved
          * positioning information was acquired by the device.
          * @type Date
+         * @readonly
          */
         timestamp: null,
 
         //PositionOptions interface
 <span id='Ext-util-Geolocation-cfg-allowHighAccuracy'>        /**
 </span>         * @cfg {Boolean} allowHighAccuracy
-         * When set to true, provide a hint that the application would like to receive
+         * When set to `true`, provide a hint that the application would like to receive
          * the best possible results. This may result in slower response times or increased power consumption.
          * The user might also deny this capability, or the device might not be able to provide more accurate
-         * results than if this option was set to false.
+         * results than if this option was set to `false`.
          */
         allowHighAccuracy: false,
 
@@ -181,13 +198,16 @@ Ext.define('Ext.util.Geolocation', {
          * The maximum number of milliseconds allowed to elapse between a location update operation
          * and the corresponding {@link #locationupdate} event being raised.  If a location was not successfully
          * acquired before the given timeout elapses (and no other internal errors have occurred in this interval),
-         * then a {@link #locationerror} event will be raised indicating a timeout as the cause.&lt;br/&gt;
-         * Note that the time that is spent obtaining the user permission is &lt;b&gt;not&lt;/b&gt; included in the period
-         * covered by the timeout.  The timeout attribute only applies to the location acquisition operation.&lt;br/&gt;
-         * In the case of calling updateLocation, the {@link #locationerror} event will be raised only once.&lt;br/&gt;
-         * If {@link #autoUpdate} is set to true, the {@link #locationerror} event could be raised repeatedly.
-         * The first timeout is relative to the moment {@link #autoUpdate} was set to true
-         * (or this {@link Ext.util.Geolocation} was initialized with the {@link #autoUpdate} config option set to true).
+         * then a {@link #locationerror} event will be raised indicating a timeout as the cause.
+         *
+         * Note that the time that is spent obtaining the user permission is **not** included in the period
+         * covered by the timeout.  The `timeout` attribute only applies to the location acquisition operation.
+         *
+         * In the case of calling `updateLocation`, the {@link #locationerror} event will be raised only once.
+         *
+         * If {@link #autoUpdate} is set to `true`, the {@link #locationerror} event could be raised repeatedly.
+         * The first timeout is relative to the moment {@link #autoUpdate} was set to `true`
+         * (or this {@link Ext.util.Geolocation} was initialized with the {@link #autoUpdate} config option set to `true`).
          * Subsequent timeouts are relative to the moment when the device determines that it's position has changed.
          */
 
@@ -196,39 +216,42 @@ Ext.define('Ext.util.Geolocation', {
 <span id='Ext-util-Geolocation-cfg-maximumAge'>        /**
 </span>         * @cfg {Number} maximumAge
          * This option indicates that the application is willing to accept cached location information whose age
-         * is no greater than the specified time in milliseconds. If maximumAge is set to 0, an attempt to retrieve
-         * new location information is made immediately.&lt;br/&gt;
-         * Setting the maximumAge to Infinity returns a cached position regardless of its age.&lt;br/&gt;
+         * is no greater than the specified time in milliseconds. If `maximumAge` is set to 0, an attempt to retrieve
+         * new location information is made immediately.
+         *
+         * Setting the `maximumAge` to Infinity returns a cached position regardless of its age.
+         *
          * If the device does not have cached location information available whose age is no
-         * greater than the specified maximumAge, then it must acquire new location information.&lt;br/&gt;
+         * greater than the specified `maximumAge`, then it must acquire new location information.
+         *
          * For example, if location information no older than 10 minutes is required, set this property to 600000.
          */
         maximumAge: 0,
 
-        // @private
-        provider : undefined
+<span id='Ext-util-Geolocation-cfg-provider'>        // @private
+</span>        provider : undefined
     },
 
-    updateMaximumAge: function() {
-        if (this.watchOperation) {
+<span id='Ext-util-Geolocation-method-updateMaximumAge'>    updateMaximumAge: function() {
+</span>        if (this.watchOperation) {
             this.updateWatchOperation();
         }
     },
 
-    updateTimeout: function() {
-        if (this.watchOperation) {
+<span id='Ext-util-Geolocation-method-updateTimeout'>    updateTimeout: function() {
+</span>        if (this.watchOperation) {
             this.updateWatchOperation();
         }
     },
 
-    updateAllowHighAccuracy: function() {
-        if (this.watchOperation) {
+<span id='Ext-util-Geolocation-method-updateAllowHighAccuracy'>    updateAllowHighAccuracy: function() {
+</span>        if (this.watchOperation) {
             this.updateWatchOperation();
         }
     },
 
-    applyProvider: function(config) {
-        if (Ext.feature.has.Geolocation) {
+<span id='Ext-util-Geolocation-method-applyProvider'>    applyProvider: function(config) {
+</span>        if (Ext.feature.has.Geolocation) {
             if (!config) {
                 if (navigator &amp;&amp; navigator.geolocation) {
                     config = navigator.geolocation;
@@ -244,8 +267,8 @@ Ext.define('Ext.util.Geolocation', {
         return config;
     },
 
-    updateAutoUpdate: function(newAutoUpdate, oldAutoUpdate) {
-        var me = this,
+<span id='Ext-util-Geolocation-method-updateAutoUpdate'>    updateAutoUpdate: function(newAutoUpdate, oldAutoUpdate) {
+</span>        var me = this,
             provider = me.getProvider();
 
         if (oldAutoUpdate &amp;&amp; provider) {
@@ -268,8 +291,8 @@ Ext.define('Ext.util.Geolocation', {
         }
     },
 
-    // @private
-    updateWatchOperation: function() {
+<span id='Ext-util-Geolocation-method-updateWatchOperation'>    // @private
+</span>    updateWatchOperation: function() {
         var me = this,
             provider = me.getProvider();
 
@@ -293,21 +316,24 @@ Ext.define('Ext.util.Geolocation', {
 
 <span id='Ext-util-Geolocation-method-updateLocation'>    /**
 </span>     * Executes a onetime location update operation,
-     * raising either a {@link #locationupdate} or {@link #locationerror} event.&lt;br/&gt;
+     * raising either a {@link #locationupdate} or {@link #locationerror} event.
+     *
      * Does not interfere with or restart ongoing location monitoring.
      * @param {Function} callback
-     * A callback method to be called when the location retrieval has been completed.&lt;br/&gt;
-     * Will be called on both success and failure.&lt;br/&gt;
-     * The method will be passed one parameter, {@link Ext.util.Geolocation} (&lt;b&gt;this&lt;/b&gt; reference),
-     * set to null on failure.
-     * &lt;pre&gt;&lt;code&gt;
-     geo.updateLocation(function (geo) {
-     alert('Latitude: ' + (geo != null ? geo.latitude : 'failed'));
-     });
-     &lt;/code&gt;&lt;/pre&gt;
-     * @param {Object} scope (optional)
-     * (optional) The scope (&lt;b&gt;this&lt;/b&gt; reference) in which the handler function is executed.
-     * &lt;b&gt;If omitted, defaults to the object which fired the event.&lt;/b&gt;
+     * A callback method to be called when the location retrieval has been completed.
+     *
+     * Will be called on both success and failure.
+     *
+     * The method will be passed one parameter, {@link Ext.util.Geolocation} (**this** reference),
+     * set to `null` on failure.
+     *
+     *     geo.updateLocation(function (geo) {
+     *         alert('Latitude: ' + (geo !== null ? geo.latitude : 'failed'));
+     *     });
+     *
+     * @param {Object} scope (optional) The scope (**this** reference) in which the handler function is executed.
+     *
+     * **If omitted, defaults to the object which fired the event.**
      * &lt;!--positonOptions undocumented param, see W3C spec--&gt;
      */
     updateLocation: function(callback, scope, positionOptions) {
@@ -352,8 +378,8 @@ Ext.define('Ext.util.Geolocation', {
         }
     },
 
-    // @private
-    fireUpdate: function(position) {
+<span id='Ext-util-Geolocation-method-fireUpdate'>    // @private
+</span>    fireUpdate: function(position) {
         var me = this,
             coords = position.coords;
 
@@ -373,8 +399,8 @@ Ext.define('Ext.util.Geolocation', {
         me.fireEvent('locationupdate', me);
     },
 
-    // @private
-    fireError: function(error) {
+<span id='Ext-util-Geolocation-method-fireError'>    // @private
+</span>    fireError: function(error) {
         var errorCode = error.code;
         this.fireEvent('locationerror', this,
             errorCode == error.TIMEOUT,
@@ -384,12 +410,12 @@ Ext.define('Ext.util.Geolocation', {
         );
     },
 
-    // @private
-    parseOptions: function() {
+<span id='Ext-util-Geolocation-method-parseOptions'>    // @private
+</span>    parseOptions: function() {
         var timeout = this.getTimeout(),
             ret = {
                 maximumAge: this.getMaximumAge(),
-                allowHighAccuracy: this.getAllowHighAccuracy()
+                enableHighAccuracy: this.getAllowHighAccuracy()
             };
 
         //Google doesn't like Infinity
@@ -399,8 +425,8 @@ Ext.define('Ext.util.Geolocation', {
         return ret;
     },
 
-    destroy : function() {
-        this.updateAutoUpdate(null);
+<span id='Ext-util-Geolocation-method-destroy'>    destroy : function() {
+</span>        this.setAutoUpdate(false);
     }
 });
 </pre>

@@ -24,10 +24,10 @@ Ext.define('Ext.fx.layout.card.Flip', {
     alias: 'fx.layout.card.flip',
 
     config: {
-        duration: 500,
-
-        inAnimation: {
-            type: 'flip',
+<span id='Ext-fx-layout-card-Flip-cfg-duration'>        duration: 500,
+</span>
+<span id='Ext-fx-layout-card-Flip-cfg-inAnimation'>        inAnimation: {
+</span>            type: 'flip',
             half: true,
             easing: 'ease-out',
             before: {
@@ -37,8 +37,8 @@ Ext.define('Ext.fx.layout.card.Flip', {
                 'backface-visibility': null
             }
         },
-        outAnimation: {
-            type: 'flip',
+<span id='Ext-fx-layout-card-Flip-cfg-outAnimation'>        outAnimation: {
+</span>            type: 'flip',
             half: true,
             easing: 'ease-in',
             before: {
@@ -51,8 +51,8 @@ Ext.define('Ext.fx.layout.card.Flip', {
         }
     },
 
-    updateDuration: function(duration) {
-        var halfDuration = duration / 2,
+<span id='Ext-fx-layout-card-Flip-method-updateDuration'>    updateDuration: function(duration) {
+</span>        var halfDuration = duration / 2,
             inAnimation = this.getInAnimation(),
             outAnimation = this.getOutAnimation();
 

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-util-translatable-Abstract'>/**
+</span> * @private
+ *
+ * The abstract class. Sub-classes are expected, at the very least, to implement translation logics inside
+ * the 'translate' method
+ */
+Ext.define('Ext.util.translatable.Abstract', {
+    extend: 'Ext.Evented',
+
+    requires: ['Ext.fx.easing.Linear'],
+
+    config: {
+<span id='Ext-util-translatable-Abstract-cfg-easing'>        easing: null,
+</span>
+<span id='Ext-util-translatable-Abstract-cfg-easingX'>        easingX: null,
+</span>
+<span id='Ext-util-translatable-Abstract-cfg-easingY'>        easingY: null,
+</span>
+<span id='Ext-util-translatable-Abstract-cfg-fps'>        fps: Ext.os.is.Android4 ? 50 : 60
+</span>    },
+
+<span id='Ext-util-translatable-Abstract-event-animationstart'>    /**
+</span>     * @event animationstart
+     * Fires whenever the animation is started
+     * @param {Ext.util.translatable.Abstract} this
+     * @param {Number} x The current translation on the x axis
+     * @param {Number} y The current translation on the y axis
+     */
+
+<span id='Ext-util-translatable-Abstract-event-animationframe'>    /**
+</span>     * @event animationframe
+     * Fires for each animation frame
+     * @param {Ext.util.translatable.Abstract} this
+     * @param {Number} x The new translation on the x axis
+     * @param {Number} y The new translation on the y axis
+     */
+
+<span id='Ext-util-translatable-Abstract-event-animationend'>    /**
+</span>     * @event animationend
+     * Fires whenever the animation is ended
+     * @param {Ext.util.translatable.Abstract} this
+     * @param {Number} x The current translation on the x axis
+     * @param {Number} y The current translation on the y axis
+     */
+
+    x: 0,
+
+<span id='Ext-util-translatable-Abstract-property-y'>    y: 0,
+</span>
+<span id='Ext-util-translatable-Abstract-property-activeEasingX'>    activeEasingX: null,
+</span>
+<span id='Ext-util-translatable-Abstract-property-activeEasingY'>    activeEasingY: null,
+</span>
+<span id='Ext-util-translatable-Abstract-property-isAnimating'>    isAnimating: false,
+</span>
+<span id='Ext-util-translatable-Abstract-property-isTranslatable'>    isTranslatable: true,
+</span>
+<span id='Ext-util-translatable-Abstract-method-constructor'>    constructor: function(config) {
+</span>        this.doAnimationFrame = Ext.Function.bind(this.doAnimationFrame, this);
+
+        this.initConfig(config);
+    },
+
+<span id='Ext-util-translatable-Abstract-method-factoryEasing'>    factoryEasing: function(easing) {
+</span>        return Ext.factory(easing, Ext.fx.easing.Linear, null, 'easing');
+    },
+
+<span id='Ext-util-translatable-Abstract-method-applyEasing'>    applyEasing: function(easing) {
+</span>        if (!this.getEasingX()) {
+            this.setEasingX(this.factoryEasing(easing));
+        }
+
+        if (!this.getEasingY()) {
+            this.setEasingY(this.factoryEasing(easing));
+        }
+    },
+
+<span id='Ext-util-translatable-Abstract-method-applyEasingX'>    applyEasingX: function(easing) {
+</span>        return this.factoryEasing(easing);
+    },
+
+<span id='Ext-util-translatable-Abstract-method-applyEasingY'>    applyEasingY: function(easing) {
+</span>        return this.factoryEasing(easing);
+    },
+
+<span id='Ext-util-translatable-Abstract-method-updateFps'>    updateFps: function(fps) {
+</span>        this.animationInterval = 1000 / fps;
+    },
+
+<span id='Ext-util-translatable-Abstract-method-doTranslate'>    doTranslate: Ext.emptyFn,
+</span>
+<span id='Ext-util-translatable-Abstract-method-translate'>    translate: function(x, y, animation) {
+</span>        if (animation) {
+            return this.translateAnimated(x, y, animation);
+        }
+
+        if (this.isAnimating) {
+            this.stopAnimation();
+        }
+
+        if (!isNaN(x) &amp;&amp; typeof x == 'number') {
+            this.x = x;
+        }
+
+        if (!isNaN(y) &amp;&amp; typeof y == 'number') {
+            this.y = y;
+        }
+        this.doTranslate(x, y);
+    },
+
+<span id='Ext-util-translatable-Abstract-method-translateAxis'>    translateAxis: function(axis, value, animation) {
+</span>        var x, y;
+
+        if (axis == 'x') {
+            x = value;
+        }
+        else {
+            y = value;
+        }
+
+        return this.translate(x, y, animation);
+    },
+
+<span id='Ext-util-translatable-Abstract-method-animate'>    animate: function(easingX, easingY) {
+</span>        this.activeEasingX = easingX;
+        this.activeEasingY = easingY;
+
+        this.isAnimating = true;
+        this.lastX = null;
+        this.lastY = null;
+
+        this.animationFrameId = requestAnimationFrame(this.doAnimationFrame);
+
+        this.fireEvent('animationstart', this, this.x, this.y);
+        return this;
+    },
+
+<span id='Ext-util-translatable-Abstract-method-translateAnimated'>    translateAnimated: function(x, y, animation) {
+</span>        if (!Ext.isObject(animation)) {
+            animation = {};
+        }
+
+        if (this.isAnimating) {
+            this.stopAnimation();
+        }
+
+        var now = Ext.Date.now(),
+            easing = animation.easing,
+            easingX = (typeof x == 'number') ? (animation.easingX || easing || this.getEasingX() || true) : null,
+            easingY = (typeof y == 'number') ? (animation.easingY || easing || this.getEasingY() || true) : null;
+
+        if (easingX) {
+            easingX = this.factoryEasing(easingX);
+            easingX.setStartTime(now);
+            easingX.setStartValue(this.x);
+            easingX.setEndValue(x);
+
+            if ('duration' in animation) {
+                easingX.setDuration(animation.duration);
+            }
+        }
+
+        if (easingY) {
+            easingY = this.factoryEasing(easingY);
+            easingY.setStartTime(now);
+            easingY.setStartValue(this.y);
+            easingY.setEndValue(y);
+
+            if ('duration' in animation) {
+                easingY.setDuration(animation.duration);
+            }
+        }
+
+        return this.animate(easingX, easingY);
+    },
+
+<span id='Ext-util-translatable-Abstract-method-doAnimationFrame'>    doAnimationFrame: function() {
+</span>        var me = this,
+            easingX = me.activeEasingX,
+            easingY = me.activeEasingY,
+            now = Date.now(),
+            x, y;
+
+        this.animationFrameId = requestAnimationFrame(this.doAnimationFrame);
+
+        if (!me.isAnimating) {
+            return;
+        }
+
+        me.lastRun = now;
+
+        if (easingX === null &amp;&amp; easingY === null) {
+            me.stopAnimation();
+            return;
+        }
+
+        if (easingX !== null) {
+            me.x = x = Math.round(easingX.getValue());
+
+            if (easingX.isEnded) {
+                me.activeEasingX = null;
+                me.fireEvent('axisanimationend', me, 'x', x);
+            }
+        }
+        else {
+            x = me.x;
+        }
+
+        if (easingY !== null) {
+            me.y = y = Math.round(easingY.getValue());
+
+            if (easingY.isEnded) {
+                me.activeEasingY = null;
+                me.fireEvent('axisanimationend', me, 'y', y);
+            }
+        }
+        else {
+            y = me.y;
+        }
+
+        if (me.lastX !== x || me.lastY !== y) {
+            me.doTranslate(x, y);
+
+            me.lastX = x;
+            me.lastY = y;
+        }
+
+        me.fireEvent('animationframe', me, x, y);
+    },
+
+
+<span id='Ext-util-translatable-Abstract-method-stopAnimation'>    stopAnimation: function() {
+</span>        if (!this.isAnimating) {
+            return;
+        }
+
+        this.activeEasingX = null;
+        this.activeEasingY = null;
+
+        this.isAnimating = false;
+
+        cancelAnimationFrame(this.animationFrameId);
+        this.fireEvent('animationend', this, this.x, this.y);
+    },
+
+<span id='Ext-util-translatable-Abstract-method-refresh'>    refresh: function() {
+</span>        this.translate(this.x, this.y);
+    },
+
+<span id='Ext-util-translatable-Abstract-method-destroy'>    destroy: function() {
+</span>        if (this.isAnimating) {
+            this.stopAnimation();
+        }
+
+        this.callParent(arguments);
+    }
+});</pre>
+</body>
+</html>

@@ -34,7 +34,7 @@
  *         }
  *     });
  *
- * Four fields will have been created for the User Model - name, email, age and gender. Note that we specified a couple
+ * Four fields will have been created for the User Model - name, email, age, and gender. Note that we specified a couple
  * of different formats here; if we only pass in the string name of the field (as with name and email), the field is set
  * up with the 'auto' type. It's as if we'd done this instead:
  *
@@ -114,8 +114,8 @@ Ext.define('Ext.data.Field', {
     requires: ['Ext.data.Types', 'Ext.data.SortTypes'],
     alias: 'data.field',
 
-    isField: true,
-
+<span id='Ext-data-Field-property-isField'>    isField: true,
+</span>
     config: {
 <span id='Ext-data-Field-cfg-name'>        /**
 </span>         * @cfg {String} name
@@ -222,7 +222,7 @@ Ext.define('Ext.data.Field', {
          * Used when converting received data into a Date when the {@link #type} is specified as `&quot;date&quot;`.
          *
          * A format string for the {@link Ext.Date#parse Ext.Date.parse} function, or &quot;timestamp&quot; if the value provided by
-         * the Reader is a UNIX timestamp, or &quot;time&quot; if the value provided by the Reader is a javascript millisecond
+         * the Reader is a UNIX timestamp, or &quot;time&quot; if the value provided by the Reader is a JavaScript millisecond
          * timestamp. See {@link Ext.Date}.
          */
         dateFormat: null,
@@ -231,16 +231,16 @@ Ext.define('Ext.data.Field', {
 </span>         * @cfg {Boolean} allowNull
          *
          * Use when converting received data into a boolean, string or number type (either int or float). If the value cannot be
-         * parsed, null will be used if allowNull is true, otherwise the value will be 0. Defaults to true.
+         * parsed, `null` will be used if `allowNull` is `true`, otherwise the value will be 0.
          */
         allowNull: true,
 
 <span id='Ext-data-Field-cfg-defaultValue'>        /**
-</span>         * @cfg {Object} defaultValue
+</span>         * @cfg {Object} [defaultValue='']
          *
          * The default value used **when a Model is being created by a {@link Ext.data.reader.Reader Reader}**
          * when the item referenced by the `{@link Ext.data.Field#mapping mapping}` does not exist in the data object
-         * (i.e. undefined). Defaults to &quot;&quot;.
+         * (i.e. `undefined`).
          */
         defaultValue: undefined,
 
@@ -255,7 +255,7 @@ Ext.define('Ext.data.Field', {
          *
          * - {@link Ext.data.reader.Json}
          *
-         *   The mapping is a string containing the javascript expression to reference the data from an element of the data2
+         *   The mapping is a string containing the JavaScript expression to reference the data from an element of the data2
          *   item's {@link Ext.data.reader.Json#rootProperty rootProperty} Array. Defaults to the field name.
          *
          * - {@link Ext.data.reader.Xml}
@@ -301,7 +301,7 @@ Ext.define('Ext.data.Field', {
 <span id='Ext-data-Field-cfg-sortDir'>        /**
 </span>         * @cfg {String} sortDir
          *
-         * Initial direction to sort (`&quot;ASC&quot;` or `&quot;DESC&quot;`). Defaults to `&quot;ASC&quot;`.
+         * Initial direction to sort (`&quot;ASC&quot;` or `&quot;DESC&quot;`).
          */
         sortDir : &quot;ASC&quot;,
 
@@ -309,27 +309,29 @@ Ext.define('Ext.data.Field', {
 </span>         * @cfg {Boolean} allowBlank
          * @private
          *
-         * Used for validating a {@link Ext.data.Model model}. Defaults to true. An empty value here will cause
-         * {@link Ext.data.Model}.{@link Ext.data.Model#isValid isValid} to evaluate to false.
+         * Used for validating a {@link Ext.data.Model model}. An empty value here will cause
+         * {@link Ext.data.Model}.{@link Ext.data.Model#isValid isValid} to evaluate to `false`.
          */
         allowBlank : true,
 
 <span id='Ext-data-Field-cfg-persist'>        /**
 </span>         * @cfg {Boolean} persist
          *
-         * False to exclude this field from being synchronized with the server or localstorage.
+         * `false` to exclude this field from being synchronized with the server or localStorage.
          * This option is useful when model fields are used to keep state on the client but do
-         * not need to be persisted to the server. Defaults to true.
+         * not need to be persisted to the server.
          */
         persist: true,
 
-        // Used in LocalStorage stuff
-        encode: null,
-        decode: null
-    },
+<span id='Ext-data-Field-cfg-encode'>        // Used in LocalStorage stuff
+</span>        encode: null,
+<span id='Ext-data-Field-cfg-decode'>        decode: null,
+</span>
+<span id='Ext-data-Field-cfg-bubbleEvents'>        bubbleEvents: 'action'
+</span>    },
 
-    constructor : function(config) {
-        // This adds support for just passing a string used as the field name
+<span id='Ext-data-Field-method-constructor'>    constructor : function(config) {
+</span>        // This adds support for just passing a string used as the field name
         if (Ext.isString(config)) {
             config = {name: config};
         }
@@ -337,8 +339,8 @@ Ext.define('Ext.data.Field', {
         this.initConfig(config);
     },
 
-    applyType: function(type) {
-        var types = Ext.data.Types,
+<span id='Ext-data-Field-method-applyType'>    applyType: function(type) {
+</span>        var types = Ext.data.Types,
             autoType = types.AUTO;
 
         if (type) {
@@ -353,15 +355,15 @@ Ext.define('Ext.data.Field', {
         return autoType;
     },
 
-    updateType: function(newType, oldType) {
-        var convert = this.getConvert();
+<span id='Ext-data-Field-method-updateType'>    updateType: function(newType, oldType) {
+</span>        var convert = this.getConvert();
         if (oldType &amp;&amp; convert === oldType.convert) {
             this.setConvert(newType.convert);
         }
     },
 
-    applySortType: function(sortType) {
-        var sortTypes = Ext.data.SortTypes,
+<span id='Ext-data-Field-method-applySortType'>    applySortType: function(sortType) {
+</span>        var sortTypes = Ext.data.SortTypes,
             type = this.getType(),
             defaultSortType = type.sortType;
 
@@ -377,8 +379,8 @@ Ext.define('Ext.data.Field', {
         return defaultSortType;
     },
 
-    applyConvert: function(convert) {
-        var defaultConvert = this.getType().convert;
+<span id='Ext-data-Field-method-applyConvert'>    applyConvert: function(convert) {
+</span>        var defaultConvert = this.getType().convert;
         if (convert &amp;&amp; convert !== defaultConvert) {
             this._hasCustomConvert = true;
             return convert;
@@ -388,8 +390,8 @@ Ext.define('Ext.data.Field', {
         }
     },
 
-    hasCustomConvert: function() {
-        return this._hasCustomConvert;
+<span id='Ext-data-Field-method-hasCustomConvert'>    hasCustomConvert: function() {
+</span>        return this._hasCustomConvert;
     }
 
     // &lt;deprecated product=touch since=2.0&gt;

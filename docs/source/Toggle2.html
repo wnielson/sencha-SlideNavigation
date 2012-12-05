@@ -41,38 +41,76 @@ Ext.define('Ext.slider.Toggle', {
         maxValueCls: 'x-toggle-on'
     },
 
-    initialize: function() {
-        this.callParent();
+<span id='Ext-slider-Toggle-method-initialize'>    initialize: function() {
+</span>        this.callParent();
 
         this.on({
             change: 'onChange'
         });
     },
 
-    applyMinValue: function() {
-        return 0;
+<span id='Ext-slider-Toggle-method-applyMinValue'>    applyMinValue: function() {
+</span>        return 0;
     },
 
-    applyMaxValue: function() {
-        return 1;
+<span id='Ext-slider-Toggle-method-applyMaxValue'>    applyMaxValue: function() {
+</span>        return 1;
     },
 
-    applyIncrement: function() {
-        return 1;
+<span id='Ext-slider-Toggle-method-applyIncrement'>    applyIncrement: function() {
+</span>        return 1;
     },
 
-    setValue: function(newValue, oldValue) {
-        this.callParent(arguments);
+<span id='Ext-slider-Toggle-method-updateMinValueCls'>    updateMinValueCls: function(newCls, oldCls) {
+</span>        var element = this.element;
+
+        if (oldCls &amp;&amp; element.hasCls(oldCls)) {
+            element.replaceCls(oldCls, newCls);
+        }
+    },
+
+<span id='Ext-slider-Toggle-method-updateMaxValueCls'>    updateMaxValueCls: function(newCls, oldCls) {
+</span>        var element = this.element;
+
+        if (oldCls &amp;&amp; element.hasCls(oldCls)) {
+            element.replaceCls(oldCls, newCls);
+        }
+    },
+
+<span id='Ext-slider-Toggle-method-setValue'>    setValue: function(newValue, oldValue) {
+</span>        this.callParent(arguments);
         this.onChange(this, this.getThumbs()[0], newValue, oldValue);
     },
 
-    onChange: function(me, thumb, newValue, oldValue) {
-        var isOn = newValue &gt; 0,
+<span id='Ext-slider-Toggle-method-onChange'>    onChange: function(me, thumb, newValue, oldValue) {
+</span>        var isOn = newValue &gt; 0,
             onCls = me.getMaxValueCls(),
             offCls = me.getMinValueCls();
 
         this.element.addCls(isOn ? onCls : offCls);
         this.element.removeCls(isOn ? offCls : onCls);
+    },
+
+<span id='Ext-slider-Toggle-method-toggle'>    toggle: function() {
+</span>        var value = this.getValue();
+        this.setValue((value == 1) ? 0 : 1);
+
+        return this;
+    },
+
+<span id='Ext-slider-Toggle-method-onTap'>    onTap: function() {
+</span>        if (this.isDisabled() || this.getReadOnly()) {
+            return;
+        }
+
+        var oldValue = this.getValue(),
+            newValue = (oldValue == 1) ? 0 : 1,
+            thumb = this.getThumb(0);
+
+        this.setIndexValue(0, newValue, this.getAnimation());
+        this.refreshThumbConstraints(thumb);
+
+        this.fireEvent('change', this, thumb, newValue, oldValue);
     }
 });
 </pre>

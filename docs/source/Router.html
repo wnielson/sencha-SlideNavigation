@@ -34,7 +34,8 @@ Ext.define('Ext.app.Router', {
 
     config: {
 <span id='Ext-app-Router-cfg-routes'>        /**
-</span>         * @cfg {Array} routes The set of routes contained within this Router. Read only
+</span>         * @cfg {Array} routes The set of routes contained within this Router.
+         * @readonly
          */
         routes: [],
 
@@ -46,13 +47,13 @@ Ext.define('Ext.app.Router', {
         }
     },
 
-    constructor: function(config) {
-        this.initConfig(config);
+<span id='Ext-app-Router-method-constructor'>    constructor: function(config) {
+</span>        this.initConfig(config);
     },
 
 <span id='Ext-app-Router-method-connect'>    /**
-</span>     * Connects a url-based route to a controller/action pair plus additional params
-     * @param {String} url The url to recognize
+</span>     * Connects a url-based route to a controller/action pair plus additional params.
+     * @param {String} url The url to recognize.
      */
     connect: function(url, params) {
         params = Ext.apply({url: url}, params || {}, this.getDefaults());
@@ -65,9 +66,9 @@ Ext.define('Ext.app.Router', {
 
 <span id='Ext-app-Router-method-recognize'>    /**
 </span>     * Recognizes a url string connected to the Router, return the controller/action pair plus any additional
-     * config associated with it
-     * @param {String} url The url to recognize
-     * @return {Object/undefined} If the url was recognized, the controller and action to call, else undefined
+     * config associated with it.
+     * @param {String} url The url to recognize.
+     * @return {Object/undefined} If the url was recognized, the controller and action to call, else `undefined`.
      */
     recognize: function(url) {
         var routes = this.getRoutes(),
@@ -87,12 +88,12 @@ Ext.define('Ext.app.Router', {
 
 <span id='Ext-app-Router-method-draw'>    /**
 </span>     * Convenience method which just calls the supplied function with the Router instance. Example usage:
-&lt;pre&gt;&lt;code&gt;
-Ext.Router.draw(function(map) {
-    map.connect('activate/:token', {controller: 'users', action: 'activate'});
-    map.connect('home',            {controller: 'index', action: 'home'});
-});
-&lt;/code&gt;&lt;/pre&gt;
+     *
+     *     Ext.Router.draw(function(map) {
+     *         map.connect('activate/:token', {controller: 'users', action: 'activate'});
+     *         map.connect('home',            {controller: 'index', action: 'home'});
+     *     });
+     *
      * @param {Function} fn The fn to call
      */
     draw: function(fn) {
@@ -108,9 +109,9 @@ Ext.Router.draw(function(map) {
 }, function() {
     //&lt;deprecated product=touch since=2.0&gt;
 <span id='Ext-Router'>    /**
-</span>     * Restores compatibility for the old Ext.Router.draw syntax. This needs to be here because apps often include
-     * routes.js just after app.js, so this is our only opportunity to hook this in. There is a small piece of code
-     * inside Application's onDependenciesLoaded that sets up the other end of this.
+</span>     * Restores compatibility for the old `Ext.Router.draw` syntax. This needs to be here because apps often include
+     * _routes.js_ just after _app.js_, so this is our only opportunity to hook this in. There is a small piece of code
+     * inside Application's {@link Ext.app.Application#onDependenciesLoaded onDependenciesLoaded} that sets up the other end of this.
      * @singleton
      * @private
      */
@@ -119,9 +120,9 @@ Ext.Router.draw(function(map) {
     var drawStack = [];
 
 <span id='Ext-Router-method-setAppInstance'>    /**
-</span>     * Application's onDependenciesLoaded has a deprecated-wrapped line that calls this. Basic idea is that once an
-     * app has been instantiated we set that at Ext.Router's appInstance and then redirect any calls to
-     * Ext.Router.draw to that app's Router. We keep a drawStack above so that we can call Ext.Router.draw one or
+</span>     * Application's {@link Ext.app.Application#onDependenciesLoaded onDependenciesLoaded} has a deprecated-wrapped line that calls this. Basic idea is that once an
+     * app has been instantiated we set that at Ext.Router's `appInstance` and then redirect any calls to
+     * {@link Ext.app.Router#draw Ext.Router.draw} to that app's Router. We keep a `drawStack` above so that we can call {@link Ext.app.Router#draw Ext.Router.draw} one or
      * more times before the application is even instantiated and it will simply link it up once everything is
      * present.
      */

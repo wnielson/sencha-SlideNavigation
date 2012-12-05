@@ -25,8 +25,8 @@ Ext.define('Ext.fx.runner.Css', {
         'Ext.fx.Animation'
     ],
 
-    prefixedProperties: {
-        'transform'                 : true,
+<span id='Ext-fx-runner-Css-property-prefixedProperties'>    prefixedProperties: {
+</span>        'transform'                 : true,
         'transform-origin'          : true,
         'perspective'               : true,
         'transform-style'           : true,
@@ -44,8 +44,8 @@ Ext.define('Ext.fx.runner.Css', {
         'animation-delay'           : true
     },
 
-    lengthProperties: {
-        'top'                : true,
+<span id='Ext-fx-runner-Css-property-lengthProperties'>    lengthProperties: {
+</span>        'top'                : true,
         'right'              : true,
         'bottom'             : true,
         'left'               : true,
@@ -82,15 +82,15 @@ Ext.define('Ext.fx.runner.Css', {
         'translate3d'        : true
     },
 
-    durationProperties: {
-        'transition-duration'   : true,
+<span id='Ext-fx-runner-Css-property-durationProperties'>    durationProperties: {
+</span>        'transition-duration'   : true,
         'transition-delay'      : true,
         'animation-duration'    : true,
         'animation-delay'       : true
     },
 
-    angleProperties: {
-        rotate     : true,
+<span id='Ext-fx-runner-Css-property-angleProperties'>    angleProperties: {
+</span>        rotate     : true,
         rotateX    : true,
         rotateY    : true,
         rotateZ    : true,
@@ -99,18 +99,18 @@ Ext.define('Ext.fx.runner.Css', {
         skewY      : true
     },
 
-    lengthUnitRegex: /([a-z%]*)$/,
-
-    DEFAULT_UNIT_LENGTH: 'px',
-
-    DEFAULT_UNIT_ANGLE: 'deg',
-
-    DEFAULT_UNIT_DURATION: 'ms',
-
-    formattedNameCache: {},
-
-    constructor: function() {
-        var supports3dTransform = Ext.feature.has.Css3dTransforms;
+<span id='Ext-fx-runner-Css-property-lengthUnitRegex'>    lengthUnitRegex: /([a-z%]*)$/,
+</span>
+<span id='Ext-fx-runner-Css-property-DEFAULT_UNIT_LENGTH'>    DEFAULT_UNIT_LENGTH: 'px',
+</span>
+<span id='Ext-fx-runner-Css-property-DEFAULT_UNIT_ANGLE'>    DEFAULT_UNIT_ANGLE: 'deg',
+</span>
+<span id='Ext-fx-runner-Css-property-DEFAULT_UNIT_DURATION'>    DEFAULT_UNIT_DURATION: 'ms',
+</span>
+<span id='Ext-fx-runner-Css-property-formattedNameCache'>    formattedNameCache: {},
+</span>
+<span id='Ext-fx-runner-Css-method-constructor'>    constructor: function() {
+</span>        var supports3dTransform = Ext.feature.has.Css3dTransforms;
 
         if (supports3dTransform) {
             this.transformMethods = ['translateX', 'translateY', 'translateZ', 'rotate', 'rotateX', 'rotateY', 'rotateZ', 'skewX', 'skewY', 'scaleX', 'scaleY', 'scaleZ'];
@@ -126,8 +126,8 @@ Ext.define('Ext.fx.runner.Css', {
         return this;
     },
 
-    getStyleSheet: function() {
-        var styleSheet = this.styleSheet,
+<span id='Ext-fx-runner-Css-method-getStyleSheet'>    getStyleSheet: function() {
+</span>        var styleSheet = this.styleSheet,
             styleElement, styleSheets;
 
         if (!styleSheet) {
@@ -144,8 +144,8 @@ Ext.define('Ext.fx.runner.Css', {
         return styleSheet;
     },
 
-    applyRules: function(selectors) {
-        var styleSheet = this.getStyleSheet(),
+<span id='Ext-fx-runner-Css-method-applyRules'>    applyRules: function(selectors) {
+</span>        var styleSheet = this.getStyleSheet(),
             ruleStylesCache = this.ruleStylesCache,
             rules = styleSheet.cssRules,
             selector, properties, ruleStyle,
@@ -189,8 +189,8 @@ Ext.define('Ext.fx.runner.Css', {
         return this;
     },
 
-    applyStyles: function(styles) {
-        var id, element, elementStyle, properties, name, value;
+<span id='Ext-fx-runner-Css-method-applyStyles'>    applyStyles: function(styles) {
+</span>        var id, element, elementStyle, properties, name, value;
 
         for (id in styles) {
 //            console.log(&quot;-&gt; [&quot;+id+&quot;]&quot;, &quot;APPLY======================&quot;);
@@ -222,8 +222,8 @@ Ext.define('Ext.fx.runner.Css', {
         return this;
     },
 
-    formatName: function(name) {
-        var cache = this.formattedNameCache,
+<span id='Ext-fx-runner-Css-method-formatName'>    formatName: function(name) {
+</span>        var cache = this.formattedNameCache,
             formattedName = cache[name];
 
         if (!formattedName) {
@@ -240,8 +240,8 @@ Ext.define('Ext.fx.runner.Css', {
         return formattedName;
     },
 
-    formatValue: function(value, name) {
-        var type = typeof value,
+<span id='Ext-fx-runner-Css-method-formatValue'>    formatValue: function(value, name) {
+</span>        var type = typeof value,
             lengthUnit = this.DEFAULT_UNIT_LENGTH,
             transformMethods,
             method, i, ln,

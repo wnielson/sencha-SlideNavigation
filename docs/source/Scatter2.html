@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-chart-series-sprite-Scatter'>/**
+</span> * @class Ext.chart.series.sprite.Scatter
+ * @extends Ext.chart.series.sprite.Cartesian
+ * 
+ * Scatter series sprite.
+ */
+Ext.define(&quot;Ext.chart.series.sprite.Scatter&quot;, {
+    alias: 'sprite.scatterSeries',
+    extend: 'Ext.chart.series.sprite.Cartesian',
+<span id='Ext-chart-series-sprite-Scatter-method-renderClipped'>    renderClipped: function (surface, ctx, clip, clipRegion) {
+</span>        if (this.cleanRedraw) {
+            return;
+        }
+        var attr = this.attr,
+            dataX = attr.dataX,
+            dataY = attr.dataY,
+            matrix = this.attr.matrix,
+            xx = matrix.getXX(),
+            yy = matrix.getYY(),
+            dx = matrix.getDX(),
+            dy = matrix.getDY(),
+            markerCfg = {},
+            left = clipRegion[0] - xx,
+            right = clipRegion[0] + clipRegion[2] + xx,
+            top = clipRegion[1] - yy,
+            bottom = clipRegion[1] + clipRegion[3] + yy,
+            x, y;
+        for (var i = 0; i &lt; dataX.length; i++) {
+            x = dataX[i];
+            y = dataY[i];
+            x = x * xx + dx;
+            y = y * yy + dy;
+            if (left &lt;= x &amp;&amp; x &lt;= right &amp;&amp; top &lt;= y &amp;&amp; y &lt;= bottom) {
+                if (attr.renderer) {
+                    attr.renderer.call(this, markerCfg, this, i, this.getDataItems().items[i]);
+                }
+                markerCfg.translationX = x;
+                markerCfg.translationY = y;
+                this.putMarker(&quot;items&quot;, markerCfg, i, !attr.renderer);
+            }
+        }
+    }
+});
+</pre>
+</body>
+</html>

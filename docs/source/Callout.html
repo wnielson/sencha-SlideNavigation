@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-chart-label-Callout'>/**
+</span> * @class Ext.chart.label.Callout
+ * @extends Ext.draw.modifier.Modifier
+ * 
+ * This is a modifier to place labels and callouts by additional attributes.
+ */
+Ext.define(&quot;Ext.chart.label.Callout&quot;, {
+    extend: 'Ext.draw.modifier.Modifier',
+
+<span id='Ext-chart-label-Callout-method-prepareAttributes'>    prepareAttributes: function (attr) {
+</span>        if (!attr.hasOwnProperty('calloutOriginal')) {
+            attr.calloutOriginal = Ext.Object.chain(attr);
+        }
+        if (this._previous) {
+            this._previous.prepareAttributes(attr.calloutOriginal);
+        }
+    },
+
+<span id='Ext-chart-label-Callout-method-setAttrs'>    setAttrs: function (attr, changes) {
+</span>        var callout = attr.callout,
+            origin = attr.calloutOriginal,
+            bbox = attr.bbox.plain,
+            width = (bbox.width || 0) + attr.labelOverflowPadding,
+            height = (bbox.height || 0) + attr.labelOverflowPadding,
+            dx, dy, r;
+
+        if ('callout' in changes) {
+            callout = changes.callout;
+        }
+
+        if ('callout' in changes || 'calloutPlaceX' in changes || 'calloutPlaceY' in changes || 'x' in changes || 'y' in changes) {
+            var rotationRads = 'rotationRads' in changes ? origin.rotationRads = changes.rotationRads : origin.rotationRads,
+                x = 'x' in changes ? (origin.x = changes.x) : origin.x,
+                y = 'y' in changes ? (origin.y = changes.y) : origin.y,
+                calloutPlaceX = 'calloutPlaceX' in changes ? changes.calloutPlaceX : attr.calloutPlaceX,
+                calloutPlaceY = 'calloutPlaceY' in changes ? changes.calloutPlaceY : attr.calloutPlaceY,
+                calloutVertical = 'calloutVertical' in changes ? changes.calloutVertical : attr.calloutVertical,
+                temp;
+
+            // Normalize Rotations
+            rotationRads %= Math.PI * 2;
+            if (Math.cos(rotationRads) &lt; 0) {
+                rotationRads = (rotationRads + Math.PI) % (Math.PI * 2);
+            }
+
+            if (rotationRads &gt; Math.PI) {
+                rotationRads -= Math.PI * 2;
+            }
+
+            if (calloutVertical) {
+                rotationRads = rotationRads * (1 - callout) + Math.PI / 2 * callout;
+                temp = width;
+                width = height;
+                height = temp;
+            } else {
+                rotationRads = rotationRads * (1 - callout);
+            }
+            changes.rotationRads = rotationRads;
+
+
+            // Placing label.
+            changes.x = x * (1 - callout) + calloutPlaceX * callout;
+            changes.y = y * (1 - callout) + calloutPlaceY * callout;
+
+
+            // Placing the end of the callout line.
+            dx = calloutPlaceX - x;
+            dy = calloutPlaceY - y;
+            if (Math.abs(dy * width) &gt; Math.abs(height * dx)) {
+                // on top/bottom
+                if (dy &gt; 0) {
+                    changes.calloutEndX = changes.x - (height / (dy * 2) * dx) * callout;
+                    changes.calloutEndY = changes.y - height / 2 * callout;
+                } else {
+                    changes.calloutEndX = changes.x + (height / (dy * 2) * dx) * callout;
+                    changes.calloutEndY = changes.y + height / 2 * callout;
+                }
+            } else {
+                // on left/right
+                if (dx &gt; 0) {
+                    changes.calloutEndX = changes.x - width / 2;
+                    changes.calloutEndY = changes.y - (width / (dx * 2) * dy) * callout;
+                } else {
+                    changes.calloutEndX = changes.x + width / 2;
+                    changes.calloutEndY = changes.y + (width / (dx * 2) * dy) * callout;
+                }
+            }
+        }
+
+        return changes;
+    },
+
+<span id='Ext-chart-label-Callout-method-pushDown'>    pushDown: function (attr, changes) {
+</span>        changes = Ext.draw.modifier.Modifier.prototype.pushDown.call(this, attr.calloutOriginal, changes);
+        return this.setAttrs(attr, changes);
+    },
+
+<span id='Ext-chart-label-Callout-method-popUp'>    popUp: function (attr, changes) {
+</span>        attr = attr.__proto__;
+        changes = this.setAttrs(attr, changes);
+        if (this._next) {
+            return this._next.popUp(attr, changes);
+        } else {
+            return Ext.apply(attr, changes);
+        }
+    }
+});</pre>
+</body>
+</html>

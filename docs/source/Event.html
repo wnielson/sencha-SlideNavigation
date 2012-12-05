@@ -28,8 +28,8 @@ Ext.define('Ext.direct.Event', {
     requires: ['Ext.direct.Manager'],
 
     config: {
-        status: true,
-
+<span id='Ext-direct-Event-cfg-status'>        status: true,
+</span>
 <span id='Ext-direct-Event-cfg-data'>        /**
 </span>         * @cfg {Object} data The raw data for this event.
          * @accessor
@@ -38,23 +38,23 @@ Ext.define('Ext.direct.Event', {
 
 <span id='Ext-direct-Event-cfg-name'>        /**
 </span>         * @cfg {String} name The name of this Event.
-         * @eccessor
+         * @accessor
          */
         name: 'event',
 
-        xhr: null,
+<span id='Ext-direct-Event-cfg-xhr'>        xhr: null,
+</span>
+<span id='Ext-direct-Event-cfg-code'>        code: null,
+</span>
+<span id='Ext-direct-Event-cfg-message'>        message: '',
+</span>
+<span id='Ext-direct-Event-cfg-result'>        result: null,
+</span>
+<span id='Ext-direct-Event-cfg-transaction'>        transaction: null
+</span>    },
 
-        code: null,
-
-        message: '',
-
-        result: null,
-
-        transaction: null
-    },
-
-    constructor: function(config) {
-        this.initConfig(config)
+<span id='Ext-direct-Event-method-constructor'>    constructor: function(config) {
+</span>        this.initConfig(config)
     }
 });</pre>
 </body>

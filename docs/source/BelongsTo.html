@@ -70,7 +70,7 @@
  *
  * The new getCategory function will also accept an object containing success, failure and callback properties
  * - callback will always be called, success will only be called if the associated model was loaded successfully
- * and failure will only be called if the associatied model could not be loaded:
+ * and failure will only be called if the associated model could not be loaded:
  *
  *     product.getCategory({
  *         reload: true, // force a reload if the owner model is already cached
@@ -110,13 +110,13 @@
  *
  *     //alternative syntax:
  *     product.setCategory(10, {
- *         callback: function(product, operation), // a function that will always be called
- *         success : function(product, operation), // a function that will only be called if the load succeeded
- *         failure : function(product, operation), // a function that will only be called if the load did not succeed
+ *         callback: function(product, operation) {}, // a function that will always be called
+ *         success : function(product, operation) {}, // a function that will only be called if the load succeeded
+ *         failure : function(product, operation) {}, // a function that will only be called if the load did not succeed
  *         scope   : this //optionally pass in a scope object to execute the callbacks in
- *     })
+ *     });
  *
- * ## Customisation
+ * ## Customization
  *
  * Associations reflect on the models they are linking to automatically set up properties such as the
  * {@link #primaryKey} and {@link #foreignKey}. These can alternatively be specified:
@@ -124,7 +124,8 @@
  *     Ext.define('Product', {
  *         extend: 'Ext.data.Model',
  *         config: {
- *             fields: [ // ...
+ *             fields: [
+ *                 // ...
  *             ],
  *
  *             associations: [
@@ -180,18 +181,18 @@ Ext.define('Ext.data.association.BelongsTo', {
          */
         setterName: undefined,
 
-        instanceName: undefined
-    },
+<span id='Ext-data-association-BelongsTo-cfg-instanceName'>        instanceName: undefined
+</span>    },
 
-    applyForeignKey: function(foreignKey) {
-        if (!foreignKey) {
+<span id='Ext-data-association-BelongsTo-method-applyForeignKey'>    applyForeignKey: function(foreignKey) {
+</span>        if (!foreignKey) {
             foreignKey = this.getAssociatedName().toLowerCase() + '_id';
         }
         return foreignKey;
     },
 
-    updateForeignKey: function(foreignKey, oldForeignKey) {
-        var fields = this.getOwnerModel().getFields(),
+<span id='Ext-data-association-BelongsTo-method-updateForeignKey'>    updateForeignKey: function(foreignKey, oldForeignKey) {
+</span>        var fields = this.getOwnerModel().getFields(),
             field = fields.get(foreignKey);
 
         if (!field) {
@@ -211,39 +212,39 @@ Ext.define('Ext.data.association.BelongsTo', {
         }
     },
 
-    applyInstanceName: function(instanceName) {
-        if (!instanceName) {
+<span id='Ext-data-association-BelongsTo-method-applyInstanceName'>    applyInstanceName: function(instanceName) {
+</span>        if (!instanceName) {
             instanceName = this.getAssociatedName() + 'BelongsToInstance';
         }
         return instanceName;
     },
 
-    applyAssociationKey: function(associationKey) {
-        if (!associationKey) {
+<span id='Ext-data-association-BelongsTo-method-applyAssociationKey'>    applyAssociationKey: function(associationKey) {
+</span>        if (!associationKey) {
             var associatedName = this.getAssociatedName();
             associationKey = associatedName[0].toLowerCase() + associatedName.slice(1);
         }
         return associationKey;
     },
 
-    applyGetterName: function(getterName) {
-        if (!getterName) {
+<span id='Ext-data-association-BelongsTo-method-applyGetterName'>    applyGetterName: function(getterName) {
+</span>        if (!getterName) {
             var associatedName = this.getAssociatedName();
             getterName = 'get' + associatedName[0].toUpperCase() + associatedName.slice(1);
         }
         return getterName;
     },
 
-    applySetterName: function(setterName) {
-        if (!setterName) {
+<span id='Ext-data-association-BelongsTo-method-applySetterName'>    applySetterName: function(setterName) {
+</span>        if (!setterName) {
             var associatedName = this.getAssociatedName();
             setterName = 'set' + associatedName[0].toUpperCase() + associatedName.slice(1);
         }
         return setterName;
     },
 
-    updateGetterName: function(getterName, oldGetterName) {
-        var ownerProto = this.getOwnerModel().prototype;
+<span id='Ext-data-association-BelongsTo-method-updateGetterName'>    updateGetterName: function(getterName, oldGetterName) {
+</span>        var ownerProto = this.getOwnerModel().prototype;
         if (oldGetterName) {
             delete ownerProto[oldGetterName];
         }
@@ -252,8 +253,8 @@ Ext.define('Ext.data.association.BelongsTo', {
         }
     },
 
-    updateSetterName: function(setterName, oldSetterName) {
-        var ownerProto = this.getOwnerModel().prototype;
+<span id='Ext-data-association-BelongsTo-method-updateSetterName'>    updateSetterName: function(setterName, oldSetterName) {
+</span>        var ownerProto = this.getOwnerModel().prototype;
         if (oldSetterName) {
             delete ownerProto[oldSetterName];
         }
@@ -269,40 +270,65 @@ Ext.define('Ext.data.association.BelongsTo', {
      */
     createSetter: function() {
         var me = this,
-            foreignKey = me.getForeignKey();
+            foreignKey = me.getForeignKey(),
+            associatedModel = me.getAssociatedModel(),
+            currentOwner, newOwner, store;
 
         //'this' refers to the Model instance inside this function
         return function(value, options, scope) {
-            var inverse = me.getInverseAssociation();
+            var inverse = me.getInverseAssociation(),
+                record = this;
 
             // If we pass in an instance, pull the id out
             if (value &amp;&amp; value.isModel) {
                 value = value.getId();
             }
-            this.set(foreignKey, value);
 
             if (Ext.isFunction(options)) {
                 options = {
                     callback: options,
-                    scope: scope || this
+                    scope: scope || record
                 };
             }
 
+            // Remove the current belongsToInstance
+            delete record[me.getInstanceName()];
+
+            currentOwner = Ext.data.Model.cache[Ext.data.Model.generateCacheId(associatedModel.modelName, this.get(foreignKey))];
+            newOwner     = Ext.data.Model.cache[Ext.data.Model.generateCacheId(associatedModel.modelName, value)];
+
+            record.set(foreignKey, value);
+
             if (inverse) {
-                value = Ext.data.Model.cache.get(Ext.data.Model.generateCacheId(inverse.getOwnerModel().modelName, value));
-                if (value) {
+                // We first add it to the new owner so that the record wouldnt be destroyed if it was the last store it was in
+                if (newOwner) {
                     if (inverse.getType().toLowerCase() === 'hasmany') {
-                        var store = value[inverse.getName()]();
-                        store.add(this);
+                        store = newOwner[inverse.getName()]();
+                        store.add(record);
                     } else {
-                        value[inverse.getInstanceName()] = this;
+                        newOwner[inverse.getInstanceName()] = record;
+                    }
+                }
+
+                if (currentOwner) {
+                    if (inverse.getType().toLowerCase() === 'hasmany') {
+                        store = currentOwner[inverse.getName()]();
+                        store.remove(record);
+                    } else {
+                        delete value[inverse.getInstanceName()];
                     }
                 }
             }
 
-            if (Ext.isObject(options)) {
-                return this.save(options);
+            if (newOwner) {
+                record[me.getInstanceName()] = newOwner;
             }
+
+            if (Ext.isObject(options)) {
+                return record.save(options);
+            }
+
+            return record;
         };
     },
 
@@ -329,8 +355,9 @@ Ext.define('Ext.data.association.BelongsTo', {
                 args;
 
             instance = model[instanceName];
+
             if (!instance) {
-                instance = Ext.data.Model.cache.get(Ext.data.Model.generateCacheId(associatedModel.modelName, foreignKeyId));
+                instance = Ext.data.Model.cache[Ext.data.Model.generateCacheId(associatedModel.modelName, foreignKeyId)];
                 if (instance) {
                     model[instanceName] = instance;
                 }
@@ -349,7 +376,7 @@ Ext.define('Ext.data.association.BelongsTo', {
                 options.success = function(rec) {
                     model[instanceName] = rec;
                     if (success) {
-                        success.call(this, arguments);
+                        success.apply(this, arguments);
                     }
                 };
 
@@ -379,8 +406,8 @@ Ext.define('Ext.data.association.BelongsTo', {
         record[this.getInstanceName()] = reader.read([associationData]).getRecords()[0];
     },
 
-    getInverseAssociation: function() {
-        var ownerName = this.getOwnerModel().modelName,
+<span id='Ext-data-association-BelongsTo-method-getInverseAssociation'>    getInverseAssociation: function() {
+</span>        var ownerName = this.getOwnerModel().modelName,
             foreignKey = this.getForeignKey();
 
         return this.getAssociatedModel().associations.findBy(function(assoc) {

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-draw-sprite-Sector'>/**
+</span> * @class Ext.draw.sprite.Sector
+ * @extends Ext.draw.sprite.Path
+ * 
+ * A sprite representing a pie slice.
+ */
+Ext.define(&quot;Ext.draw.sprite.Sector&quot;, {
+    extend: &quot;Ext.draw.sprite.Path&quot;,
+    alias: 'sprite.sector',
+<span id='Ext-draw-sprite-Sector-property-type'>    type: 'sector',
+</span>    inheritableStatics: {
+<span id='Ext-draw-sprite-Sector-property-def'>        def: {
+</span>            processors: {
+<span id='Ext-draw-sprite-Sector-cfg-centerX'>                /**
+</span>                 * @cfg {Number} [centerX=0] The center coordinate of the sprite on the x-axis.
+                 */
+                centerX: &quot;number&quot;,
+
+<span id='Ext-draw-sprite-Sector-cfg-centerY'>                /**
+</span>                 * @cfg {Number} [centerY=0] The center coordinate of the sprite on the y-axis.
+                 */
+                centerY: &quot;number&quot;,
+
+<span id='Ext-draw-sprite-Sector-cfg-startAngle'>                /**
+</span>                 * @cfg {Number} [startAngle=0] The starting angle of the sprite.
+                 */
+                startAngle: &quot;number&quot;,
+
+<span id='Ext-draw-sprite-Sector-cfg-endAngle'>                /**
+</span>                 * @cfg {Number} [endAngle=0] The ending angle of the sprite.
+                 */
+                endAngle: &quot;number&quot;,
+
+<span id='Ext-draw-sprite-Sector-cfg-startRho'>                /**
+</span>                 * @cfg {Number} [startRho=0] The starting point of the radius of the sprite.
+                 */
+                startRho: &quot;number&quot;,
+
+<span id='Ext-draw-sprite-Sector-cfg-endRho'>                /**
+</span>                 * @cfg {Number} [endRho=150] The ending point of the radius of the sprite.
+                 */
+                endRho: &quot;number&quot;,
+
+<span id='Ext-draw-sprite-Sector-cfg-margin'>                /**
+</span>                 * @cfg {Number} [margin=0] The margin of the sprite from the center of pie.
+                 */
+                margin: &quot;number&quot;
+            },
+            aliases: {
+                rho: 'endRho'
+            },
+            dirtyTriggers: {
+                centerX: &quot;path,bbox&quot;,
+                centerY: &quot;path,bbox&quot;,
+                startAngle: &quot;path,bbox&quot;,
+                endAngle: &quot;path,bbox&quot;,
+                startRho: &quot;path,bbox&quot;,
+                endRho: &quot;path,bbox&quot;,
+                margin: &quot;path,bbox&quot;
+            },
+            defaults: {
+                centerX: 0,
+                centerY: 0,
+                startAngle: 0,
+                endAngle: 0,
+                startRho: 0,
+                endRho: 150,
+                margin: 0,
+                path: 'M 0,0'
+            }
+        }
+    },
+
+<span id='Ext-draw-sprite-Sector-method-updatePath'>    updatePath: function (path, attr) {
+</span>        var startAngle = Math.min(attr.startAngle, attr.endAngle),
+            endAngle = Math.max(attr.startAngle, attr.endAngle),
+            midAngle = (startAngle + endAngle) * 0.5,
+            margin = attr.margin,
+            centerX = attr.centerX,
+            centerY = attr.centerY,
+            startRho = Math.min(attr.startRho, attr.endRho),
+            endRho = Math.max(attr.startRho, attr.endRho);
+
+        if (margin) {
+            centerX += margin * Math.cos(midAngle);
+            centerY += margin * Math.sin(midAngle);
+        }
+        path.moveTo(centerX + startRho * Math.cos(startAngle), centerY + startRho * Math.sin(startAngle));
+        path.lineTo(centerX + endRho * Math.cos(startAngle), centerY + endRho * Math.sin(startAngle));
+        path.arc(centerX, centerY, endRho, startAngle, endAngle, false);
+        path.lineTo(centerX + startRho * Math.cos(endAngle), centerY + startRho * Math.sin(endAngle));
+        path.arc(centerX, centerY, startRho, endAngle, startAngle, true);
+    }
+});</pre>
+</body>
+</html>

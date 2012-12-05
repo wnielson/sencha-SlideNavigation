@@ -62,8 +62,7 @@ Ext.define('Ext.data.Request', {
 
 <span id='Ext-data-Request-cfg-disableCaching'>        /**
 </span>         * @cfg {Boolean} disableCaching
-         * Wether or not to disable caching for this request.
-         * Defaults to false.
+         * Whether or not to disable caching for this request.
          */
         disableCaching: false,
 
@@ -107,16 +106,32 @@ Ext.define('Ext.data.Request', {
          */
         withCredentials: null,
 
-        callback: null,
-        scope: null,
-        timeout: 30000,
-        records: null,
+<span id='Ext-data-Request-cfg-username'>        /**
+</span>         * @cfg {String} username
+         * Most oData feeds require basic HTTP authentication. This configuration allows
+         * you to specify the username.
+         * @accessor
+         */
+        username: null,
 
-        // The following two configurations are only used by Ext.data.proxy.Direct and are just
-        // for being able to retrieve them after the request comes back from the server.
+<span id='Ext-data-Request-cfg-password'>        /**
+</span>         * @cfg {String} password
+         * Most oData feeds require basic HTTP authentication. This configuration allows
+         * you to specify the password.
+         * @accessor
+         */
+        password: null,
+
+<span id='Ext-data-Request-cfg-callback'>        callback: null,
+</span><span id='Ext-data-Request-cfg-scope'>        scope: null,
+</span><span id='Ext-data-Request-cfg-timeout'>        timeout: 30000,
+</span><span id='Ext-data-Request-cfg-records'>        records: null,
+</span>
+<span id='Ext-data-Request-cfg-directFn'>        // The following two configurations are only used by Ext.data.proxy.Direct and are just
+</span>        // for being able to retrieve them after the request comes back from the server.
         directFn: null,
-        args: null
-    },
+<span id='Ext-data-Request-cfg-args'>        args: null
+</span>    },
 
 <span id='Ext-data-Request-method-constructor'>    /**
 </span>     * Creates the Request object.

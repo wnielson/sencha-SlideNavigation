@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-chart-axis-segmenter-Numeric'>/**
+</span> * @class Ext.chart.axis.segmenter.Numeric
+ * @extends Ext.chart.axis.segmenter.Segmenter
+ * 
+ * Numeric data type.
+ */
+Ext.define(&quot;Ext.chart.axis.segmenter.Numeric&quot;, {
+    extend: 'Ext.chart.axis.segmenter.Segmenter',
+    alias: 'segmenter.numeric',
+
+<span id='Ext-chart-axis-segmenter-Numeric-method-renderer'>    renderer: function (value, context) {
+</span>        return value.toFixed(Math.max(0, context.majorTicks.unit.fixes));
+    },
+
+<span id='Ext-chart-axis-segmenter-Numeric-method-diff'>    diff: function (min, max, unit) {
+</span>        return Math.floor((max - min) / unit.scale);
+    },
+
+<span id='Ext-chart-axis-segmenter-Numeric-method-align'>    align: function (value, step, unit) {
+</span>        return Math.floor(value / (unit.scale * step)) * unit.scale * step;
+    },
+
+
+<span id='Ext-chart-axis-segmenter-Numeric-method-add'>    add: function (value, step, unit) {
+</span>        return value + step * (unit.scale);
+    },
+
+<span id='Ext-chart-axis-segmenter-Numeric-method-preferredStep'>    preferredStep: function (min, estStepSize) {
+</span>        var logs = Math.floor(Math.log(estStepSize) * Math.LOG10E),
+            scale = Math.pow(10, logs);
+        estStepSize /= scale;
+        if (estStepSize &lt; 2) {
+            estStepSize = 2;
+        } else if (estStepSize &lt; 5) {
+            estStepSize = 5;
+        } else if (estStepSize &lt; 10) {
+            estStepSize = 10;
+            logs++;
+        }
+        return {
+            unit: { fixes: -logs, scale: scale },
+            step: estStepSize
+        };
+    }
+});</pre>
+</body>
+</html>

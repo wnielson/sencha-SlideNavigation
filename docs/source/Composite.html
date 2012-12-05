@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-draw-sprite-Composite'>/**
+</span> * @class Ext.draw.sprite.Composite
+ * @extends Ext.draw.sprite.Sprite
+ * 
+ * Represents a group of sprites.
+ */
+Ext.define(&quot;Ext.draw.sprite.Composite&quot;, {
+    extend: &quot;Ext.draw.sprite.Sprite&quot;,
+    alias: 'sprite.composite',
+<span id='Ext-draw-sprite-Composite-property-type'>    type: 'composite',
+</span><span id='Ext-draw-sprite-Composite-method-constructor'>    constructor: function () {
+</span>        this.callSuper(arguments);
+        this.sprites = [];
+        this.sprites.map = {};
+    },
+
+<span id='Ext-draw-sprite-Composite-method-add'>    /**
+</span>     * Adds a sprite to the composite.
+     */
+    add: function (sprite) {
+        if (!(sprite instanceof Ext.draw.sprite.Sprite)) {
+            sprite = Ext.create('sprite.' + sprite.type, sprite);
+            sprite.setParent(this);
+        }
+        var oldTransformations = sprite.applyTransformations,
+            me = this,
+            attr = me.attr;
+
+        sprite.applyTransformations = function () {
+            if (sprite.attr.dirtyTransform) {
+                attr.dirtyTransform = true;
+                attr.bbox.plain.dirty = true;
+                attr.bbox.transform.dirty = true;
+            }
+            oldTransformations.call(sprite);
+        };
+        this.sprites.push(sprite);
+        this.sprites.map[sprite.id] = sprite.getId();
+        attr.bbox.plain.dirty = true;
+        attr.bbox.transform.dirty = true;
+    },
+
+<span id='Ext-draw-sprite-Composite-method-updatePlainBBox'>    /**
+</span>     * Updates the bounding box of the composite, which contains the bounding box of all sprites in the composite.
+     */
+    updatePlainBBox: function (plain) {
+        var me = this,
+            left = Infinity,
+            right = -Infinity,
+            top = Infinity,
+            bottom = -Infinity,
+            sprite, bbox, i, ln;
+
+        for (i = 0, ln = me.sprites.length; i &lt; ln; i++) {
+            sprite = me.sprites[i];
+            sprite.applyTransformations();
+            bbox = sprite.getBBox();
+            if (left &gt; bbox.x) {
+                left = bbox.x;
+            }
+            if (right &lt; bbox.x + bbox.width) {
+                right = bbox.x + bbox.width;
+            }
+            if (top &gt; bbox.y) {
+                top = bbox.y;
+            }
+            if (bottom &lt; bbox.y + bbox.height) {
+                bottom = bbox.y + bbox.height;
+            }
+        }
+        plain.x = left;
+        plain.y = top;
+        plain.width = right - left;
+        plain.height = bottom - top;
+    },
+
+<span id='Ext-draw-sprite-Composite-method-render'>    /**
+</span>     * Renders all sprites contained in the composite to the surface.
+     */
+    render: function (surface, ctx, region) {
+        var mat = this.attr.matrix,
+            i, ln;
+
+        mat.toContext(ctx);
+        for (i = 0, ln = this.sprites.length; i &lt; ln; i++) {
+            surface.renderSprite(this.sprites[i], region);
+        }
+    }
+});</pre>
+</body>
+</html>

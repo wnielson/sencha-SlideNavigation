@@ -38,8 +38,8 @@ Ext.define('Ext.device.connection.Sencha', {
         });
     },
 
-    onConnectionChange: function(e) {
-        this.setOnline(Boolean(e.online));
+<span id='Ext-device-connection-Sencha-method-onConnectionChange'>    onConnectionChange: function(e) {
+</span>        this.setOnline(Boolean(e.online));
         this.setType(this[e.type]);
 
         this.fireEvent('onlinechange', this.getOnline(), this.getType());

@@ -49,15 +49,15 @@ Ext.define('Ext.field.Field', {
     ],
 
 <span id='Ext-field-Field-property-isField'>    /**
-</span>     * Set to true on all Ext.field.Field subclasses. This is used by {@link Ext.form.Panel#getValues} to determine which
+</span>     * Set to `true` on all Ext.field.Field subclasses. This is used by {@link Ext.form.Panel#getValues} to determine which
      * components inside a form are fields.
      * @property isField
      * @type Boolean
      */
     isField: true,
 
-    // @private
-    isFormField: true,
+<span id='Ext-field-Field-property-isFormField'>    // @private
+</span>    isFormField: true,
 
     config: {
 <span id='Ext-field-Field-cfg-baseCls'>        /**
@@ -76,7 +76,6 @@ Ext.define('Ext.field.Field', {
 <span id='Ext-field-Field-cfg-labelAlign'>        /**
 </span>         * @cfg {String} labelAlign The position to render the label relative to the field input.
          * Available options are: 'top', 'left', 'bottom' and 'right'
-         * Defaults to 'left'
          * @accessor
          */
         labelAlign: 'left',
@@ -87,40 +86,51 @@ Ext.define('Ext.field.Field', {
          */
         labelWidth: '30%',
 
+<span id='Ext-field-Field-cfg-labelWrap'>        /**
+</span>         * @cfg {Boolean} labelWrap `true` to allow the label to wrap. If set to `false`, the label will be truncated with
+         * an ellipsis.
+         * @accessor
+         */
+        labelWrap: false,
+
 <span id='Ext-field-Field-cfg-clearIcon'>        /**
-</span>         * @cfg {Boolean} clearIcon True to use a clear icon in this field
+</span>         * @cfg {Boolean} clearIcon `true` to use a clear icon in this field.
          * @accessor
          */
         clearIcon: null,
 
 <span id='Ext-field-Field-cfg-required'>        /**
-</span>         * @cfg {Boolean} required True to make this field required. Note: this only causes a visual indication.
+</span>         * @cfg {Boolean} required `true` to make this field required.
+         *
+         * __Note:__ this only causes a visual indication.
+         *
          * Doesn't prevent user from submitting the form.
          * @accessor
          */
         required: false,
 
 <span id='Ext-field-Field-property-labelEl'>        /**
-</span>         * &lt;p&gt;The label Element associated with this Field. &lt;b&gt;Only available if a {@link #label} is specified.&lt;/b&gt;&lt;/p&gt;
-&lt;p&gt;This has been deprecated.
+</span>         * The label Element associated with this Field.
+         *
+         * __Note:__ Only available if a {@link #label} is specified.
          * @type Ext.Element
          * @property labelEl
          * @deprecated 2.0
          */
 
 <span id='Ext-field-Field-cfg-inputType'>        /**
-</span>         * @cfg {String} inputType The type attribute for input fields -- e.g. radio, text, password, file (defaults
-         * to 'text'). The types 'file' and 'password' must be used to render those field types currently -- there are
+</span>         * @cfg {String} [inputType='text'] The type attribute for input fields -- e.g. radio, text, password, file.
+         * The types 'file' and 'password' must be used to render those field types currently -- there are
          * no separate Ext components for those.
-         * This is now deprecated. Please use 'input.type' instead.
-         * @deprecated 2.0
+         * @deprecated 2.0 Please use `input.type` instead.
          * @accessor
          */
         inputType: null,
 
 <span id='Ext-field-Field-cfg-name'>        /**
 </span>         * @cfg {String} name The field's HTML name attribute.
-         * &lt;b&gt;Note&lt;/b&gt;: this property must be set if this field is to be automatically included with
+         *
+         * __Note:__ this property must be set if this field is to be automatically included with.
          * {@link Ext.form.Panel#method-submit form submit()}.
          * @accessor
          */
@@ -133,8 +143,8 @@ Ext.define('Ext.field.Field', {
         value: null,
 
 <span id='Ext-field-Field-cfg-tabIndex'>        /**
-</span>         * @cfg {Number} tabIndex The tabIndex for this field. Note this only applies to fields that are rendered,
-         * not those which are built via applyTo.
+</span>         * @cfg {Number} tabIndex The `tabIndex` for this field. Note this only applies to fields that are rendered,
+         * not those which are built via `applyTo`.
          * @accessor
          */
         tabIndex: null
@@ -151,13 +161,13 @@ Ext.define('Ext.field.Field', {
 
     cachedConfig: {
 <span id='Ext-field-Field-cfg-labelCls'>        /**
-</span>         * @cfg {String} labelCls Optional CSS class to add to the Label element
+</span>         * @cfg {String} labelCls Optional CSS class to add to the Label element.
          * @accessor
          */
         labelCls: null,
 
 <span id='Ext-field-Field-cfg-requiredCls'>        /**
-</span>         * @cfg {String} requiredCls The className to be applied to this Field when the {@link #required} configuration is set to true
+</span>         * @cfg {String} requiredCls The `className` to be applied to this Field when the {@link #required} configuration is set to `true`.
          * @accessor
          */
         requiredCls: Ext.baseCSSPrefix + 'field-required',
@@ -170,7 +180,7 @@ Ext.define('Ext.field.Field', {
 
 <span id='Ext-field-Field-cfg-isFocused'>    /**
 </span>     * @cfg {Boolean} isFocused
-     * True if this field is currently focused,
+     * `true` if this field is currently focused.
      * @private
      */
 
@@ -197,8 +207,8 @@ Ext.define('Ext.field.Field', {
         };
     },
 
-    // @private
-    updateLabel: function(newLabel, oldLabel) {
+<span id='Ext-field-Field-method-updateLabel'>    // @private
+</span>    updateLabel: function(newLabel, oldLabel) {
         var renderElement = this.renderElement,
             prefix = Ext.baseCSSPrefix;
 
@@ -210,15 +220,15 @@ Ext.define('Ext.field.Field', {
         }
     },
 
-    // @private
-    updateLabelAlign: function(newLabelAlign, oldLabelAlign) {
+<span id='Ext-field-Field-method-updateLabelAlign'>    // @private
+</span>    updateLabelAlign: function(newLabelAlign, oldLabelAlign) {
         var renderElement = this.renderElement,
             prefix = Ext.baseCSSPrefix;
 
         if (newLabelAlign) {
             renderElement.addCls(prefix + 'label-align-' + newLabelAlign);
 
-            if (newLabelAlign == &quot;top&quot;) {
+            if (newLabelAlign == &quot;top&quot; || newLabelAlign == &quot;bottom&quot;) {
                 this.label.setWidth('100%');
             } else {
                 this.updateLabelWidth(this.getLabelWidth());
@@ -230,8 +240,8 @@ Ext.define('Ext.field.Field', {
         }
     },
 
-    // @private
-    updateLabelCls: function(newLabelCls, oldLabelCls) {
+<span id='Ext-field-Field-method-updateLabelCls'>    // @private
+</span>    updateLabelCls: function(newLabelCls, oldLabelCls) {
         if (newLabelCls) {
             this.label.addCls(newLabelCls);
         }
@@ -241,10 +251,12 @@ Ext.define('Ext.field.Field', {
         }
     },
 
-    // @private
-    updateLabelWidth: function(newLabelWidth) {
+<span id='Ext-field-Field-method-updateLabelWidth'>    // @private
+</span>    updateLabelWidth: function(newLabelWidth) {
+        var labelAlign = this.getLabelAlign();
+
         if (newLabelWidth) {
-            if (this.getLabelAlign() == &quot;top&quot;) {
+            if (labelAlign == &quot;top&quot; || labelAlign == &quot;bottom&quot;) {
                 this.label.setWidth('100%');
             } else {
                 this.label.setWidth(newLabelWidth);
@@ -252,8 +264,19 @@ Ext.define('Ext.field.Field', {
         }
     },
 
+<span id='Ext-field-Field-method-updateLabelWrap'>    // @private
+</span>    updateLabelWrap: function(newLabelWrap, oldLabelWrap) {
+        var cls = Ext.baseCSSPrefix + 'form-label-nowrap';
+
+        if (!newLabelWrap) {
+            this.addCls(cls);
+        } else {
+            this.removeCls(cls);
+        }
+    },
+
 <span id='Ext-field-Field-method-updateRequired'>    /**
-</span>     * Updates the {@link #required} configuration
+</span>     * Updates the {@link #required} configuration.
      * @private
      */
     updateRequired: function(newRequired) {
@@ -270,8 +293,8 @@ Ext.define('Ext.field.Field', {
         }
     },
 
-    // @private
-    initialize: function() {
+<span id='Ext-field-Field-method-initialize'>    // @private
+</span>    initialize: function() {
         var me = this;
         me.callParent();
 
@@ -285,7 +308,7 @@ Ext.define('Ext.field.Field', {
 <span id='Ext-field-Field-property-originalValue'>        /**
 </span>         * @property {Mixed} originalValue
          * The original value of the field as configured in the {@link #value} configuration.
-         * setting is &lt;code&gt;true&lt;/code&gt;.
+         * setting is `true`.
          */
         this.originalValue = this.getInitialConfig().value;
     },
@@ -314,10 +337,11 @@ Ext.define('Ext.field.Field', {
     },
 
 <span id='Ext-field-Field-method-isDirty'>    /**
-</span>     * &lt;p&gt;Returns true if the value of this Field has been changed from its {@link #originalValue}.
-     * Will return false if the field is disabled or has not been rendered yet.&lt;/p&gt;
-     * @return {Boolean} True if this field has been changed from its original value (and
-     * is not disabled), false otherwise.
+</span>     * Returns `true` if the value of this Field has been changed from its {@link #originalValue}.
+     * Will return `false` if the field is disabled or has not been rendered yet.
+     *
+     * @return {Boolean} `true` if this field has been changed from its original value (and
+     * is not disabled), `false` otherwise.
      */
     isDirty: function() {
         return false;
@@ -352,22 +376,22 @@ Ext.define('Ext.field.Field', {
 
 <span id='Ext-field-Field-cfg-fieldCls'>            /**
 </span>             * @member Ext.field.Field
-             * @cfg {String} fieldCls CSS class to add to the field
-             * @deprecated 2.0.0 Deprecated, please use {@link #inputCls}
+             * @cfg {String} fieldCls CSS class to add to the field.
+             * @deprecated 2.0.0 Please use the {@link #inputCls} configuration instead.
              */
             deprecateProperty('fieldCls', null, 'inputCls');
 
 <span id='Ext-field-Field-cfg-fieldLabel'>            /**
 </span>             * @member Ext.field.Field
-             * @cfg {String} fieldLabel The label for this Field
-             * @deprecated 2.0.0 Please use the {@link #label} configuration instead
+             * @cfg {String} fieldLabel The label for this Field.
+             * @deprecated 2.0.0 Please use the {@link #label} configuration instead.
              */
             deprecateProperty('fieldLabel', null, 'label');
 
 <span id='Ext-field-Field-cfg-useClearIcon'>            /**
 </span>             * @member Ext.field.Field
-             * @cfg {String} useClearIcon True to use a clear icon in this field
-             * @deprecated 2.0.0 Please use the {@link #clearIcon} configuration instead
+             * @cfg {String} useClearIcon `true` to use a clear icon in this field.
+             * @deprecated 2.0.0 Please use the {@link #clearIcon} configuration instead.
              */
             deprecateProperty('useClearIcon', null, 'clearIcon');
 

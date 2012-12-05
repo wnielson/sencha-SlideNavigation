@@ -82,24 +82,13 @@ Ext.define('Ext.Mask', {
      * @param {Ext.EventObject} e The event object
      */
     initialize: function() {
-        this.callParent();
+        this.callSuper();
 
-        this.on({
-            painted: 'onPainted',
-            erased: 'onErased'
-        })
-    },
-
-    onPainted: function() {
         this.element.on('*', 'onEvent', this);
     },
 
-    onErased: function() {
-        this.element.un('*', 'onEvent', this);
-    },
-
-    onEvent: function(e) {
-        var controller = arguments[arguments.length - 1];
+<span id='Ext-Mask-method-onEvent'>    onEvent: function(e) {
+</span>        var controller = arguments[arguments.length - 1];
 
         if (controller.info.eventName === 'tap') {
             this.fireEvent('tap', this, e);
@@ -113,8 +102,8 @@ Ext.define('Ext.Mask', {
         return false;
     },
 
-    updateTransparent: function(newTransparent) {
-        this[newTransparent ? 'addCls' : 'removeCls'](this.getBaseCls() + '-transparent');
+<span id='Ext-Mask-method-updateTransparent'>    updateTransparent: function(newTransparent) {
+</span>        this[newTransparent ? 'addCls' : 'removeCls'](this.getBaseCls() + '-transparent');
     }
 });
 </pre>

@@ -15,64 +15,46 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-device-geolocation-Sencha'>/**
+  <pre class="prettyprint lang-js"><span id='Ext-device-device-Sencha'>/**
 </span> * @private
  */
-Ext.define('Ext.device.geolocation.Sencha', {
-    extend: 'Ext.device.geolocation.Abstract',
+Ext.define('Ext.device.device.Sencha', {
+    extend: 'Ext.device.device.Abstract',
 
-    getCurrentPosition: function(config) {
-        config = this.callParent([config]);
+<span id='Ext-device-device-Sencha-method-constructor'>    constructor: function() {
+</span>        this.name = device.name;
+        this.uuid = device.uuid;
+        this.platform = device.platformName || Ext.os.name;
 
-        Ext.apply(config, {
-            command: 'Geolocation#getCurrentPosition',
-            callbacks: {
-                success: config.success,
-                failure: config.failure
-            }
-        });
-
-        Ext.applyIf(config, {
-            scope: this
-        });
-
-        delete config.success;
-        delete config.failure;
-
-        Ext.device.Communicator.send(config);
-
-        return config;
+        this.initURL();
     },
 
-    watchPosition: function(config) {
-        config = this.callParent([config]);
-
-        Ext.apply(config, {
-            command: 'Geolocation#watchPosition',
-            callbacks: {
-                success: config.callback,
-                failure: config.failure
-            }
+<span id='Ext-device-device-Sencha-method-openURL'>    openURL: function(url) {
+</span>        Ext.device.Communicator.send({
+            command: 'OpenURL#open',
+            url: url
         });
-
-        Ext.applyIf(config, {
-            scope: this
-        });
-
-        delete config.callback;
-        delete config.failure;
-
-        Ext.device.Communicator.send(config);
-
-        return config;
     },
 
-    clearWatch: function() {
-        if (this.geolocation) {
-            this.geolocation.destroy();
-        }
+<span id='Ext-device-device-Sencha-method-initURL'>    /**
+</span>     * @private
+     */
+    initURL: function() {
+        Ext.device.Communicator.send({
+            command: &quot;OpenURL#watch&quot;,
+            callbacks: {
+                callback: this.updateURL
+            },
+            scope: this
+        });
+    },
 
-        this.geolocation = null;
+<span id='Ext-device-device-Sencha-method-updateURL'>    /**
+</span>     * @private
+     */
+    updateURL: function() {
+        this.scheme = device.scheme || false;
+        this.fireEvent('schemeupdate', this, this.scheme);
     }
 });
 </pre>

@@ -23,13 +23,13 @@ Ext.define('Ext.fx.easing.Bounce', {
     extend: 'Ext.fx.easing.Abstract',
 
     config: {
-        springTension: 0.3,
-        acceleration: 30,
-        startVelocity: 0
-    },
+<span id='Ext-fx-easing-Bounce-cfg-springTension'>        springTension: 0.3,
+</span><span id='Ext-fx-easing-Bounce-cfg-acceleration'>        acceleration: 30,
+</span><span id='Ext-fx-easing-Bounce-cfg-startVelocity'>        startVelocity: 0
+</span>    },
 
-    getValue: function() {
-        var deltaTime = Ext.Date.now() - this.getStartTime(),
+<span id='Ext-fx-easing-Bounce-method-getValue'>    getValue: function() {
+</span>        var deltaTime = Ext.Date.now() - this.getStartTime(),
             theta = (deltaTime / this.getAcceleration()),
             powTime = theta * Math.pow(Math.E, -this.getSpringTension() * theta);
 

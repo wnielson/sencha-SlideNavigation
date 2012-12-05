@@ -15,31 +15,34 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-mixin-Identifiable'>/**
+  <pre class="prettyprint lang-js">//@tag dom,core
+//@require Ext.dom.Helper
+
+<span id='Ext-mixin-Identifiable'>/**
 </span> * An Identifiable mixin.
  * @private
  */
 Ext.define('Ext.mixin.Identifiable', {
     statics: {
-        uniqueIds: {}
+<span id='Ext-mixin-Identifiable-property-uniqueIds'>        uniqueIds: {}
+</span>    },
+
+<span id='Ext-mixin-Identifiable-property-isIdentifiable'>    isIdentifiable: true,
+</span>
+<span id='Ext-mixin-Identifiable-property-mixinId'>    mixinId: 'identifiable',
+</span>
+<span id='Ext-mixin-Identifiable-property-idCleanRegex'>    idCleanRegex: /\.|[^\w\-]/g,
+</span>
+<span id='Ext-mixin-Identifiable-property-defaultIdPrefix'>    defaultIdPrefix: 'ext-',
+</span>
+<span id='Ext-mixin-Identifiable-property-defaultIdSeparator'>    defaultIdSeparator: '-',
+</span>
+<span id='Ext-mixin-Identifiable-method-getOptimizedId'>    getOptimizedId: function() {
+</span>        return this.id;
     },
 
-    isIdentifiable: true,
-
-    mixinId: 'identifiable',
-
-    idCleanRegex: /\.|[^\w\-]/g,
-
-    defaultIdPrefix: 'ext-',
-
-    defaultIdSeparator: '-',
-
-    getOptimizedId: function() {
-        return this.id;
-    },
-
-    getUniqueId: function() {
-        var id = this.id,
+<span id='Ext-mixin-Identifiable-method-getUniqueId'>    getUniqueId: function() {
+</span>        var id = this.id,
             prototype, separator, xtype, uniqueIds, prefix;
 
         if (!id) {
@@ -75,8 +78,8 @@ Ext.define('Ext.mixin.Identifiable', {
         return id;
     },
 
-    setId: function(id) {
-        this.id = id;
+<span id='Ext-mixin-Identifiable-method-setId'>    setId: function(id) {
+</span>        this.id = id;
     },
 
 <span id='Ext-mixin-Identifiable-method-getId'>    /**

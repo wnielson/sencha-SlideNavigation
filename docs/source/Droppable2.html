@@ -71,11 +71,11 @@ Ext.define('Ext.util.Droppable', {
      */
     group: 'base',
 
-    // not yet implemented
-    tolerance: null,
+<span id='Ext-util-Droppable-property-tolerance'>    // not yet implemented
+</span>    tolerance: null,
 
-    // @private
-    monitoring: false,
+<span id='Ext-util-Droppable-property-monitoring'>    // @private
+</span>    monitoring: false,
 
 <span id='Ext-util-Droppable-method-constructor'>    /**
 </span>     * Creates new Droppable.
@@ -136,8 +136,8 @@ Ext.define('Ext.util.Droppable', {
         me.el.addCls(me.baseCls);
     },
 
-    // @private
-    onDragStart: function(draggable, e) {
+<span id='Ext-util-Droppable-method-onDragStart'>    // @private
+</span>    onDragStart: function(draggable, e) {
         if (draggable.group === this.group) {
             this.monitoring = true;
             this.el.addCls(this.activeCls);
@@ -168,18 +168,18 @@ Ext.define('Ext.util.Droppable', {
         }
     },
 
-    // @private
-    isDragOver: function(draggable, region) {
+<span id='Ext-util-Droppable-method-isDragOver'>    // @private
+</span>    isDragOver: function(draggable, region) {
         return this.region[this.validDropMode](draggable.region);
     },
 
-    // @private
-    onDrag: function(draggable, e) {
+<span id='Ext-util-Droppable-method-onDrag'>    // @private
+</span>    onDrag: function(draggable, e) {
         this.setCanDrop(this.isDragOver(draggable), draggable, e);
     },
 
-    // @private
-    setCanDrop: function(canDrop, draggable, e) {
+<span id='Ext-util-Droppable-method-setCanDrop'>    // @private
+</span>    setCanDrop: function(canDrop, draggable, e) {
         if (canDrop &amp;&amp; !this.canDrop) {
             this.canDrop = true;
             this.el.addCls(this.hoverCls);
@@ -192,13 +192,13 @@ Ext.define('Ext.util.Droppable', {
         }
     },
 
-    // @private
-    onBeforeDragEnd: function(draggable, e) {
+<span id='Ext-util-Droppable-method-onBeforeDragEnd'>    // @private
+</span>    onBeforeDragEnd: function(draggable, e) {
         draggable.cancelRevert = this.canDrop;
     },
 
-    // @private
-    onDragEnd: function(draggable, e) {
+<span id='Ext-util-Droppable-method-onDragEnd'>    // @private
+</span>    onDragEnd: function(draggable, e) {
         this.monitoring = false;
         this.el.removeCls(this.activeCls);
 

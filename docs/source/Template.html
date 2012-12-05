@@ -30,14 +30,12 @@
  *       var t = new Ext.Template(&quot;&lt;div&gt;Hello {0}.&lt;/div&gt;&quot;);
  *       t.{@link #append}('some-element', ['foo']);
  *
- * - Array:
- *
- *   An Array will be combined with `join('')`.
+ * - Array: An Array will be combined with `join('')`.
  *
  *       var t = new Ext.Template([
  *           '&lt;div name=&quot;{id}&quot;&gt;',
  *               '&lt;span class=&quot;{cls}&quot;&gt;{name:trim} {value:ellipsis(10)}&lt;/span&gt;',
- *           '&lt;/div&gt;',
+ *           '&lt;/div&gt;'
  *       ]);
  *       t.{@link #compile}();
  *       t.{@link #append}('some-element', {id: 'myid', cls: 'myclass', name: 'foo', value: 'bar'});
@@ -52,7 +50,7 @@
  *         '&lt;/div&gt;',
  *         // a configuration object:
  *         {
- *             compiled: true,      // {@link #compile} immediately
+ *             compiled: true      // {@link #compile} immediately
  *         }
  *     );
  *
@@ -69,10 +67,10 @@ Ext.define('Ext.Template', {
 
     inheritableStatics: {
 <span id='Ext-Template-static-method-from'>        /**
-</span>         * Creates a template from the passed element's value (_display:none_ textarea, preferred) or innerHTML.
-         * @param {String/HTMLElement} el A DOM element or its id
-         * @param {Object} config (optional) Config object
-         * @return {Ext.Template} The created template
+</span>         * Creates a template from the passed element's value (_display:none_ textarea, preferred) or `innerHTML`.
+         * @param {String/HTMLElement} el A DOM element or its `id`.
+         * @param {Object} config (optional) Config object.
+         * @return {Ext.Template} The created template.
          * @static
          * @inheritable
          */
@@ -86,10 +84,10 @@ Ext.define('Ext.Template', {
 
 <span id='Ext-Template-method-constructor'>    /**
 </span>     * Creates new template.
-     *
+     * 
      * @param {String...} html List of strings to be concatenated into template.
      * Alternatively an array of strings can be given, but then no config object may be passed.
-     * @param {Object} config (optional) Config object
+     * @param {Object} config (optional) Config object.
      */
     constructor: function(html) {
         var me = this,
@@ -100,6 +98,14 @@ Ext.define('Ext.Template', {
             value;
 
         me.initialConfig = {};
+        
+        // Allow an array to be passed here so we can
+        // pass an array of strings and an object
+        // at the end
+        if (length === 1 &amp;&amp; Ext.isArray(html)) {
+            args = html;
+            length = args.length;
+        }
 
         if (length &gt; 1) {
             for (; i &lt; length; i++) {
@@ -111,13 +117,8 @@ Ext.define('Ext.Template', {
                     buffer.push(value);
                 }
             }
-            html = buffer.join('');
         } else {
-            if (Ext.isArray(html)) {
-                buffer.push(html.join(''));
-            } else {
-                buffer.push(html);
-            }
+            buffer.push(html);
         }
 
         // @private
@@ -130,24 +131,24 @@ Ext.define('Ext.Template', {
 
 <span id='Ext-Template-property-isTemplate'>    /**
 </span>     * @property {Boolean} isTemplate
-     * `true` in this class to identify an objact as an instantiated Template, or subclass thereof.
+     * `true` in this class to identify an object as an instantiated Template, or subclass thereof.
      */
     isTemplate: true,
 
 <span id='Ext-Template-cfg-compiled'>    /**
-</span>     * @cfg {Boolean} compiled
-     * True to immediately compile the template. Defaults to false.
+</span>     * @cfg {Boolean} [compiled=false]
+     * `true` to immediately compile the template.
      */
 
 <span id='Ext-Template-cfg-disableFormats'>    /**
-</span>     * @cfg {Boolean} disableFormats
-     * True to disable format functions in the template. If the template doesn't contain
-     * format functions, setting disableFormats to true will reduce apply time. Defaults to false.
+</span>     * @cfg {Boolean} [disableFormats=false]
+     * `true` to disable format functions in the template. If the template doesn't contain
+     * format functions, setting `disableFormats` to `true` will reduce apply time.
      */
     disableFormats: false,
 
-    re: /\{([\w\-]+)(?:\:([\w\.]*)(?:\((.*?)?\))?)?\}/g,
-
+<span id='Ext-Template-property-re'>    re: /\{([\w\-]+)(?:\:([\w\.]*)(?:\((.*?)?\))?)?\}/g,
+</span>
 <span id='Ext-Template-method-apply'>    /**
 </span>     * Returns an HTML fragment of this template with the specified values applied.
      *
@@ -161,7 +162,7 @@ Ext.define('Ext.Template', {
      *     var tpl = new Ext.Template('Name: {name}, Age: {age}');
      *     tpl.apply({name: 'John', age: 25});
      *
-     * @return {String} The HTML fragment
+     * @return {String} The HTML fragment.
      */
     apply: function(values) {
         var me = this,
@@ -228,7 +229,7 @@ Ext.define('Ext.Template', {
 <span id='Ext-Template-method-set'>    /**
 </span>     * Sets the HTML used as the template and optionally compiles it.
      * @param {String} html
-     * @param {Boolean} compile (optional) True to compile the template.
+     * @param {Boolean} compile (optional) `true` to compile the template.
      * @return {Ext.Template} this
      */
     set: function(html, compile) {
@@ -238,10 +239,10 @@ Ext.define('Ext.Template', {
         return compile ? me.compile() : me;
     },
 
-    compileARe: /\\/g,
-    compileBRe: /(\r\n|\n)/g,
-    compileCRe: /'/g,
-
+<span id='Ext-Template-property-compileARe'>    compileARe: /\\/g,
+</span><span id='Ext-Template-property-compileBRe'>    compileBRe: /(\r\n|\n)/g,
+</span><span id='Ext-Template-property-compileCRe'>    compileCRe: /'/g,
+</span>
 <span id='Ext-Template-method-compile'>    /**
 </span>     * Compiles the template into an internal function, eliminating the RegEx overhead.
      * @return {Ext.Template} this
@@ -278,10 +279,10 @@ Ext.define('Ext.Template', {
 <span id='Ext-Template-method-insertFirst'>    /**
 </span>     * Applies the supplied values to the template and inserts the new node(s) as the first child of el.
      *
-     * @param {String/HTMLElement/Ext.Element} el The context element
+     * @param {String/HTMLElement/Ext.Element} el The context element.
      * @param {Object/Array} values The template values. See {@link #applyTemplate} for details.
-     * @param {Boolean} returnElement (optional) true to return a Ext.Element.
-     * @return {HTMLElement/Ext.Element} The new node or Element
+     * @param {Boolean} returnElement (optional) `true` to return a Ext.Element.
+     * @return {HTMLElement/Ext.Element} The new node or Element.
      */
     insertFirst: function(el, values, returnElement) {
         return this.doInsert('afterBegin', el, values, returnElement);
@@ -290,9 +291,9 @@ Ext.define('Ext.Template', {
 <span id='Ext-Template-method-insertBefore'>    /**
 </span>     * Applies the supplied values to the template and inserts the new node(s) before el.
      *
-     * @param {String/HTMLElement/Ext.Element} el The context element
+     * @param {String/HTMLElement/Ext.Element} el The context element.
      * @param {Object/Array} values The template values. See {@link #applyTemplate} for details.
-     * @param {Boolean} returnElement (optional) true to return a Ext.Element.
+     * @param {Boolean} returnElement (optional) `true` to return an Ext.Element.
      * @return {HTMLElement/Ext.Element} The new node or Element
      */
     insertBefore: function(el, values, returnElement) {
@@ -302,10 +303,10 @@ Ext.define('Ext.Template', {
 <span id='Ext-Template-method-insertAfter'>    /**
 </span>     * Applies the supplied values to the template and inserts the new node(s) after el.
      *
-     * @param {String/HTMLElement/Ext.Element} el The context element
+     * @param {String/HTMLElement/Ext.Element} el The context element.
      * @param {Object/Array} values The template values. See {@link #applyTemplate} for details.
-     * @param {Boolean} returnElement (optional) true to return a Ext.Element.
-     * @return {HTMLElement/Ext.Element} The new node or Element
+     * @param {Boolean} returnElement (optional) `true` to return a Ext.Element.
+     * @return {HTMLElement/Ext.Element} The new node or Element.
      */
     insertAfter: function(el, values, returnElement) {
         return this.doInsert('afterEnd', el, values, returnElement);
@@ -316,34 +317,33 @@ Ext.define('Ext.Template', {
      *
      * For example usage see {@link Ext.Template Ext.Template class docs}.
      *
-     * @param {String/HTMLElement/Ext.Element} el The context element
+     * @param {String/HTMLElement/Ext.Element} el The context element.
      * @param {Object/Array} values The template values. See {@link #applyTemplate} for details.
      * @param {Boolean} returnElement (optional) true to return an Ext.Element.
-     * @return {HTMLElement/Ext.Element} The new node or Element
+     * @return {HTMLElement/Ext.Element} The new node or Element.
      */
     append: function(el, values, returnElement) {
         return this.doInsert('beforeEnd', el, values, returnElement);
     },
 
-    doInsert: function(where, el, values, returnEl) {
-        el = Ext.getDom(el);
-        var newNode = Ext.DomHelper.insertHtml(where, el, this.apply(values));
-        return returnEl ? Ext.get(newNode, true) : newNode;
+<span id='Ext-Template-method-doInsert'>    doInsert: function(where, el, values, returnElement) {
+</span>        var newNode = Ext.DomHelper.insertHtml(where, Ext.getDom(el), this.apply(values));
+        return returnElement ? Ext.get(newNode) : newNode;
     },
 
 <span id='Ext-Template-method-overwrite'>    /**
 </span>     * Applies the supplied values to the template and overwrites the content of el with the new node(s).
      *
-     * @param {String/HTMLElement/Ext.Element} el The context element
+     * @param {String/HTMLElement/Ext.Element} el The context element.
      * @param {Object/Array} values The template values. See {@link #applyTemplate} for details.
      * @param {Boolean} returnElement (optional) true to return a Ext.Element.
-     * @return {HTMLElement/Ext.Element} The new node or Element
+     * @return {HTMLElement/Ext.Element} The new node or Element.
      */
     overwrite: function(el, values, returnElement) {
-        el = Ext.getDom(el);
-        el.innerHTML = this.apply(values);
-        return returnElement ? Ext.get(el.firstChild, true) : el.firstChild;
+        var newNode = Ext.DomHelper.overwrite(Ext.getDom(el), this.apply(values));
+        return returnElement ? Ext.get(newNode) : newNode;
     }
-});</pre>
+});
+</pre>
 </body>
 </html>

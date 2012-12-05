@@ -15,146 +15,64 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-device-geolocation-Abstract'>/**
+  <pre class="prettyprint lang-js"><span id='Ext-device-contacts-Abstract'>/**
 </span> * @private
  */
-Ext.define('Ext.device.geolocation.Abstract', {
+Ext.define('Ext.device.contacts.Abstract', {
+    extend: 'Ext.Evented',
+
     config: {
-<span id='Ext-device-geolocation-Abstract-cfg-maximumAge'>        /**
-</span>         * @cfg {Number} maximumAge
-         * This option indicates that the application is willing to accept cached location information whose age
-         * is no greater than the specified time in milliseconds. If maximumAge is set to 0, an attempt to retrieve
-         * new location information is made immediately.
+<span id='Ext-device-contacts-Abstract-cfg-includeImages'>        /**
+</span>         * @cfg {Boolean} includeImages
+         * True to include images when you get the contacts store. Please beware that this can be very slow.
          */
-        maximumAge: 0,
-
-<span id='Ext-device-geolocation-Abstract-cfg-frequency'>        /**
-</span>         * @cfg {Number} frequency The default frequency to get the current position when using {@link Ext.device.Geolocation#watchPosition}.
-         */
-        frequency: 10000,
-
-<span id='Ext-device-geolocation-Abstract-cfg-allowHighAccuracy'>        /**
-</span>         * @cfg {Boolean} allowHighAccuracy True to allow high accuracy when getting the current position.
-         */
-        allowHighAccuracy: false,
-
-<span id='Ext-device-geolocation-Abstract-cfg-timeout'>        /**
-</span>         * @cfg {Number} timeout
-         * The maximum number of milliseconds allowed to elapse between a location update operation.
-         */
-        timeout: Infinity
+        includeImages: false
     },
 
-<span id='Ext-device-geolocation-Abstract-method-getCurrentPosition'>    /**
-</span>     * Attempts to get the current position of this device.
-     *
-     *     Ext.device.Geolocation.getCurrentPosition({
-     *         success: function(position) {
-     *             console.log(position);
-     *         },
-     *         failure: function() {
-     *             Ext.Msg.alert('Geolocation', 'Something went wrong!');
-     *         }
-     *     });
-     *
-     * *Note:* If you want to watch the current position, you could use {@link Ext.device.Geolocation#watchPosition} instead.
-     *
-     * @param {Object} config An object which contains the following config options:
-     *
-     * @param {Function} config.success
-     * The function to call when the location of the current device has been received.
-     *
-     * @param {Object} config.success.position
-     *
-     * @param {Function} config.failure
-     * The function that is called when something goes wrong.
-     *
-     * @param {Object} config.scope
-     * The scope of the `success` and `failure` functions.
-     *
-     * @param {Number} config.maximumAge
-     * The maximum age of a cached location. If you do not enter a value for this, the value of {@link #maximumAge}
-     * will be used.
-     *
-     * @param {Number} config.timeout
-     * The timeout for this request. If you do not specify a value, it will default to {@link #timeout}.
-     *
-     * @param {Boolean} config.allowHighAccuracy
-     * True to enable allow accuracy detection of the location of the current device. If you do not specify a value, it will
-     * default to {@link #allowHighAccuracy}.
+<span id='Ext-device-contacts-Abstract-method-getContacts'>    /**
+</span>     * Returns an Array of contact objects.
+     * @return {Object[]} An array of contact objects.
      */
-    getCurrentPosition: function(config) {
-        var defaultConfig = Ext.device.geolocation.Abstract.prototype.config;
-
-        config = Ext.applyIf(config, {
-            maximumAge: defaultConfig.maximumAge,
-            frequency: defaultConfig.frequency,
-            allowHighAccuracy: defaultConfig.allowHighAccuracy,
-            timeout: defaultConfig.timeout
-        });
-
-        // &lt;debug&gt;
-        if (!config.success) {
-            Ext.Logger.warn('You need to specify a `success` function for #getCurrentPosition');
+    getContacts: function(config) {
+        if (!this._store) {
+            this._store = [
+                {
+                    first: 'Robert',
+                    last: 'Dougan',
+                    emails: {
+                        work: 'rob@sencha.com'
+                    }
+                },
+                {
+                    first: 'Jamie',
+                    last: 'Avins',
+                    emails: {
+                        work: 'jamie@sencha.com'
+                    }
+                }
+            ];
         }
-        // &lt;/debug&gt;
 
-        return config;
+        config.success.call(config.scope || this, this._store);
     },
 
-<span id='Ext-device-geolocation-Abstract-method-watchPosition'>    /**
-</span>     * Watches for the current position and calls the callback when successful depending on the specified {@link #frequency}.
-     *
-     *     Ext.device.Geolocation.watchPosition({
-     *         callback: function(position) {
-     *             console.log(position);
-     *         },
-     *         failure: function() {
-     *             Ext.Msg.alert('Geolocation', 'Something went wrong!');
-     *         }
-     *     });
-     *
-     * @param {Object} config An object which contains the following config options:
-     *
-     * @param {Function} config.callback
-     * The function to be called when the position has been updated.
-     *
-     * @param {Function} config.failure
-     * The function that is called when something goes wrong.
-     *
-     * @param {Object} config.scope
-     * The scope of the `success` and `failure` functions.
-     *
-     * @param {Boolean} config.frequency
-     * The frequency in which to call the supplied callback. Defaults to {@link #frequency} if you do not specify a value.
-     *
-     * @param {Boolean} config.allowHighAccuracy
-     * True to enable allow accuracy detection of the location of the current device. If you do not specify a value, it will
-     * default to {@link #allowHighAccuracy}.
+<span id='Ext-device-contacts-Abstract-method-getThumbnail'>     /**
+</span>     * Returns base64 encoded image thumbnail for a contact specified in config.id
+     * @return {String} base64 string
      */
-    watchPosition: function(config) {
-        var defaultConfig = Ext.device.geolocation.Abstract.prototype.config;
 
-        config = Ext.applyIf(config, {
-            maximumAge: defaultConfig.maximumAge,
-            frequency: defaultConfig.frequency,
-            allowHighAccuracy: defaultConfig.allowHighAccuracy,
-            timeout: defaultConfig.timeout
-        });
-
-        // &lt;debug&gt;
-        if (!config.callback) {
-            Ext.Logger.warn('You need to specify a `callback` function for #watchPosition');
-        }
-        // &lt;/debug&gt;
-
-        return config;
+    getThumbnail: function(config) {
+        config.callback.call(config.scope || this, &quot;&quot;);
     },
 
-<span id='Ext-device-geolocation-Abstract-method-clearWatch'>    /**
-</span>     * If you are currently watching for the current position, this will stop that task.
+
+<span id='Ext-device-contacts-Abstract-method-getLocalizedLabel'>     /**
+</span>     * Returns localized, user readable label for a contact field (i.e. &quot;Mobile&quot;, &quot;Home&quot;)
+     * @return {String} user readable string
      */
-    clearWatch: Ext.emptyFn
+    getLocalizedLabel: function(config) {
+        config.callback.call(config.scope || this, config.label.toUpperCase(), config.label);
+    }
 });
 </pre>
 </body>

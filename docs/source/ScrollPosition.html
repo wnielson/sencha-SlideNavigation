@@ -22,11 +22,11 @@ Ext.define('Ext.scroll.indicator.ScrollPosition', {
     extend: 'Ext.scroll.indicator.Abstract',
 
     config: {
-        cls: 'scrollposition'
-    },
+<span id='Ext-scroll-indicator-ScrollPosition-cfg-cls'>        cls: 'scrollposition'
+</span>    },
 
-    getElementConfig: function() {
-        var config = this.callParent(arguments);
+<span id='Ext-scroll-indicator-ScrollPosition-method-getElementConfig'>    getElementConfig: function() {
+</span>        var config = this.callParent(arguments);
 
         config.children.unshift({
             className: 'x-scroll-bar-stretcher'
@@ -35,8 +35,8 @@ Ext.define('Ext.scroll.indicator.ScrollPosition', {
         return config;
     },
 
-    updateValue: function(value) {
-        if (this.gapLength === 0) {
+<span id='Ext-scroll-indicator-ScrollPosition-method-updateValue'>    updateValue: function(value) {
+</span>        if (this.gapLength === 0) {
             if (value &gt; 1) {
                 value = value - 1;
             }
@@ -48,15 +48,14 @@ Ext.define('Ext.scroll.indicator.ScrollPosition', {
         }
     },
 
-    setLength: function(length) {
-        var axis = this.getAxis(),
-            scrollOffset = this.barLength,
+<span id='Ext-scroll-indicator-ScrollPosition-method-updateLength'>    updateLength: function() {
+</span>        var scrollOffset = this.barLength,
             barDom = this.barElement.dom,
             element = this.element;
 
         this.callParent(arguments);
 
-        if (axis === 'x') {
+        if (this.getAxis() === 'x') {
             barDom.scrollLeft = scrollOffset;
             element.setLeft(scrollOffset);
         }
@@ -66,14 +65,15 @@ Ext.define('Ext.scroll.indicator.ScrollPosition', {
         }
     },
 
-    setOffset: function(offset) {
-        var axis = this.getAxis(),
-            scrollOffset = this.barLength,
+<span id='Ext-scroll-indicator-ScrollPosition-method-setOffset'>    setOffset: function(offset) {
+</span>        var barLength = this.barLength,
+            minLength = this.getMinLength(),
             barDom = this.barElement.dom;
 
-        offset = scrollOffset - offset;
+        offset = Math.min(barLength - minLength, Math.max(offset, minLength - this.getLength()));
+        offset = barLength - offset;
 
-        if (axis === 'x') {
+        if (this.getAxis() === 'x') {
             barDom.scrollLeft = offset;
         }
         else {

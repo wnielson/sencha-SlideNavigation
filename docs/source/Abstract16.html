@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-util-sizemonitor-Abstract'>/**
+</span> * @private
+ */
+Ext.define('Ext.util.sizemonitor.Abstract', {
+
+    mixins: ['Ext.mixin.Templatable'],
+
+    requires: [
+        'Ext.TaskQueue'
+    ],
+
+    config: {
+<span id='Ext-util-sizemonitor-Abstract-cfg-element'>        element: null,
+</span>
+<span id='Ext-util-sizemonitor-Abstract-cfg-callback'>        callback: Ext.emptyFn,
+</span>
+<span id='Ext-util-sizemonitor-Abstract-cfg-scope'>        scope: null,
+</span>
+<span id='Ext-util-sizemonitor-Abstract-cfg-args'>        args: []
+</span>    },
+
+<span id='Ext-util-sizemonitor-Abstract-property-width'>    width: 0,
+</span>
+<span id='Ext-util-sizemonitor-Abstract-property-height'>    height: 0,
+</span>
+<span id='Ext-util-sizemonitor-Abstract-property-contentWidth'>    contentWidth: 0,
+</span>
+<span id='Ext-util-sizemonitor-Abstract-property-contentHeight'>    contentHeight: 0,
+</span>
+<span id='Ext-util-sizemonitor-Abstract-method-constructor'>    constructor: function(config) {
+</span>        this.refresh = Ext.Function.bind(this.refresh, this);
+
+        this.info = {
+            width: 0,
+            height: 0,
+            contentWidth: 0,
+            contentHeight: 0,
+            flag: 0
+        };
+
+        this.initElement();
+
+        this.initConfig(config);
+
+        this.bindListeners(true);
+    },
+
+<span id='Ext-util-sizemonitor-Abstract-method-bindListeners'>    bindListeners: Ext.emptyFn,
+</span>
+<span id='Ext-util-sizemonitor-Abstract-method-applyElement'>    applyElement: function(element) {
+</span>        if (element) {
+            return Ext.get(element);
+        }
+    },
+
+<span id='Ext-util-sizemonitor-Abstract-method-updateElement'>    updateElement: function(element) {
+</span>        element.append(this.detectorsContainer);
+        element.addCls('x-size-monitored');
+    },
+
+<span id='Ext-util-sizemonitor-Abstract-method-applyArgs'>    applyArgs: function(args) {
+</span>        return args.concat([this.info]);
+    },
+
+<span id='Ext-util-sizemonitor-Abstract-method-refreshMonitors'>    refreshMonitors: Ext.emptyFn,
+</span>
+<span id='Ext-util-sizemonitor-Abstract-method-forceRefresh'>    forceRefresh: function() {
+</span>        Ext.TaskQueue.requestRead('refresh', this);
+    },
+
+<span id='Ext-util-sizemonitor-Abstract-method-refreshSize'>    refreshSize: function() {
+</span>        var element = this.getElement();
+
+        if (!element || element.isDestroyed) {
+            return false;
+        }
+
+        var width = element.getWidth(),
+            height = element.getHeight(),
+            contentElement = this.detectorsContainer,
+            contentWidth = contentElement.offsetWidth,
+            contentHeight = contentElement.offsetHeight,
+            currentContentWidth = this.contentWidth,
+            currentContentHeight = this.contentHeight,
+            info = this.info,
+            resized = false,
+            flag;
+
+        this.width = width;
+        this.height = height;
+        this.contentWidth = contentWidth;
+        this.contentHeight = contentHeight;
+
+        flag = ((currentContentWidth !== contentWidth ? 1 : 0) + (currentContentHeight !== contentHeight ? 2 : 0));
+
+        if (flag &gt; 0) {
+            info.width = width;
+            info.height = height;
+            info.contentWidth = contentWidth;
+            info.contentHeight = contentHeight;
+            info.flag = flag;
+
+            resized = true;
+            this.getCallback().apply(this.getScope(), this.getArgs());
+        }
+
+        return resized;
+    },
+
+<span id='Ext-util-sizemonitor-Abstract-method-refresh'>    refresh: function(force) {
+</span>        if (this.refreshSize() || force) {
+            Ext.TaskQueue.requestWrite('refreshMonitors', this);
+        }
+    },
+
+<span id='Ext-util-sizemonitor-Abstract-method-destroy'>    destroy: function() {
+</span>        var element = this.getElement();
+
+        this.bindListeners(false);
+
+        if (element &amp;&amp; !element.isDestroyed) {
+            element.removeCls('x-size-monitored');
+        }
+
+        delete this._element;
+
+        this.callSuper();
+    }
+});
+</pre>
+</body>
+</html>

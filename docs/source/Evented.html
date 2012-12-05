@@ -25,8 +25,8 @@ Ext.define('Ext.Evented', {
     mixins: ['Ext.mixin.Observable'],
 
     statics: {
-        generateSetter: function(nameMap) {
-            var internalName = nameMap.internal,
+<span id='Ext-Evented-method-generateSetter'>        generateSetter: function(nameMap) {
+</span>            var internalName = nameMap.internal,
                 applyName = nameMap.apply,
                 changeEventName = nameMap.changeEvent,
                 doSetName = nameMap.doSet;
@@ -44,6 +44,10 @@ Ext.define('Ext.Evented', {
                     }
                 }
 
+                // The old value might have been changed at this point
+                // (after the apply call chain) so it should be read again
+                oldValue = this[internalName];
+
                 if (value !== oldValue) {
                     if (initialized) {
                         this.fireAction(changeEventName, [this, value, oldValue], this.doSet, this, {
@@ -52,7 +56,9 @@ Ext.define('Ext.Evented', {
                     }
                     else {
                         this[internalName] = value;
-                        this[doSetName].call(this, value, oldValue);
+                        if (this[doSetName]) {
+                            this[doSetName].call(this, value, oldValue);
+                        }
                     }
                 }
 
@@ -61,27 +67,29 @@ Ext.define('Ext.Evented', {
         }
     },
 
-    initialized: false,
-
-    constructor: function(config) {
-        this.initialConfig = config;
+<span id='Ext-Evented-property-initialized'>    initialized: false,
+</span>
+<span id='Ext-Evented-method-constructor'>    constructor: function(config) {
+</span>        this.initialConfig = config;
         this.initialize();
     },
 
-    initialize: function() {
-        this.initConfig(this.initialConfig);
+<span id='Ext-Evented-method-initialize'>    initialize: function() {
+</span>        this.initConfig(this.initialConfig);
         this.initialized = true;
     },
 
-    doSet: function(me, value, oldValue, options) {
-        var nameMap = options.nameMap;
+<span id='Ext-Evented-method-doSet'>    doSet: function(me, value, oldValue, options) {
+</span>        var nameMap = options.nameMap;
 
         me[nameMap.internal] = value;
-        me[nameMap.doSet].call(this, value, oldValue);
+        if (me[nameMap.doSet]) {
+          me[nameMap.doSet].call(this, value, oldValue);
+        }
     },
 
-    onClassExtended: function(Class, data) {
-        if (!data.hasOwnProperty('eventedConfig')) {
+<span id='Ext-Evented-method-onClassExtended'>    onClassExtended: function(Class, data) {
+</span>        if (!data.hasOwnProperty('eventedConfig')) {
             return;
         }
 

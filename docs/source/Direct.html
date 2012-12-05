@@ -103,22 +103,22 @@ Ext.define('Ext.data.proxy.Direct', {
         extraParams: null
     },
 
-    // private
-    paramOrderRe: /[\s,|]/,
+<span id='Ext-data-proxy-Direct-property-paramOrderRe'>    // @private
+</span>    paramOrderRe: /[\s,|]/,
 
-    applyParamOrder: function(paramOrder) {
-        if (Ext.isString(paramOrder)) {
+<span id='Ext-data-proxy-Direct-method-applyParamOrder'>    applyParamOrder: function(paramOrder) {
+</span>        if (Ext.isString(paramOrder)) {
             paramOrder = paramOrder.split(this.paramOrderRe);
         }
         return paramOrder;
     },
 
-    applyDirectFn: function(directFn) {
-        return Ext.direct.Manager.parseMethod(directFn);
+<span id='Ext-data-proxy-Direct-method-applyDirectFn'>    applyDirectFn: function(directFn) {
+</span>        return Ext.direct.Manager.parseMethod(directFn);
     },
 
-    applyApi: function(api) {
-        var fn;
+<span id='Ext-data-proxy-Direct-method-applyApi'>    applyApi: function(api) {
+</span>        var fn;
 
         if (api &amp;&amp; Ext.isObject(api)) {
             for (fn in api) {
@@ -131,8 +131,8 @@ Ext.define('Ext.data.proxy.Direct', {
         return api;
     },
 
-    doRequest: function(operation, callback, scope) {
-        var me = this,
+<span id='Ext-data-proxy-Direct-method-doRequest'>    doRequest: function(operation, callback, scope) {
+</span>        var me = this,
             writer = me.getWriter(),
             request = me.buildRequest(operation, callback, scope),
             api = me.getApi(),
@@ -143,7 +143,7 @@ Ext.define('Ext.data.proxy.Direct', {
 
         //&lt;debug&gt;
         if (!fn) {
-            Ext.Error.raise('No direct function specified for this proxy');
+            Ext.Logger.error('No direct function specified for this proxy');
         }
         //&lt;/debug&gt;
 
@@ -167,35 +167,35 @@ Ext.define('Ext.data.proxy.Direct', {
         fn.apply(window, args);
     },
 
-    /*
-     * Inherit docs. We don't apply any encoding here because
+<span id='Ext-data-proxy-Direct-method-applyEncoding'>    /*
+</span>     * Inherit docs. We don't apply any encoding here because
      * all of the direct requests go out as jsonData
      */
     applyEncoding: function(value) {
         return value;
     },
 
-    createRequestCallback: function(request, operation, callback, scope) {
-        var me = this;
+<span id='Ext-data-proxy-Direct-method-createRequestCallback'>    createRequestCallback: function(request, operation, callback, scope) {
+</span>        var me = this;
 
         return function(data, event) {
             me.processResponse(event.getStatus(), operation, request, event.getResult(), callback, scope);
         };
     },
 
-    // inherit docs
-    extractResponseData: function(response) {
+<span id='Ext-data-proxy-Direct-method-extractResponseData'>    // @inheritdoc
+</span>    extractResponseData: function(response) {
         var result = response.getResult();
         return Ext.isDefined(result) ? result : response.getData();
     },
 
-    // inherit docs
-    setException: function(operation, response) {
+<span id='Ext-data-proxy-Direct-method-setException'>    // @inheritdoc
+</span>    setException: function(operation, response) {
         operation.setException(response.getMessage());
     },
 
-    // inherit docs
-    buildUrl: function() {
+<span id='Ext-data-proxy-Direct-method-buildUrl'>    // @inheritdoc
+</span>    buildUrl: function() {
         return '';
     }
 });

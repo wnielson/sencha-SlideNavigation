@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-layout-wrapper-Inner'>/**
+</span> *
+ */
+Ext.define('Ext.layout.wrapper.Inner', {
+    config: {
+<span id='Ext-layout-wrapper-Inner-cfg-sizeState'>        sizeState: null,
+</span><span id='Ext-layout-wrapper-Inner-cfg-container'>        container: null
+</span>    },
+
+<span id='Ext-layout-wrapper-Inner-method-constructor'>    constructor: function(config) {
+</span>        this.initConfig(config);
+    },
+
+<span id='Ext-layout-wrapper-Inner-method-getElement'>    getElement: function() {
+</span>        return this.getContainer().bodyElement;
+    },
+
+<span id='Ext-layout-wrapper-Inner-method-setInnerWrapper'>    setInnerWrapper: Ext.emptyFn,
+</span>
+<span id='Ext-layout-wrapper-Inner-method-getInnerWrapper'>    getInnerWrapper: Ext.emptyFn
+</span>});
+</pre>
+</body>
+</html>

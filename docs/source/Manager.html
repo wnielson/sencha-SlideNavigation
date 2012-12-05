@@ -25,7 +25,7 @@
  *
  * # Specification
  *
- * For additional information consult the [Ext.Direct Specification][1].
+ * For additional information consult the [Ext.Direct Specification](http://sencha.com/products/extjs/extdirect).
  *
  * # Providers
  *
@@ -56,8 +56,6 @@
  *         out.el.scrollTo('t', 100000, true);
  *     });
  *
- *    [1]: http://sencha.com/products/extjs/extdirect
- *
  * @singleton
  * @alternateClassName Ext.Direct
  */
@@ -72,8 +70,8 @@ Ext.define('Ext.direct.Manager', {
 
     alternateClassName: 'Ext.Direct',
 
-    exceptions: {
-        TRANSPORT: 'xhr',
+<span id='Ext-direct-Manager-property-exceptions'>    exceptions: {
+</span>        TRANSPORT: 'xhr',
         PARSE: 'parse',
         LOGIN: 'login',
         SERVER: 'exception'
@@ -99,8 +97,8 @@ Ext.define('Ext.direct.Manager', {
         me.providers = Ext.create('Ext.util.Collection', this.getKey);
     },
 
-    getKey: function(item) {
-        return item.getId();
+<span id='Ext-direct-Manager-method-getKey'>    getKey: function(item) {
+</span>        return item.getId();
     },
 
 <span id='Ext-direct-Manager-method-addProvider'>    /**
@@ -109,7 +107,7 @@ Ext.define('Ext.direct.Manager', {
      *
      *     Ext.direct.Manager.addProvider({
      *         type: &quot;remoting&quot;,       // create a {@link Ext.direct.RemotingProvider}
-     *         url: &quot;php\/router.php&quot;, // url to connect to the Ext.Direct server-side router.
+     *         url: &quot;php/router.php&quot;, // url to connect to the Ext.Direct server-side router.
      *         actions: {              // each property within the actions object represents a Class
      *             TestAction: [       // array of methods within each server side Class
      *             {
@@ -124,13 +122,14 @@ Ext.define('Ext.direct.Manager', {
      *                 len: 1
      *             }]
      *         },
-     *         namespace: &quot;myApplication&quot;, // namespace to create the Remoting Provider in
+     *         namespace: &quot;myApplication&quot; // namespace to create the Remoting Provider in
      *     });
      *
      * @param {Ext.direct.Provider/Object...} provider
      * Accepts any number of Provider descriptions (an instance or config object for
-     * a Provider). Each Provider description instructs Ext.Directhow to create
+     * a Provider). Each Provider description instructs Ext.Direct how to create
      * client-side stub methods.
+     * @return {Object}
      */
     addProvider : function(provider) {
         var me = this,
@@ -162,6 +161,7 @@ Ext.define('Ext.direct.Manager', {
 </span>     * Retrieves a {@link Ext.direct.Provider provider} by the **{@link Ext.direct.Provider#id id}** specified when the
      * provider is {@link #addProvider added}.
      * @param {String/Ext.direct.Provider} id The id of the provider, or the provider instance.
+     * @return {Object}
      */
     getProvider : function(id){
         return id.isProvider ? id : this.providers.get(id);
@@ -170,7 +170,7 @@ Ext.define('Ext.direct.Manager', {
 <span id='Ext-direct-Manager-method-removeProvider'>    /**
 </span>     * Removes the provider.
      * @param {String/Ext.direct.Provider} provider The provider instance or the id of the provider.
-     * @return {Ext.direct.Provider} The provider, null if not found.
+     * @return {Ext.direct.Provider/null} The provider, `null` if not found.
      */
     removeProvider : function(provider) {
         var me = this,
@@ -219,8 +219,8 @@ Ext.define('Ext.direct.Manager', {
         return Ext.isObject(transaction) ? transaction : this.transactions.get(transaction);
     },
 
-    onProviderData : function(provider, event) {
-        var me = this,
+<span id='Ext-direct-Manager-method-onProviderData'>    onProviderData : function(provider, event) {
+</span>        var me = this,
             i = 0, ln,
             name;
 

@@ -15,138 +15,170 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-tab-Bar'>/**
-</span> * Ext.tab.Bar is used internally by {@link Ext.tab.Panel} to create the bar of tabs that appears at the top of the tab
- * panel. It's unusual to use it directly, instead see the {@link Ext.tab.Panel tab panel docs} for usage instructions.
+  <pre class="prettyprint lang-js"><span id='Ext-chart-series-sprite-Bar'>/**
+</span> * @class Ext.chart.series.sprite.Bar
+ * @extends Ext.chart.series.sprite.StackedCartesian
  *
- * Used in the {@link Ext.tab.Panel} component to display {@link Ext.tab.Tab} components.
- *
- * @private
+ * Draws a sprite used in the bar series.
  */
-Ext.define('Ext.tab.Bar', {
-    extend: 'Ext.Toolbar',
-    alternateClassName: 'Ext.TabBar',
-    xtype : 'tabbar',
+Ext.define(&quot;Ext.chart.series.sprite.Bar&quot;, {
+    alias: 'sprite.barSeries',
+    extend: 'Ext.chart.series.sprite.StackedCartesian',
 
-    requires: ['Ext.tab.Tab'],
+    inheritableStatics: {
+<span id='Ext-chart-series-sprite-Bar-property-def'>        def: {
+</span>            processors: {
+<span id='Ext-chart-series-sprite-Bar-cfg-minBarWidth'>                /**
+</span>                 * @cfg {Number} [minBarWidth=2] The minimum bar width.
+                 */
+                minBarWidth: 'number',
 
-    config: {
-<span id='Ext-tab-Bar-cfg-baseCls'>        /**
-</span>         * @cfg
-         * @inheritdoc
-         */
-        baseCls: Ext.baseCSSPrefix + 'tabbar',
+<span id='Ext-chart-series-sprite-Bar-cfg-maxBarWidth'>                /**
+</span>                 * @cfg {Number} [maxBarWidth=100] The maximum bar width.
+                 */
+                maxBarWidth: 'number',
 
-        // @private
-        defaultType: 'tab',
+<span id='Ext-chart-series-sprite-Bar-cfg-minGapWidth'>                /**
+</span>                 * @cfg {Number} [minGapWidth=5] The minimum gap between bars.
+                 */
+                minGapWidth: 'number',
 
-        // @private
-        layout: {
-            type: 'hbox',
-            align: 'middle'
-        }
-    },
+<span id='Ext-chart-series-sprite-Bar-cfg-radius'>                /**
+</span>                 * @cfg {Number} [radius=0] The degree of rounding for rounded bars.
+                 */
+                radius: 'number',
 
-    eventedConfig: {
-<span id='Ext-tab-Bar-cfg-activeTab'>        /**
-</span>         * @cfg {Number/String/Ext.Component} activeTab
-         * The initially activated tab. Can be specified as numeric index,
-         * component ID or as the component instance itself.
-         * @accessor
-         * @evented
-         */
-        activeTab: null
-    },
-
-<span id='Ext-tab-Bar-event-tabchange'>    /**
-</span>     * @event tabchange
-     * Fired when active tab changes.
-     * @param {Ext.tab.Bar} this
-     * @param {Ext.tab.Tab} newTab The new Tab
-     * @param {Ext.tab.Tab} oldTab The old Tab
-     */
-
-    initialize: function() {
-        var me = this;
-        me.callParent();
-
-        me.on({
-            tap: 'onTabTap',
-
-            delegate: '&gt; tab',
-            scope   : me
-        });
-    },
-
-    // @private
-    onTabTap: function(tab) {
-        this.setActiveTab(tab);
-    },
-
-<span id='Ext-tab-Bar-method-applyActiveTab'>    /**
-</span>     * @private
-     */
-    applyActiveTab: function(activeTab, oldActiveTab) {
-        if (!activeTab &amp;&amp; activeTab !== 0) {
-            return;
-        }
-
-        var activeTabInstance = this.parseActiveTab(activeTab);
-
-        if (!activeTabInstance) {
-            // &lt;debug warn&gt;
-            if (oldActiveTab) {
-                Ext.Logger.warn('Trying to set a non-existent activeTab');
+<span id='Ext-chart-series-sprite-Bar-cfg-inGroupGapWidth'>                /**
+</span>                 * @cfg {Number} [inGroupGapWidth=3] The gap between grouped bars.
+                 */
+                inGroupGapWidth: 'number',
+                renderer: 'default'
+            },
+            defaults: {
+                minBarWidth: 2,
+                maxBarWidth: 100,
+                minGapWidth: 5,
+                inGroupGapWidth: 3,
+                radius: 0,
+                renderer: null
             }
-            // &lt;/debug&gt;
+        }
+    },
+
+<span id='Ext-chart-series-sprite-Bar-method-drawLabel'>    // TODO: design this more carefully
+</span>    drawLabel: function (text, dataX, dataStartY, dataY, labelId) {
+        var me = this,
+            attr = me.attr,
+            labelCfg = me.labelCfg || (me.labelCfg = {}),
+            surfaceMatrix = me.surfaceMatrix,
+            labelX, labelY,
+            labelOverflowPadding = attr.labelOverflowPadding,
+            halfWidth,
+            labelBox;
+
+        labelBox = this.getMarkerBBox('labels', labelId, true);
+        labelCfg.text = text;
+        if (!labelBox) {
+            me.putMarker('labels', labelCfg, labelId);
+            labelBox = this.getMarkerBBox('labels', labelId, true);
+        }
+        if (!attr.flipXY) {
+            labelCfg.rotationRads = Math.PI * 0.5;
+        } else {
+            labelCfg.rotationRads = 0;
+        }
+        labelCfg.calloutVertical = !attr.flipXY;
+
+        halfWidth = (labelBox.width / 2 + labelOverflowPadding);
+        if (dataStartY &gt; dataY) {
+            halfWidth = -halfWidth;
+        }
+        labelX = dataX;
+        labelY = dataY - halfWidth;
+        labelCfg.x = surfaceMatrix.x(labelX, labelY);
+        labelCfg.y = surfaceMatrix.y(labelX, labelY);
+        labelX = dataX;
+        labelY = dataY + halfWidth;
+        labelCfg.calloutPlaceX = surfaceMatrix.x(labelX, labelY);
+        labelCfg.calloutPlaceY = surfaceMatrix.y(labelX, labelY);
+        labelX = dataX;
+        labelY = dataY;
+        labelCfg.calloutStartX = surfaceMatrix.x(labelX, labelY);
+        labelCfg.calloutStartY = surfaceMatrix.y(labelX, labelY);
+        if (dataStartY &gt; dataY) {
+            halfWidth = -halfWidth;
+        }
+        if (Math.abs(dataY - dataStartY) &gt; halfWidth * 2) {
+            labelCfg.callout = 0;
+        } else {
+            labelCfg.callout = 1;
+        }
+        me.putMarker('labels', labelCfg, labelId);
+    },
+
+<span id='Ext-chart-series-sprite-Bar-method-drawBar'>    drawBar: function (ctx, surface, clip, left, top, right, bottom, index) {
+</span>        var itemCfg = this.itemCfg || (this.itemCfg = {});
+        itemCfg.x = left;
+        itemCfg.y = top;
+        itemCfg.width = right - left;
+        itemCfg.height = bottom - top;
+        itemCfg.radius = this.attr.radius;
+        if (this.attr.renderer) {
+            this.attr.renderer.call(this, itemCfg, this, index, this.getDataItems().items[index]);
+        }
+        this.putMarker(&quot;items&quot;, itemCfg, index, !this.attr.renderer);
+    },
+
+<span id='Ext-chart-series-sprite-Bar-method-renderClipped'>    //@inheritdoc
+</span>    renderClipped: function (surface, ctx, clip) {
+        if (this.cleanRedraw) {
             return;
         }
-        return activeTabInstance;
-    },
+        var me = this,
+            attr = me.attr,
+            dataX = attr.dataX,
+            dataY = attr.dataY,
+            dataText = attr.labels,
+            dataStartY = attr.dataStartY,
+            groupCount = attr.groupCount,
+            groupOffset = attr.groupOffset - (groupCount - 1) * 0.5,
+            inGroupGapWidth = attr.inGroupGapWidth,
+            yLow, yHi,
+            lineWidth = ctx.lineWidth,
+            matrix = attr.matrix,
+            maxBarWidth = matrix.getXX() - attr.minGapWidth,
+            barWidth = surface.roundPixel(Math.max(attr.minBarWidth, (Math.min(maxBarWidth, attr.maxBarWidth) - inGroupGapWidth * (groupCount - 1)) / groupCount)),
+            surfaceMatrix = this.surfaceMatrix,
+            left, right, bottom, top, i, center,
+            halfLineWidth = 0.5 * attr.lineWidth,
+            xx = matrix.elements[0],
+            dx = matrix.elements[4],
+            yy = matrix.elements[3],
+            dy = surface.roundPixel(matrix.elements[5]) - 1,
+            start = Math.max(0, Math.floor(clip[0])),
+            end = Math.min(dataX.length - 1, Math.ceil(clip[2])),
+            drawMarkers = dataText &amp;&amp; !!this.getBoundMarker(&quot;labels&quot;);
 
-<span id='Ext-tab-Bar-method-doSetDocked'>    /**
-</span>     * @private
-     * When docked to the top, pack left, when on the bottom pack center
-     */
-    doSetDocked: function(newDocked) {
-        var layout = this.getLayout(),
-            pack   = newDocked == 'bottom' ? 'center' : 'left';
+        for (i = start; i &lt;= end; i++) {
+            yLow = dataStartY ? dataStartY[i] : 0;
+            yHi = dataY[i];
 
-        //layout isn't guaranteed to be instantiated so must test
-        if (layout.isLayout) {
-            layout.setPack(pack);
-        } else {
-            layout.pack = (layout &amp;&amp; layout.pack) ? layout.pack : pack;
-        }
-    },
+            center = dataX[i] * xx + dx + groupOffset * (barWidth + inGroupGapWidth);
+            left = surface.roundPixel(center - barWidth / 2) + halfLineWidth;
+            top = surface.roundPixel(yHi * yy + lineWidth + dy);
+            right = surface.roundPixel(center + barWidth / 2) - halfLineWidth;
+            bottom = surface.roundPixel(yLow * yy + lineWidth + dy);
 
-<span id='Ext-tab-Bar-method-doSetActiveTab'>    /**
-</span>     * @private
-     * Sets the active tab
-     */
-    doSetActiveTab: function(newTab, oldTab) {
-        if (newTab) {
-            newTab.setActive(true);
-        }
+            me.drawBar(ctx, surface, clip, left, top - halfLineWidth, right, bottom - halfLineWidth, i);
 
-        if (oldTab) {
-            oldTab.setActive(false);
+            if (drawMarkers &amp;&amp; dataText[i]) {
+                this.drawLabel(dataText[i], center, bottom, top, i);
+            }
+            me.putMarker(&quot;markers&quot;, {
+                translationX: surfaceMatrix.x(center, top),
+                translationY: surfaceMatrix.y(center, top)
+            }, i, true);
         }
-    },
-
-<span id='Ext-tab-Bar-method-parseActiveTab'>    /**
-</span>     * @private
-     * Parses the active tab, which can be a number or string
-     */
-    parseActiveTab: function(tab) {
-        //we need to call getItems to initialize the items, otherwise they will not exist yet.
-        if (typeof tab == 'number') {
-            return this.getInnerItems()[tab];
-        }
-        else if (typeof tab == 'string') {
-            tab = Ext.getCmp(tab);
-        }
-        return tab;
     }
 });
 </pre>

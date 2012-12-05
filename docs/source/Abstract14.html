@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-scroll-indicator-Abstract'>/**
+</span> * @private
+ */
+Ext.define('Ext.scroll.indicator.Abstract', {
+    extend: 'Ext.Component',
+
+    config: {
+<span id='Ext-scroll-indicator-Abstract-cfg-baseCls'>        baseCls: 'x-scroll-indicator',
+</span>
+<span id='Ext-scroll-indicator-Abstract-cfg-axis'>        axis: 'x',
+</span>
+<span id='Ext-scroll-indicator-Abstract-cfg-value'>        value: 0,
+</span>
+<span id='Ext-scroll-indicator-Abstract-cfg-length'>        length: null,
+</span>
+<span id='Ext-scroll-indicator-Abstract-cfg-minLength'>        minLength: 6,
+</span>
+<span id='Ext-scroll-indicator-Abstract-cfg-hidden'>        hidden: true,
+</span>
+<span id='Ext-scroll-indicator-Abstract-cfg-ui'>        ui: 'dark'
+</span>    },
+
+    cachedConfig: {
+<span id='Ext-scroll-indicator-Abstract-cfg-ratio'>        ratio: 1,
+</span>
+<span id='Ext-scroll-indicator-Abstract-cfg-barCls'>        barCls: 'x-scroll-bar',
+</span>
+<span id='Ext-scroll-indicator-Abstract-cfg-active'>        active: true
+</span>    },
+
+<span id='Ext-scroll-indicator-Abstract-property-barElement'>    barElement: null,
+</span>
+<span id='Ext-scroll-indicator-Abstract-property-barLength'>    barLength: 0,
+</span>
+<span id='Ext-scroll-indicator-Abstract-property-gapLength'>    gapLength: 0,
+</span>
+<span id='Ext-scroll-indicator-Abstract-method-getElementConfig'>    getElementConfig: function() {
+</span>        return {
+            reference: 'barElement',
+            children: [this.callParent()]
+        };
+    },
+
+<span id='Ext-scroll-indicator-Abstract-method-applyRatio'>    applyRatio: function(ratio) {
+</span>        if (isNaN(ratio)) {
+            ratio = 1;
+        }
+
+        return ratio;
+    },
+
+<span id='Ext-scroll-indicator-Abstract-method-refresh'>    refresh: function() {
+</span>        var bar = this.barElement,
+            barDom = bar.dom,
+            ratio = this.getRatio(),
+            axis = this.getAxis(),
+            barLength = (axis === 'x') ? barDom.offsetWidth : barDom.offsetHeight,
+            length = barLength * ratio;
+
+        this.barLength = barLength;
+
+        this.gapLength = barLength - length;
+
+        this.setLength(length);
+
+        this.updateValue(this.getValue());
+    },
+
+<span id='Ext-scroll-indicator-Abstract-method-updateBarCls'>    updateBarCls: function(barCls) {
+</span>        this.barElement.addCls(barCls);
+    },
+
+<span id='Ext-scroll-indicator-Abstract-method-updateAxis'>    updateAxis: function(axis) {
+</span>        this.element.addCls(this.getBaseCls(), null, axis);
+        this.barElement.addCls(this.getBarCls(), null, axis);
+    },
+
+<span id='Ext-scroll-indicator-Abstract-method-updateValue'>    updateValue: function(value) {
+</span>        this.setOffset(this.gapLength * value);
+    },
+
+<span id='Ext-scroll-indicator-Abstract-method-updateActive'>    updateActive: function(active) {
+</span>        this.barElement[active ? 'addCls' : 'removeCls']('active');
+    },
+
+<span id='Ext-scroll-indicator-Abstract-method-doSetHidden'>    doSetHidden: function(hidden) {
+</span>        var elementDomStyle = this.element.dom.style;
+
+        if (hidden) {
+            elementDomStyle.opacity = '0';
+        }
+        else {
+            elementDomStyle.opacity = '';
+        }
+    },
+
+<span id='Ext-scroll-indicator-Abstract-method-applyLength'>    applyLength: function(length) {
+</span>        return Math.max(this.getMinLength(), length);
+    },
+
+<span id='Ext-scroll-indicator-Abstract-method-updateLength'>    updateLength: function(length) {
+</span>        if (!this.isDestroyed) {
+            var axis = this.getAxis(),
+                element = this.element;
+
+            if (axis === 'x') {
+                element.setWidth(length);
+            }
+            else {
+                element.setHeight(length);
+            }
+        }
+    },
+
+<span id='Ext-scroll-indicator-Abstract-method-setOffset'>    setOffset: function(offset) {
+</span>        var axis = this.getAxis(),
+            element = this.element;
+
+        if (axis === 'x') {
+            element.setLeft(offset);
+        }
+        else {
+            element.setTop(offset);
+        }
+    }
+});
+</pre>
+</body>
+</html>

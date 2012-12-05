@@ -16,7 +16,7 @@
 </head>
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js"><span id='Ext-device-Notification'>/**
-</span> * Provides a cross device way to show notifications. There are 3 different implementations:
+</span> * Provides a cross device way to show notifications. There are three different implementations:
  *
  * - Sencha Packager
  * - PhoneGap
@@ -33,18 +33,18 @@
  *
  *     Ext.device.Notification.show({
  *         title: 'Verification',
- *         message: 'Is your email address is: test@sencha.com',
+ *         message: 'Is your email address: test@sencha.com',
  *         buttons: Ext.MessageBox.OKCANCEL,
  *         callback: function(button) {
- *             if (button == &quot;ok&quot;) {
+ *             if (button === &quot;ok&quot;) {
  *                 console.log('Verified');
  *             } else {
- *                 console.log('Nope.');
+ *                 console.log('Nope');
  *             }
  *         }
  *     });
  *
- * To make the device virbate:
+ * To make the device vibrate:
  *
  *     Ext.device.Notification.vibrate();
  * 
@@ -62,8 +62,8 @@ Ext.define('Ext.device.Notification', {
         'Ext.device.notification.Simulator'
     ],
 
-    constructor: function() {
-        var browserEnv = Ext.browser.is;
+<span id='Ext-device-Notification-method-constructor'>    constructor: function() {
+</span>        var browserEnv = Ext.browser.is;
 
         if (browserEnv.WebView) {
             if (browserEnv.PhoneGap) {

@@ -15,7 +15,12 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-dom-Element'>/**
+  <pre class="prettyprint lang-js">//@tag dom,core
+//@define Ext.Element-all
+//@define Ext.Element-style
+//@require Ext.Element-position
+
+<span id='Ext-dom-Element'>/**
 </span> * @class Ext.dom.Element
  */
 
@@ -32,19 +37,19 @@ Ext.dom.Element.addMembers({
     LEFT: 'left',
 <span id='Ext-dom-Element-property-VISIBILITY'>    /**
 </span>     * @property VISIBILITY
-     * Visibility mode constant for use with {@link #setVisibilityMode}. Use visibility to hide element
+     * Visibility mode constant for use with {@link #setVisibilityMode}. Use `visibility` to hide element.
      */
     VISIBILITY: 1,
 
 <span id='Ext-dom-Element-property-DISPLAY'>    /**
 </span>     * @property DISPLAY
-     * Visibility mode constant for use with {@link #setVisibilityMode}. Use display to hide element
+     * Visibility mode constant for use with {@link #setVisibilityMode}. Use `display` to hide element.
      */
     DISPLAY: 2,
 
 <span id='Ext-dom-Element-property-OFFSETS'>    /**
 </span>     * @property OFFSETS
-     * Visibility mode constant for use with {@link #setVisibilityMode}. Use offsets to hide element
+     * Visibility mode constant for use with {@link #setVisibilityMode}. Use offsets to hide element.
      */
     OFFSETS: 3,
 
@@ -117,10 +122,10 @@ Ext.dom.Element.addMembers({
     },
 
 <span id='Ext-dom-Element-method-addCls'>    /**
-</span>     * Adds the given CSS class(es) to this Element
-     * @param {String} names The CSS class(es) to add to this element
-     * @param {String} prefix Optional prefix to prepend to each class
-     * @param {String} suffix Optional suffix to append to each class
+</span>     * Adds the given CSS class(es) to this Element.
+     * @param {String} names The CSS class(es) to add to this element.
+     * @param {String} [prefix] (optional) Prefix to prepend to each class.
+     * @param {String} [suffix] (optional) Suffix to append to each class.
      */
     addCls: function(names, prefix, suffix) {
         if (!names) {
@@ -159,10 +164,10 @@ Ext.dom.Element.addMembers({
     },
 
 <span id='Ext-dom-Element-method-removeCls'>    /**
-</span>     * Removes the given CSS class(es) from this Element
-     * @param {String} names The CSS class(es) to remove from this element
-     * @param {String} prefix Optional prefix to prepend to each class to be removed
-     * @param {String} suffix Optional suffix to append to each class to be removed
+</span>     * Removes the given CSS class(es) from this Element.
+     * @param {String} names The CSS class(es) to remove from this element.
+     * @param {String} [prefix=''] (optional) Prefix to prepend to each class to be removed.
+     * @param {String} [suffix=''] (optional) Suffix to append to each class to be removed.
      */
     removeCls: function(names, prefix, suffix) {
         if (!names) {
@@ -206,8 +211,8 @@ Ext.dom.Element.addMembers({
 
 <span id='Ext-dom-Element-method-replaceCls'>    /**
 </span>     * Replaces a CSS class on the element with another.  If the old name does not exist, the new name will simply be added.
-     * @param {String} oldClassName The CSS class to replace
-     * @param {String} newClassName The replacement CSS class
+     * @param {String} oldClassName The CSS class to replace.
+     * @param {String} newClassName The replacement CSS class.
      * @return {Ext.dom.Element} this
      */
     replaceCls: function(oldName, newName, prefix, suffix) {
@@ -216,8 +221,8 @@ Ext.dom.Element.addMembers({
 
 <span id='Ext-dom-Element-method-hasCls'>    /**
 </span>     * Checks if the specified CSS class exists on this element's DOM node.
-     * @param {String} className The CSS class to check for
-     * @return {Boolean} True if the class exists, else false
+     * @param {String} className The CSS class to check for.
+     * @return {Boolean} `true` if the class exists, else `false`.
      */
     hasCls: function(name) {
         if (!this.isSynchronized) {
@@ -229,11 +234,42 @@ Ext.dom.Element.addMembers({
 
 <span id='Ext-dom-Element-method-toggleCls'>    /**
 </span>     * Toggles the specified CSS class on this element (removes it if it already exists, otherwise adds it).
-     * @param {String} className The CSS class to toggle
+     * @param {String} className The CSS class to toggle.
      * @return {Ext.dom.Element} this
      */
-    toggleCls: function(className) {
-        return this.hasCls(className) ? this.removeCls(className) : this.addCls(className);
+    toggleCls: function(className, force){
+        if (typeof force !== 'boolean') {
+            force = !this.hasCls(className);
+        }
+
+   		return (force) ? this.addCls(className) : this.removeCls(className);
+   	},
+
+<span id='Ext-dom-Element-method-swapCls'>    /**
+</span>     * @private
+     * @param firstClass
+     * @param secondClass
+     * @param flag
+     * @param prefix
+     * @return {Mixed}
+     */
+    swapCls: function(firstClass, secondClass, flag, prefix) {
+        if (flag === undefined) {
+            flag = true;
+        }
+
+        var addedClass = flag ? firstClass : secondClass,
+            removedClass = flag ? secondClass : firstClass;
+
+        if (removedClass) {
+            this.removeCls(prefix ? prefix + '-' + removedClass : removedClass);
+        }
+
+        if (addedClass) {
+            this.addCls(prefix ? prefix + '-' + addedClass : addedClass);
+        }
+
+        return this;
     },
 
 <span id='Ext-dom-Element-method-setWidth'>    /**
@@ -320,7 +356,7 @@ Ext.dom.Element.addMembers({
 
 <span id='Ext-dom-Element-method-setTop'>    /**
 </span>     * Sets the element's top position directly using CSS style (instead of {@link #setY}).
-     * @param {String} top The top CSS property value
+     * @param {String} top The top CSS property value.
      * @return {Ext.dom.Element} this
      */
     setTop: function(top) {
@@ -329,7 +365,7 @@ Ext.dom.Element.addMembers({
 
 <span id='Ext-dom-Element-method-setRight'>    /**
 </span>     * Sets the element's CSS right style.
-     * @param {String} right The right CSS property value
+     * @param {String} right The right CSS property value.
      * @return {Ext.dom.Element} this
      */
     setRight: function(right) {
@@ -338,7 +374,7 @@ Ext.dom.Element.addMembers({
 
 <span id='Ext-dom-Element-method-setBottom'>    /**
 </span>     * Sets the element's CSS bottom style.
-     * @param {String} bottom The bottom CSS property value
+     * @param {String} bottom The bottom CSS property value.
      * @return {Ext.dom.Element} this
      */
     setBottom: function(bottom) {
@@ -347,7 +383,7 @@ Ext.dom.Element.addMembers({
 
 <span id='Ext-dom-Element-method-setLeft'>    /**
 </span>     * Sets the element's left position directly using CSS style (instead of {@link #setX}).
-     * @param {String} left The left CSS property value
+     * @param {String} left The left CSS property value.
      * @return {Ext.dom.Element} this
      */
     setLeft: function(left) {
@@ -416,9 +452,9 @@ Ext.dom.Element.addMembers({
     },
 
 <span id='Ext-dom-Element-method-setVisible'>    /**
-</span>     * Sets the visibility of the element (see details). If the visibilityMode is set to Element.DISPLAY, it will use
-     * the display property to hide the element, otherwise it uses visibility. The default is to hide and show using the visibility property.
-     * @param {Boolean} visible Whether the element is visible
+</span>     * Sets the visibility of the element (see details). If the `visibilityMode` is set to `Element.DISPLAY`, it will use
+     * the display property to hide the element, otherwise it uses visibility. The default is to hide and show using the `visibility` property.
+     * @param {Boolean} visible Whether the element is visible.
      * @return {Ext.Element} this
      */
     setVisible: function(visible) {
@@ -457,7 +493,7 @@ Ext.dom.Element.addMembers({
     },
 
 <span id='Ext-dom-Element-method-setVisibilityMode'>    /**
-</span>     * Use this to change the visisbiliy mode between {@link #VISIBILITY}, {@link #DISPLAY} or {@link #OFFSETS}.
+</span>     * Use this to change the visibility mode between {@link #VISIBILITY}, {@link #DISPLAY} or {@link #OFFSETS}.
      */
     setVisibilityMode: function(mode) {
         this.self.data(this.dom, 'visibilityMode', mode);
@@ -481,23 +517,7 @@ Ext.dom.Element.addMembers({
      * Uses display mode to determine whether to use &quot;display&quot; or &quot;visibility&quot;. See {@link #setVisible}.
      */
     hide: function() {
-        var dom = this.dom,
-            domStyle = dom.style,
-            needsRedraw = Ext.os.is.iOS;
-
-        if (domStyle.getPropertyValue('display') !== 'none') {
-            // iOS sometimes has a long delay before redrawing elements with their CSS 'display' set to 'none'
-            // This force a redraw to make sure the element is hidden instantly
-            if (needsRedraw) {
-                domStyle.setProperty('display', 'none', 'important');
-                dom.offsetHeight;
-                domStyle.removeProperty('display');
-                dom.offsetHeight;
-            }
-
-            domStyle.setProperty('display', 'none', 'important');
-        }
-
+        this.dom.style.setProperty('display', 'none', 'important');
     },
 
     setVisibility: function(isVisible) {
@@ -519,20 +539,19 @@ Ext.dom.Element.addMembers({
      *      returned by {@link #normalize}.
      *  * `get` (Function) : A hook function that will perform the get on this style. These
      *      functions receive &quot;(dom, el)&quot; arguments. The `dom` parameter is the DOM Element
-     *      from which to get ths tyle. The `el` argument (may be null) is the Ext.Element.
+     *      from which to get the style. The `el` argument (may be `null`) is the Ext.Element.
      *  * `set` (Function) : A hook function that will perform the set on this style. These
      *      functions receive &quot;(dom, value, el)&quot; arguments. The `dom` parameter is the DOM Element
-     *      from which to get ths tyle. The `value` parameter is the new value for the style. The
-     *      `el` argument (may be null) is the Ext.Element.
+     *      from which to get this style. The `value` parameter is the new value for the style. The
+     *      `el` argument (may be `null`) is the Ext.Element.
      *
      * The `this` pointer is the object that contains `get` or `set`, which means that
      * `this.name` can be accessed if needed. The hook functions are both optional.
      * @private
-     * @markdown
      */
     styleHooks: {},
 
-    // private
+    // @private
     addStyles: function(sides, styles) {
         var totalSize = 0,
             sidesArr = sides.match(this.wordsRe),
@@ -553,14 +572,18 @@ Ext.dom.Element.addMembers({
 </span>     * Checks if the current value of a style is equal to a given value.
      * @param {String} style property whose value is returned.
      * @param {String} value to check against.
-     * @return {Boolean} true for when the current value equals the given value.
+     * @return {Boolean} `true` for when the current value equals the given value.
      */
     isStyle: function(style, val) {
         return this.getStyle(style) == val;
     },
 
+    getStyleValue: function(name) {
+        return this.dom.style.getPropertyValue(name);
+    },
+
 <span id='Ext-dom-Element-method-getStyle'>    /**
-</span>     * Normalizes currentStyle and computedStyle.
+</span>     * Normalizes `currentStyle` and `computedStyle`.
      * @param {String} prop The style property whose value is returned.
      * @return {String} The current value of the style property for this element.
      */
@@ -574,7 +597,7 @@ Ext.dom.Element.addMembers({
             return null;
         }
         if (!hook) {
-            me.styleHooks[prop] = hook = { name: this.self.normalize(prop) };
+            me.styleHooks[prop] = hook = { name: Ext.dom.Element.normalize(prop) };
         }
         if (hook.get) {
             return hook.get(dom, me);
@@ -586,7 +609,7 @@ Ext.dom.Element.addMembers({
         // well as the fact that 0/false are valid answers...
         result = (cs &amp;&amp; cs[hook.name]); // || dom.style[hook.name];
 
-        // Webkit returns rgb values for transparent, how does this work n IE9+
+        // WebKit returns rgb values for transparent, how does this work n IE9+
         //        if (!supportsTransparentColor &amp;&amp; result == 'rgba(0, 0, 0, 0)') {
         //            result = 'transparent';
         //        }
@@ -597,7 +620,7 @@ Ext.dom.Element.addMembers({
 <span id='Ext-dom-Element-method-setStyle'>    /**
 </span>     * Wrapper for setting style properties, also takes single object parameter of multiple styles.
      * @param {String/Object} property The style property to be set, or an object of multiple styles.
-     * @param {String} [value] The value to apply to the given property, or null if an object was passed.
+     * @param {String} [value] The value to apply to the given property, or `null` if an object was passed.
      * @return {Ext.dom.Element} this
      */
     setStyle: function(prop, value) {
@@ -648,9 +671,9 @@ Ext.dom.Element.addMembers({
     },
 
 <span id='Ext-dom-Element-method-getHeight'>    /**
-</span>     * Returns the offset height of the element
-     * @param {Boolean} [contentHeight] true to get the height minus borders and padding
-     * @return {Number} The element's height
+</span>     * Returns the offset height of the element.
+     * @param {Boolean} [contentHeight] `true` to get the height minus borders and padding.
+     * @return {Number} The element's height.
      */
     getHeight: function(contentHeight) {
         var dom = this.dom,
@@ -659,9 +682,9 @@ Ext.dom.Element.addMembers({
     },
 
 <span id='Ext-dom-Element-method-getWidth'>    /**
-</span>     * Returns the offset width of the element
-     * @param {Boolean} [contentWidth] true to get the width minus borders and padding
-     * @return {Number} The element's width
+</span>     * Returns the offset width of the element.
+     * @param {Boolean} [contentWidth] `true` to get the width minus borders and padding.
+     * @return {Number} The element's width.
      */
     getWidth: function(contentWidth) {
         var dom = this.dom,
@@ -680,10 +703,10 @@ Ext.dom.Element.addMembers({
     },
 
 <span id='Ext-dom-Element-method-getPadding'>    /**
-</span>     * Gets the width of the padding(s) for the specified side(s)
+</span>     * Gets the width of the padding(s) for the specified side(s).
      * @param {String} side Can be t, l, r, b or any combination of those to add multiple values. For example,
      * passing `'lr'` would get the padding **l**eft + the padding **r**ight.
-     * @return {Number} The padding of the sides passed added together
+     * @return {Number} The padding of the sides passed added together.
      */
     getPadding: function(side) {
         return this.addStyles(side, this.paddings);
@@ -691,7 +714,7 @@ Ext.dom.Element.addMembers({
 
 <span id='Ext-dom-Element-method-applyStyles'>    /**
 </span>     * More flexible version of {@link #setStyle} for setting style properties.
-     * @param {String/Object/Function} styles A style specification string, e.g. &quot;width:100px&quot;, or object in the form {width:&quot;100px&quot;}, or
+     * @param {String/Object/Function} styles A style specification string, e.g. &quot;width:100px&quot;, or object in the form `{width:&quot;100px&quot;}`, or
      * a function which returns such a specification.
      * @return {Ext.dom.Element} this
      */
@@ -718,7 +741,7 @@ Ext.dom.Element.addMembers({
 
 <span id='Ext-dom-Element-method-getSize'>    /**
 </span>     * Returns the size of the element.
-     * @param {Boolean} [contentSize] true to get the width/size minus borders and padding
+     * @param {Boolean} [contentSize] `true` to get the width/size minus borders and padding.
      * @return {Object} An object containing the element's size:
      * @return {Number} return.width
      * @return {Number} return.height
@@ -732,7 +755,7 @@ Ext.dom.Element.addMembers({
     },
 
 <span id='Ext-dom-Element-method-repaint'>    /**
-</span>     * Forces the browser to repaint this element
+</span>     * Forces the browser to repaint this element.
      * @return {Ext.dom.Element} this
      */
     repaint: function() {
@@ -746,8 +769,8 @@ Ext.dom.Element.addMembers({
 
 <span id='Ext-dom-Element-method-getMargin'>    /**
 </span>     * Returns an object with properties top, left, right and bottom representing the margins of this element unless sides is passed,
-     * then it returns the calculated width of the sides (see getPadding)
-     * @param {String} [sides] Any combination of l, r, t, b to get the sum of those sides
+     * then it returns the calculated width of the sides (see {@link #getPadding}).
+     * @param {String} [sides] Any combination of 'l', 'r', 't', 'b' to get the sum of those sides.
      * @return {Object/Number}
      */
     getMargin: function(side) {
@@ -785,13 +808,13 @@ Ext.dom.Element.addMembers({
      *     });
      *     // To handle window resizing you would have to hook onto onWindowResize.
      *
-     * getViewSize utilizes clientHeight/clientWidth which excludes sizing of scrollbars.
-     * To obtain the size including scrollbars, use getStyleSize
+     * `getViewSize` utilizes `clientHeight`/`clientWidth` which excludes sizing of scrollbars.
+     * To obtain the size including scrollbars, use {@link #getStyleSize}.
      *
      * Sizing of the document body is handled at the adapter level which handles special cases for IE and strict modes, etc.
      *
      * @deprecated 2.0.0
-     * @return {Object} Object describing width and height.
+     * @return {Object} Object describing `width` and `height`:
      * @return {Number} return.width
      * @return {Number} return.height
      */
@@ -818,12 +841,12 @@ Ext.dom.Element.addMembers({
     },
 
 <span id='Ext-dom-Element-method-isTransparent'>    /**
-</span>     * Returns true if the value of the given property is visually transparent. This
+</span>     * Returns `true` if the value of the given property is visually transparent. This
      * may be due to a 'transparent' style value or an rgba value with 0 in the alpha
      * component.
      * @deprecated 2.0.0
      * @param {String} prop The style property whose value is to be tested.
-     * @return {Boolean} True if the style property is visually transparent.
+     * @return {Boolean} `true` if the style property is visually transparent.
      */
     isTransparent: function(prop) {
         //&lt;debug warn&gt;
@@ -839,7 +862,7 @@ Ext.dom.Element.addMembers({
 <span id='Ext-dom-Element-method-radioCls'>    /**
 </span>     * Adds one or more CSS classes to this element and removes the same class(es) from all siblings.
      * @deprecated 2.0.0
-     * @param {String/String[]} className The CSS class to add, or an array of classes
+     * @param {String/String[]} className The CSS class to add, or an array of classes.
      * @return {Ext.dom.Element} this
      */
     radioCls: function(className) {

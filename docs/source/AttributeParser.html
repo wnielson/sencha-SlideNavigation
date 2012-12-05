@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-draw-sprite-AttributeParser'>/**
+</span> * @private
+ * @class Ext.draw.sprite.AttributeParser
+ *
+ * Parsers used for sprite attributes.
+ */
+Ext.define(&quot;Ext.draw.sprite.AttributeParser&quot;, {
+    singleton: true,
+<span id='Ext-draw-sprite-AttributeParser-property-attributeRe'>    attributeRe: /^url\(#([a-zA-Z\-]+)\)$/,
+</span>    requires: ['Ext.draw.Color'],
+
+<span id='Ext-draw-sprite-AttributeParser-method-default'>    &quot;default&quot;: function (n) {
+</span>        return n;
+    },
+    
+<span id='Ext-draw-sprite-AttributeParser-method-string'>    string: function (n) {
+</span>        return String(n);
+    },
+    
+<span id='Ext-draw-sprite-AttributeParser-method-number'>    number: function (n) {
+</span>        if (!isNaN(n)) {
+            return n;
+        }
+    },
+    
+<span id='Ext-draw-sprite-AttributeParser-method-angle'>    angle: function (n) {
+</span>        if (!isNaN(n)) {
+            n %= Math.PI * 2;
+            if (n &lt; -Math.PI) {
+                n += Math.PI * 2;
+            }
+            if (n &gt; Math.PI) {
+                n -= Math.PI * 2;
+            }
+            return n;
+        }
+    },
+    
+<span id='Ext-draw-sprite-AttributeParser-method-data'>    data: function (n) {
+</span>        if (Ext.isArray(n)) {
+            return n.slice();
+        } else if (n instanceof Float32Array) {
+            return new Float32Array(n);
+        }
+    },
+    
+<span id='Ext-draw-sprite-AttributeParser-method-bool'>    bool: function (n) {
+</span>        return !!n;
+    },
+    
+<span id='Ext-draw-sprite-AttributeParser-method-color'>    color: function (n) {
+</span>        if (n instanceof Ext.draw.Color) {
+            return n.toString();
+        } else if (n instanceof Ext.draw.gradient.Gradient) {
+            return n;
+        } else if (!n) {
+            return 'none';
+        } else if (Ext.isString(n)) {
+            return n;
+        } else if (n.type === 'linear') {
+            return Ext.create('Ext.draw.gradient.Linear', n);
+        } else if (n.type === 'radial') {
+            return Ext.create('Ext.draw.gradient.Radial', n);
+        } else if (n.type === 'pattern') {
+            return Ext.create('Ext.draw.gradient.Pattern', n);
+        }
+    },
+
+<span id='Ext-draw-sprite-AttributeParser-method-limited'>    limited: function (low, hi) {
+</span>        return (function (n) {
+            return isNaN(n) ? undefined : Math.min(Math.max(+n, low), hi);
+        });
+    },
+    
+<span id='Ext-draw-sprite-AttributeParser-method-limited01'>    limited01: function (n) {
+</span>        return isNaN(n) ? undefined : Math.min(Math.max(+n, 0), 1);
+    },
+    
+<span id='Ext-draw-sprite-AttributeParser-method-enums'>    enums: function () {
+</span>        var enums = {},
+            args = Array.prototype.slice.call(arguments, 0),
+            i, ln;
+
+        for (i = 0, ln = args.length; i &lt; ln; i++) {
+            enums[args[i]] = true;
+        }
+        return (function (n) {
+            return n in enums ? n : undefined;
+        });
+    }
+});</pre>
+</body>
+</html>

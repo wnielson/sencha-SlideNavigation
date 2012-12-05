@@ -26,15 +26,15 @@ Ext.define('Ext.carousel.Infinite', {
     extend: 'Ext.carousel.Carousel',
 
     config: {
-        indicator: null,
+<span id='Ext-carousel-Infinite-cfg-indicator'>        indicator: null,
+</span>
+<span id='Ext-carousel-Infinite-cfg-maxItemIndex'>        maxItemIndex: Infinity,
+</span>
+<span id='Ext-carousel-Infinite-cfg-innerItemConfig'>        innerItemConfig: {}
+</span>    },
 
-        maxItemIndex: Infinity,
-
-        innerItemConfig: {}
-    },
-
-    applyIndicator: function(indicator) {
-        //&lt;debug error&gt;
+<span id='Ext-carousel-Infinite-method-applyIndicator'>    applyIndicator: function(indicator) {
+</span>        //&lt;debug error&gt;
         if (indicator) {
             Ext.Logger.error(&quot;'indicator' in Infinite Carousel implementation is not currently supported&quot;, this);
         }
@@ -42,24 +42,28 @@ Ext.define('Ext.carousel.Infinite', {
         return;
     },
 
-    updateBufferSize: function(size) {
-        this.callParent(arguments);
+<span id='Ext-carousel-Infinite-method-updateBufferSize'>    updateBufferSize: function(size) {
+</span>        this.callParent(arguments);
 
         var total = size * 2 + 1,
             ln = this.innerItems.length,
             innerItemConfig = this.getInnerItemConfig(),
             i;
 
+        this.isItemsInitializing = true;
+
         for (i = ln; i &lt; total; i++) {
             this.doAdd(this.factoryItem(innerItemConfig));
         }
+
+        this.isItemsInitializing = false;
 
         this.rebuildInnerIndexes();
         this.refreshActiveItem();
     },
 
-    updateMaxItemIndex: function(maxIndex, oldMaxIndex) {
-        if (oldMaxIndex !== undefined) {
+<span id='Ext-carousel-Infinite-method-updateMaxItemIndex'>    updateMaxItemIndex: function(maxIndex, oldMaxIndex) {
+</span>        if (oldMaxIndex !== undefined) {
             var activeIndex = this.getActiveIndex();
 
             if (activeIndex &gt; maxIndex) {
@@ -73,8 +77,8 @@ Ext.define('Ext.carousel.Infinite', {
         }
     },
 
-    rebuildInnerIndexes: function(activeIndex) {
-        var indexToItem = this.innerIndexToItem,
+<span id='Ext-carousel-Infinite-method-rebuildInnerIndexes'>    rebuildInnerIndexes: function(activeIndex) {
+</span>        var indexToItem = this.innerIndexToItem,
             idToIndex = this.innerIdToIndex,
             items = this.innerItems.slice(),
             ln = items.length,
@@ -122,13 +126,13 @@ Ext.define('Ext.carousel.Infinite', {
         }
     },
 
-    reset: function() {
-        this.rebuildInnerIndexes();
+<span id='Ext-carousel-Infinite-method-reset'>    reset: function() {
+</span>        this.rebuildInnerIndexes();
         this.setActiveItem(0);
     },
 
-    refreshItems: function() {
-        var items = this.innerItems,
+<span id='Ext-carousel-Infinite-method-refreshItems'>    refreshItems: function() {
+</span>        var items = this.innerItems,
             idToIndex = this.innerIdToIndex,
             index, item, i, ln;
 
@@ -139,18 +143,18 @@ Ext.define('Ext.carousel.Infinite', {
         }
     },
 
-    getInnerItemIndex: function(item) {
-        var index = this.innerIdToIndex[item.getId()];
+<span id='Ext-carousel-Infinite-method-getInnerItemIndex'>    getInnerItemIndex: function(item) {
+</span>        var index = this.innerIdToIndex[item.getId()];
 
         return (typeof index == 'number') ? index : -1;
     },
 
-    getInnerItemAt: function(index) {
-        return this.innerIndexToItem[index];
+<span id='Ext-carousel-Infinite-method-getInnerItemAt'>    getInnerItemAt: function(index) {
+</span>        return this.innerIndexToItem[index];
     },
 
-    applyActiveItem: function(activeItem) {
-        this.getItems();
+<span id='Ext-carousel-Infinite-method-applyActiveItem'>    applyActiveItem: function(activeItem) {
+</span>        this.getItems();
         this.getBufferSize();
 
         var maxIndex = this.getMaxItemIndex(),

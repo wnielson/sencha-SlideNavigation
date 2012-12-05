@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-chart-series-ItemPublisher'>/**
+</span> * @private
+ */
+Ext.define('Ext.chart.series.ItemPublisher', {
+    extend: 'Ext.event.publisher.Publisher',
+
+<span id='Ext-chart-series-ItemPublisher-property-targetType'>    targetType: 'series',
+</span>
+<span id='Ext-chart-series-ItemPublisher-property-handledEvents'>    handledEvents: [
+</span><span id='Ext-chart-series-ItemPublisher-event-itemmousemove'>    /**
+</span>     * @event itemmousemove
+     * Fires when the mouse is moved on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itemmousemove',
+<span id='Ext-chart-series-ItemPublisher-event-itemmouseup'>    /**
+</span>     * @event itemmouseup
+     * Fires when a mouseup event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itemmouseup',
+<span id='Ext-chart-series-ItemPublisher-event-itemmousedown'>    /**
+</span>     * @event itemmousedown
+     * Fires when a mousedown event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itemmousedown',
+<span id='Ext-chart-series-ItemPublisher-event-itemmouseover'>    /**
+</span>     * @event itemmouseover
+     * Fires when the mouse enters a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itemmouseover',
+<span id='Ext-chart-series-ItemPublisher-event-itemmouseout'>    /**
+</span>     * @event itemmouseout
+     * Fires when the mouse exits a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itemmouseout',
+<span id='Ext-chart-series-ItemPublisher-event-itemclick'>    /**
+</span>     * @event itemclick
+     * Fires when a click event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itemclick',
+<span id='Ext-chart-series-ItemPublisher-event-itemdoubleclick'>    /**
+</span>     * @event itemdoubleclick
+     * Fires when a doubleclick event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itemdoubleclick',
+<span id='Ext-chart-series-ItemPublisher-event-itemtap'>    /**
+</span>     * @event itemtap
+     * Fires when a tap event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itemtap',
+<span id='Ext-chart-series-ItemPublisher-event-itemtapstart'>    /**
+</span>     * @event itemtapstart
+     * Fires when a tapstart event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itemtapstart',
+<span id='Ext-chart-series-ItemPublisher-event-itemtapend'>    /**
+</span>     * @event itemtapend
+     * Fires when a tapend event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itemtapend',
+<span id='Ext-chart-series-ItemPublisher-event-itemtapcancel'>    /**
+</span>     * @event itemtapcancel
+     * Fires when a tapcancel event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itemtapcancel',
+<span id='Ext-chart-series-ItemPublisher-event-itemtaphold'>    /**
+</span>     * @event itemtaphold
+     * Fires when a taphold event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itemtaphold',
+<span id='Ext-chart-series-ItemPublisher-event-itemdoubletap'>    /**
+</span>     * @event itemdoubletap
+     * Fires when a doubletap event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itemdoubletap',
+<span id='Ext-chart-series-ItemPublisher-event-itemsingletap'>    /**
+</span>     * @event itemsingletap
+     * Fires when a singletap event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itemsingletap',
+<span id='Ext-chart-series-ItemPublisher-event-itemtouchstart'>    /**
+</span>     * @event itemtouchstart
+     * Fires when a touchstart event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itemtouchstart',
+<span id='Ext-chart-series-ItemPublisher-event-itemtouchmove'>    /**
+</span>     * @event itemtouchmove
+     * Fires when a touchmove event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itemtouchmove',
+<span id='Ext-chart-series-ItemPublisher-event-itemtouchend'>    /**
+</span>     * @event itemtouchend
+     * Fires when a touchend event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itemtouchend',
+<span id='Ext-chart-series-ItemPublisher-event-itemdragstart'>    /**
+</span>     * @event itemdragstart
+     * Fires when a dragstart event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itemdragstart',
+<span id='Ext-chart-series-ItemPublisher-event-itemdrag'>    /**
+</span>     * @event itemdrag
+     * Fires when a drag event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itemdrag',
+<span id='Ext-chart-series-ItemPublisher-event-itemdragend'>    /**
+</span>     * @event itemdragend
+     * Fires when a dragend event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itemdragend',
+<span id='Ext-chart-series-ItemPublisher-event-itempinchstart'>    /**
+</span>     * @event itempinchstart
+     * Fires when a pinchstart event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itempinchstart',
+<span id='Ext-chart-series-ItemPublisher-event-itempinch'>    /**
+</span>     * @event itempinch
+     * Fires when a pinch event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itempinch',
+<span id='Ext-chart-series-ItemPublisher-event-itempinchend'>    /**
+</span>     * @event itempinchend
+     * Fires when a pinchend event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itempinchend',
+<span id='Ext-chart-series-ItemPublisher-event-itemswipe'>    /**
+</span>     * @event itemswipe
+     * Fires when a swipe event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+        'itemswipe'
+    ],
+
+<span id='Ext-chart-series-ItemPublisher-property-delegationRegex'>    delegationRegex: /^item([a-z]+)$/i,
+</span>
+<span id='Ext-chart-series-ItemPublisher-method-getSubscribers'>    getSubscribers: function (chartId) {
+</span>        var subscribers = this.subscribers;
+
+        if (!subscribers.hasOwnProperty(chartId)) {
+            subscribers[chartId] = {};
+        }
+
+        return subscribers[chartId];
+    },
+
+<span id='Ext-chart-series-ItemPublisher-method-subscribe'>    subscribe: function (target, eventName) {
+</span>        var match = target.match(this.idSelectorRegex),
+            dispatcher = this.dispatcher,
+            targetType = this.targetType,
+            subscribers, series, id;
+
+        if (!match) {
+            return false;
+        }
+
+        id = match[1];
+        series = Ext.ComponentManager.get(id);
+        if (!series) {
+            return false;
+        }
+
+        if (!series.getChart()) {
+            dispatcher.addListener(targetType, target, 'chartattached', 'attachChart', this, [series, eventName], 'before');
+        } else {
+            this.attachChart(series.getChart(), [series, eventName]);
+        }
+
+        return true;
+    },
+
+<span id='Ext-chart-series-ItemPublisher-method-unsubscribe'>    unsubscribe: function (target, eventName, all) {
+</span>        var match = target.match(this.idSelectorRegex),
+            dispatcher = this.dispatcher,
+            targetType = this.targetType,
+            subscribers, series, id;
+
+        if (!match) {
+            return false;
+        }
+
+        id = match[1];
+        series = Ext.ComponentManager.get(id);
+        if (!series) {
+            return false;
+        }
+
+        subscribers = this.getSubscribers(target, false);
+        if (!subscribers) {
+            return false;
+        }
+
+        subscribers.$length--;
+        if (subscribers.hasOwnProperty(eventName)) {
+            subscribers[eventName]--;
+            if (series.getChart()) {
+                this.detachChart(series.getChart(), [series, eventName, subscribers]);
+            }
+        }
+        return true;
+    },
+
+<span id='Ext-chart-series-ItemPublisher-method-relayMethod'>    relayMethod: function (e, sender, args) {
+</span>        var chart = args[0],
+            eventName = args[1],
+            dispatcher = this.dispatcher,
+            targetType = this.targetType,
+            chartXY = chart.getEventXY(e),
+            x = chartXY[0],
+            y = chartXY[1],
+            subscriber = this.getSubscribers(chart.getId())[eventName],
+            i, ln;
+        if (subscriber) {
+            for (i = 0, ln = subscriber.length; i &lt; ln; i++) {
+                var series = subscriber[i],
+                    item = series.getItemForPoint(x, y);
+                if (item) {
+                    dispatcher.doDispatchEvent(targetType, '#' + series.getId(), eventName, [series, item, e]);
+                    return;
+                }
+            }
+        }
+    },
+
+<span id='Ext-chart-series-ItemPublisher-method-detachChart'>    detachChart: function (chart, args) {
+</span>        var dispatcher = this.dispatcher,
+            targetType = this.targetType,
+            series = args[0],
+            eventName = args[1],
+            subscribers = args[2],
+            match = eventName.match(this.delegationRegex);
+        if (match) {
+            var chartEventName = match[1];
+            if (subscribers.hasOwnProperty(eventName)) {
+                Ext.remove(subscribers[eventName], series);
+                if (subscribers[eventName].length === 0) {
+                    chart.element.un(chartEventName, &quot;relayMethod&quot;, this, [chart, series, eventName]);
+                }
+            }
+            dispatcher.removeListener(targetType, '#' + series.getId(), 'chartdetached', 'detachChart', this, [series, eventName, subscribers], 'after');
+        }
+    },
+
+<span id='Ext-chart-series-ItemPublisher-method-attachChart'>    attachChart: function (chart, args) {
+</span>        var dispatcher = this.dispatcher,
+            targetType = this.targetType,
+            series = args[0],
+            eventName = args[1],
+            subscribers = this.getSubscribers(chart.getId()),
+            match = eventName.match(this.delegationRegex);
+        if (match) {
+            var chartEventName = match[1];
+            if (!subscribers.hasOwnProperty(eventName)) {
+                subscribers[eventName] = [];
+                dispatcher.addListener(targetType, '#' + series.getId(), 'chartdetached', 'detachChart', this, [series, eventName, subscribers], 'after');
+                chart.element.on(chartEventName, &quot;relayMethod&quot;, this, [chart, eventName]);
+            }
+            subscribers[eventName].push(series);
+            return true;
+        } else {
+            return false;
+        }
+    }
+}, function () {
+
+});</pre>
+</body>
+</html>

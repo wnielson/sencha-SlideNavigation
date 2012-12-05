@@ -16,45 +16,39 @@
 </head>
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js"><span id='Ext-util-Inflector'>/**
-</span> * &lt;p&gt;General purpose inflector class that {@link #pluralize pluralizes}, {@link #singularize singularizes} and 
- * {@link #ordinalize ordinalizes} words. Sample usage:&lt;/p&gt;
- * 
-&lt;pre&gt;&lt;code&gt;
-//turning singular words into plurals
-Ext.util.Inflector.pluralize('word'); //'words'
-Ext.util.Inflector.pluralize('person'); //'people'
-Ext.util.Inflector.pluralize('sheep'); //'sheep'
-
-//turning plurals into singulars
-Ext.util.Inflector.singularize('words'); //'word'
-Ext.util.Inflector.singularize('people'); //'person'
-Ext.util.Inflector.singularize('sheep'); //'sheep'
-
-//ordinalizing numbers
-Ext.util.Inflector.ordinalize(11); //&quot;11th&quot;
-Ext.util.Inflector.ordinalize(21); //&quot;21th&quot;
-Ext.util.Inflector.ordinalize(1043); //&quot;1043rd&quot;
-&lt;/code&gt;&lt;/pre&gt;
- * 
- * &lt;p&gt;&lt;u&gt;Customization&lt;/u&gt;&lt;/p&gt;
- * 
- * &lt;p&gt;The Inflector comes with a default set of US English pluralization rules. These can be augmented with additional
+</span> * General purpose inflector class that {@link #pluralize pluralizes}, {@link #singularize singularizes} and 
+ * {@link #ordinalize ordinalizes} words. Sample usage:
+ *
+ *     // turning singular words into plurals
+ *     Ext.util.Inflector.pluralize('word'); // 'words'
+ *     Ext.util.Inflector.pluralize('person'); // 'people'
+ *     Ext.util.Inflector.pluralize('sheep'); // 'sheep'
+ *
+ *     // turning plurals into singulars
+ *     Ext.util.Inflector.singularize('words'); // 'word'
+ *     Ext.util.Inflector.singularize('people'); // 'person'
+ *     Ext.util.Inflector.singularize('sheep'); // 'sheep'
+ *
+ *     // ordinalizing numbers
+ *     Ext.util.Inflector.ordinalize(11); // &quot;11th&quot;
+ *     Ext.util.Inflector.ordinalize(21); // &quot;21st&quot;
+ *     Ext.util.Inflector.ordinalize(1043); // &quot;1043rd&quot;
+ *
+ * ## Customization
+ *
+ * The Inflector comes with a default set of US English pluralization rules. These can be augmented with additional
  * rules if the default rules do not meet your application's requirements, or swapped out entirely for other languages.
- * Here is how we might add a rule that pluralizes &quot;ox&quot; to &quot;oxen&quot;:&lt;/p&gt;
- * 
-&lt;pre&gt;&lt;code&gt;
-Ext.util.Inflector.plural(/^(ox)$/i, &quot;$1en&quot;);
-&lt;/code&gt;&lt;/pre&gt;
- * 
- * &lt;p&gt;Each rule consists of two items - a regular expression that matches one or more rules, and a replacement string.
- * In this case, the regular expression will only match the string &quot;ox&quot;, and will replace that match with &quot;oxen&quot;. 
- * Here's how we could add the inverse rule:&lt;/p&gt;
- * 
-&lt;pre&gt;&lt;code&gt;
-Ext.util.Inflector.singular(/^(ox)en$/i, &quot;$1&quot;);
-&lt;/code&gt;&lt;/pre&gt;
- * 
- * &lt;p&gt;Note that the ox/oxen rules are present by default.&lt;/p&gt;
+ * Here is how we might add a rule that pluralizes &quot;ox&quot; to &quot;oxen&quot;:
+ *
+ *     Ext.util.Inflector.plural(/^(ox)$/i, &quot;$1en&quot;);
+ *
+ * Each rule consists of two items - a regular expression that matches one or more rules, and a replacement string.
+ * In this case, the regular expression will only match the string &quot;ox&quot;, and will replace that match with &quot;oxen&quot;.
+ * Here's how we could add the inverse rule:
+ *
+ *     Ext.util.Inflector.singular(/^(ox)en$/i, &quot;$1&quot;);
+ *
+ * __Note:__ The ox/oxen rules are present by default.
  */
 Ext.define('Ext.util.Inflector', {
 

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-chart-MarkerHolder'>/**
+</span> * @class Ext.chart.MarkerHolder
+ * @extends Ext.mixin.Mixin
+ * 
+ * Mixin that provides the functionality to place markers.
+ */
+Ext.define(&quot;Ext.chart.MarkerHolder&quot;, {
+    extend: 'Ext.mixin.Mixin',
+<span id='Ext-chart-MarkerHolder-property-mixinConfig'>    mixinConfig: {
+</span>        id: 'markerHolder',
+        hooks: {
+            constructor: 'constructor',
+            preRender: 'preRender'
+        }
+    },
+
+<span id='Ext-chart-MarkerHolder-property-isMarkerHolder'>    isMarkerHolder: true,
+</span>
+<span id='Ext-chart-MarkerHolder-method-constructor'>    constructor: function () {
+</span>        this.boundMarkers = {};
+        this.cleanRedraw = false;
+    },
+
+<span id='Ext-chart-MarkerHolder-method-bindMarker'>    /**
+</span>     *
+     * @param name {String}
+     * @param marker {Ext.chart.Markers}
+     */
+    bindMarker: function (name, marker) {
+        if (marker) {
+            if (!this.boundMarkers[name]) {
+                this.boundMarkers[name] = [];
+            }
+            Ext.Array.include(this.boundMarkers[name], marker);
+        }
+    },
+
+<span id='Ext-chart-MarkerHolder-method-getBoundMarker'>    getBoundMarker: function (name) {
+</span>        return this.boundMarkers[name];
+    },
+
+<span id='Ext-chart-MarkerHolder-method-preRender'>    preRender: function () {
+</span>        var boundMarkers = this.boundMarkers, boundMarkersItem,
+            name, i, ln, id = this.getId(),
+            parent = this.getParent(),
+            matrix = this.surfaceMatrix ? this.surfaceMatrix.set(1, 0, 0, 1, 0, 0) : (this.surfaceMatrix = new Ext.draw.Matrix());
+
+        this.cleanRedraw = !this.attr.dirty;
+        if (!this.cleanRedraw) {
+            for (name in this.boundMarkers) {
+                if (boundMarkers[name]) {
+                    for (boundMarkersItem = boundMarkers[name], i = 0, ln = boundMarkersItem.length; i &lt; ln; i++) {
+                        boundMarkersItem[i].clear(id);
+                    }
+                }
+            }
+        }
+
+        while (parent &amp;&amp; parent.attr &amp;&amp; parent.attr.matrix) {
+            matrix.prependMatrix(parent.attr.matrix);
+            parent = parent.getParent();
+        }
+        matrix.prependMatrix(parent.matrix);
+        this.surfaceMatrix = matrix;
+        this.inverseSurfaceMatrix = matrix.inverse(this.inverseSurfaceMatrix);
+    },
+
+<span id='Ext-chart-MarkerHolder-method-putMarker'>    putMarker: function (name, markerAttr, index, canonical, keepRevision) {
+</span>        var boundMarkersItem, i, ln, id = this.getId();
+        if (this.boundMarkers[name]) {
+            for (boundMarkersItem = this.boundMarkers[name], i = 0, ln = boundMarkersItem.length; i &lt; ln; i++) {
+                boundMarkersItem[i].putMarkerFor(id, markerAttr, index, canonical);
+            }
+        }
+    },
+
+<span id='Ext-chart-MarkerHolder-method-getMarkerBBox'>    getMarkerBBox: function (name, index, isWithoutTransform) {
+</span>        var boundMarkersItem, i, ln, id = this.getId();
+        if (this.boundMarkers[name]) {
+            for (boundMarkersItem = this.boundMarkers[name], i = 0, ln = boundMarkersItem.length; i &lt; ln; i++) {
+                return boundMarkersItem[i].getMarkerBBoxFor(id, index, isWithoutTransform);
+            }
+        }
+    }
+});</pre>
+</body>
+</html>

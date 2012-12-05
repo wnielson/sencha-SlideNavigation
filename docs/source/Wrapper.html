@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-util-Wrapper'>/**
+</span> *
+ */
+Ext.define('Ext.util.Wrapper', {
+    mixins: ['Ext.mixin.Bindable'],
+
+<span id='Ext-util-Wrapper-method-constructor'>    constructor: function(elementConfig, wrappedElement) {
+</span>        var element = this.link('element', Ext.Element.create(elementConfig));
+
+        if (wrappedElement) {
+            element.insertBefore(wrappedElement);
+            this.wrap(wrappedElement);
+        }
+    },
+
+<span id='Ext-util-Wrapper-method-bindSize'>    bindSize: function(sizeName) {
+</span>        var wrappedElement = this.wrappedElement,
+            boundMethodName;
+
+        this.boundSizeName = sizeName;
+        this.boundMethodName = boundMethodName = sizeName === 'width' ? 'setWidth' : 'setHeight';
+
+        this.bind(wrappedElement, boundMethodName, 'onBoundSizeChange');
+        wrappedElement[boundMethodName].call(wrappedElement, wrappedElement.getStyleValue(sizeName));
+    },
+
+<span id='Ext-util-Wrapper-method-onBoundSizeChange'>    onBoundSizeChange: function(size, args) {
+</span>        var element = this.element;
+
+        if (typeof size === 'string' &amp;&amp; size.substr(-1) === '%') {
+            args[0] = '100%';
+        }
+        else {
+            size = '';
+        }
+
+        element[this.boundMethodName].call(element, size);
+    },
+
+<span id='Ext-util-Wrapper-method-wrap'>    wrap: function(wrappedElement) {
+</span>        var element = this.element,
+            innerDom;
+
+        this.wrappedElement = wrappedElement;
+
+        innerDom = element.dom;
+
+        while (innerDom.firstElementChild !== null) {
+            innerDom = innerDom.firstElementChild;
+        }
+
+        innerDom.appendChild(wrappedElement.dom);
+    },
+
+<span id='Ext-util-Wrapper-method-destroy'>    destroy: function() {
+</span>        var element = this.element,
+            dom = element.dom,
+            wrappedElement = this.wrappedElement,
+            boundMethodName = this.boundMethodName,
+            parentNode = dom.parentNode,
+            size;
+
+        if (boundMethodName) {
+            this.unbind(wrappedElement, boundMethodName, 'onBoundSizeChange');
+            size = element.getStyle(this.boundSizeName);
+
+            if (size) {
+                wrappedElement[boundMethodName].call(wrappedElement, size);
+            }
+        }
+
+        if (parentNode) {
+            if (!wrappedElement.isDestroyed) {
+                parentNode.replaceChild(dom.firstElementChild, dom);
+            }
+            delete this.wrappedElement;
+        }
+
+        this.callSuper();
+    }
+});
+</pre>
+</body>
+</html>

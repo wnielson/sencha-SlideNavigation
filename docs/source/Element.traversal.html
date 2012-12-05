@@ -15,7 +15,12 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-dom-Element'>/**
+  <pre class="prettyprint lang-js">//@tag dom,core
+//@define Ext.Element-all
+//@define Ext.Element-traversal
+//@require Ext.Element-style
+
+<span id='Ext-dom-Element'>/**
 </span> * @class Ext.dom.Element
  */
 Ext.dom.Element.addMembers({
@@ -28,9 +33,9 @@ Ext.dom.Element.addMembers({
     },
 
 <span id='Ext-dom-Element-method-contains'>    /**
-</span>     * Returns true if this element is an ancestor of the passed element
-     * @param {HTMLElement/String} element The element to check
-     * @return {Boolean} True if this element is an ancestor of el, else false
+</span>     * Returns `true` if this element is an ancestor of the passed element.
+     * @param {HTMLElement/String} element The element to check.
+     * @return {Boolean} `true` if this element is an ancestor of `el`, else `false`.
      */
     contains: function(element) {
         if (!element) {
@@ -44,12 +49,12 @@ Ext.dom.Element.addMembers({
     },
 
 <span id='Ext-dom-Element-method-findParent'>    /**
-</span>     * Looks at this node and then at parent nodes for a match of the passed simple selector (e.g. div.some-class or span:first-child)
-     * @param {String} selector The simple selector to test
+</span>     * Looks at this node and then at parent nodes for a match of the passed simple selector (e.g. 'div.some-class' or 'span:first-child')
+     * @param {String} selector The simple selector to test.
      * @param {Number/String/HTMLElement/Ext.Element} maxDepth (optional)
-     * The max depth to search as a number or element (defaults to 50 || document.body)
-     * @param {Boolean} returnEl (optional) True to return a Ext.Element object instead of DOM node
-     * @return {HTMLElement} The matching DOM node (or null if no match was found)
+     * The max depth to search as a number or element (defaults to `50 || document.body`)
+     * @param {Boolean} returnEl (optional) `true` to return a Ext.Element object instead of DOM node.
+     * @return {HTMLElement/null} The matching DOM node (or `null` if no match was found).
      */
     findParent: function(simpleSelector, maxDepth, returnEl) {
         var p = this.dom,
@@ -73,12 +78,12 @@ Ext.dom.Element.addMembers({
     },
 
 <span id='Ext-dom-Element-method-findParentNode'>    /**
-</span>     * Looks at parent nodes for a match of the passed simple selector (e.g. div.some-class or span:first-child)
-     * @param {String} selector The simple selector to test
+</span>     * Looks at parent nodes for a match of the passed simple selector (e.g. 'div.some-class' or 'span:first-child').
+     * @param {String} selector The simple selector to test.
      * @param {Number/String/HTMLElement/Ext.Element} maxDepth (optional)
-     * The max depth to search as a number or element (defaults to 10 || document.body)
-     * @param {Boolean} returnEl (optional) True to return a Ext.Element object instead of DOM node
-     * @return {HTMLElement} The matching DOM node (or null if no match was found)
+     * The max depth to search as a number or element (defaults to `10 || document.body`).
+     * @param {Boolean} returnEl (optional) `true` to return a Ext.Element object instead of DOM node.
+     * @return {HTMLElement/null} The matching DOM node (or `null` if no match was found).
      */
     findParentNode: function(simpleSelector, maxDepth, returnEl) {
         var p = Ext.fly(this.dom.parentNode, '_internal');
@@ -86,12 +91,12 @@ Ext.dom.Element.addMembers({
     },
 
 <span id='Ext-dom-Element-method-up'>    /**
-</span>     * Walks up the dom looking for a parent node that matches the passed simple selector (e.g. div.some-class or span:first-child).
-     * This is a shortcut for findParentNode() that always returns an Ext.dom.Element.
+</span>     * Walks up the dom looking for a parent node that matches the passed simple selector (e.g. 'div.some-class' or 'span:first-child').
+     * This is a shortcut for `findParentNode()` that always returns an Ext.dom.Element.
      * @param {String} selector The simple selector to test
      * @param {Number/String/HTMLElement/Ext.Element} maxDepth (optional)
-     * The max depth to search as a number or element (defaults to 10 || document.body)
-     * @return {Ext.dom.Element} The matching DOM node (or null if no match was found)
+     * The max depth to search as a number or element (defaults to `10 || document.body`).
+     * @return {Ext.dom.Element/null} The matching DOM node (or `null` if no match was found).
      */
     up: function(simpleSelector, maxDepth) {
         return this.findParentNode(simpleSelector, maxDepth, true);
@@ -103,8 +108,8 @@ Ext.dom.Element.addMembers({
 
 <span id='Ext-dom-Element-method-query'>    /**
 </span>     * Selects child nodes based on the passed CSS selector (the selector should not contain an id).
-     * @param {String} selector The CSS selector
-     * @return {HTMLElement[]} An array of the matched nodes
+     * @param {String} selector The CSS selector.
+     * @return {HTMLElement[]} An array of the matched nodes.
      */
     query: function(selector) {
         return Ext.DomQuery.select(selector, this.dom);
@@ -112,9 +117,9 @@ Ext.dom.Element.addMembers({
 
 <span id='Ext-dom-Element-method-down'>    /**
 </span>     * Selects a single child at any depth below this element based on the passed CSS selector (the selector should not contain an id).
-     * @param {String} selector The CSS selector
-     * @param {Boolean} returnDom (optional) True to return the DOM node instead of Ext.dom.Element (defaults to false)
-     * @return {HTMLElement/Ext.dom.Element} The child Ext.dom.Element (or DOM node if returnDom = true)
+     * @param {String} selector The CSS selector.
+     * @param {Boolean} [returnDom=false] (optional) `true` to return the DOM node instead of Ext.dom.Element.
+     * @return {HTMLElement/Ext.dom.Element} The child Ext.dom.Element (or DOM node if `returnDom` is `true`).
      */
     down: function(selector, returnDom) {
         var n = Ext.DomQuery.selectNode(selector, this.dom);
@@ -123,9 +128,9 @@ Ext.dom.Element.addMembers({
 
 <span id='Ext-dom-Element-method-child'>    /**
 </span>     * Selects a single *direct* child based on the passed CSS selector (the selector should not contain an id).
-     * @param {String} selector The CSS selector
-     * @param {Boolean} returnDom (optional) True to return the DOM node instead of Ext.dom.Element (defaults to false)
-     * @return {HTMLElement/Ext.dom.Element} The child Ext.dom.Element (or DOM node if returnDom = true)
+     * @param {String} selector The CSS selector.
+     * @param {Boolean} [returnDom=false] (optional) `true` to return the DOM node instead of Ext.dom.Element.
+     * @return {HTMLElement/Ext.dom.Element} The child Ext.dom.Element (or DOM node if `returnDom` is `true`)
      */
     child: function(selector, returnDom) {
         var node,
@@ -139,30 +144,30 @@ Ext.dom.Element.addMembers({
     },
 
 <span id='Ext-dom-Element-method-parent'>     /**
-</span>     * Gets the parent node for this element, optionally chaining up trying to match a selector
-     * @param {String} selector (optional) Find a parent node that matches the passed simple selector
-     * @param {Boolean} returnDom (optional) True to return a raw dom node instead of an Ext.dom.Element
-     * @return {Ext.dom.Element/HTMLElement} The parent node or null
+</span>     * Gets the parent node for this element, optionally chaining up trying to match a selector.
+     * @param {String} selector (optional) Find a parent node that matches the passed simple selector.
+     * @param {Boolean} returnDom (optional) `true` to return a raw DOM node instead of an Ext.dom.Element.
+     * @return {Ext.dom.Element/HTMLElement/null} The parent node or `null`.
      */
     parent: function(selector, returnDom) {
         return this.matchNode('parentNode', 'parentNode', selector, returnDom);
     },
 
 <span id='Ext-dom-Element-method-next'>     /**
-</span>     * Gets the next sibling, skipping text nodes
-     * @param {String} selector (optional) Find the next sibling that matches the passed simple selector
-     * @param {Boolean} returnDom (optional) True to return a raw dom node instead of an Ext.dom.Element
-     * @return {Ext.dom.Element/HTMLElement} The next sibling or null
+</span>     * Gets the next sibling, skipping text nodes.
+     * @param {String} selector (optional) Find the next sibling that matches the passed simple selector.
+     * @param {Boolean} returnDom (optional) `true` to return a raw dom node instead of an Ext.dom.Element.
+     * @return {Ext.dom.Element/HTMLElement/null} The next sibling or `null`.
      */
     next: function(selector, returnDom) {
         return this.matchNode('nextSibling', 'nextSibling', selector, returnDom);
     },
 
 <span id='Ext-dom-Element-method-prev'>    /**
-</span>     * Gets the previous sibling, skipping text nodes
-     * @param {String} selector (optional) Find the previous sibling that matches the passed simple selector
-     * @param {Boolean} returnDom (optional) True to return a raw dom node instead of an Ext.dom.Element
-     * @return {Ext.dom.Element/HTMLElement} The previous sibling or null
+</span>     * Gets the previous sibling, skipping text nodes.
+     * @param {String} selector (optional) Find the previous sibling that matches the passed simple selector.
+     * @param {Boolean} returnDom (optional) `true` to return a raw DOM node instead of an Ext.dom.Element
+     * @return {Ext.dom.Element/HTMLElement/null} The previous sibling or `null`.
      */
     prev: function(selector, returnDom) {
         return this.matchNode('previousSibling', 'previousSibling', selector, returnDom);
@@ -170,20 +175,20 @@ Ext.dom.Element.addMembers({
 
 
 <span id='Ext-dom-Element-method-first'>    /**
-</span>     * Gets the first child, skipping text nodes
-     * @param {String} selector (optional) Find the next sibling that matches the passed simple selector
-     * @param {Boolean} returnDom (optional) True to return a raw dom node instead of an Ext.dom.Element
-     * @return {Ext.dom.Element/HTMLElement} The first child or null
+</span>     * Gets the first child, skipping text nodes.
+     * @param {String} selector (optional) Find the next sibling that matches the passed simple selector.
+     * @param {Boolean} returnDom (optional) `true` to return a raw DOM node instead of an Ext.dom.Element.
+     * @return {Ext.dom.Element/HTMLElement/null} The first child or `null`.
      */
     first: function(selector, returnDom) {
         return this.matchNode('nextSibling', 'firstChild', selector, returnDom);
     },
 
 <span id='Ext-dom-Element-method-last'>    /**
-</span>     * Gets the last child, skipping text nodes
-     * @param {String} selector (optional) Find the previous sibling that matches the passed simple selector
-     * @param {Boolean} returnDom (optional) True to return a raw dom node instead of an Ext.dom.Element
-     * @return {Ext.dom.Element/HTMLElement} The last child or null
+</span>     * Gets the last child, skipping text nodes.
+     * @param {String} selector (optional) Find the previous sibling that matches the passed simple selector.
+     * @param {Boolean} returnDom (optional) `true` to return a raw DOM node instead of an Ext.dom.Element.
+     * @return {Ext.dom.Element/HTMLElement/null} The last child or `null`.
      */
     last: function(selector, returnDom) {
         return this.matchNode('previousSibling', 'lastChild', selector, returnDom);

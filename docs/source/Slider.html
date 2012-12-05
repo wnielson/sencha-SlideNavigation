@@ -67,7 +67,7 @@
  *
  *     slider.on('change', function(field, newValue) {
  *         if (newValue[0] &gt; 40) {
- *             imgComponent.setSrc('large.png')
+ *             imgComponent.setSrc('large.png');
  *         } else {
  *             imgComponent.setSrc('small.png');
  *         }
@@ -87,10 +87,40 @@ Ext.define('Ext.field.Slider', {
 </span>     * @event change
      * Fires when an option selection has changed.
      * @param {Ext.field.Slider} me
+     * @param {Ext.slider.Slider} sl Slider Component.
      * @param {Ext.slider.Thumb} thumb
-     * @param {Number} newValue the new value of this thumb
-     * @param {Number} oldValue the old value of this thumb
+     * @param {Number} newValue The new value of this thumb.
+     * @param {Number} oldValue The old value of this thumb.
      */
+
+<span id='Ext-field-Slider-event-dragstart'>    /**
+</span>    * @event dragstart
+    * Fires when the slider thumb starts a drag operation.
+    * @param {Ext.field.Slider} this
+    * @param {Ext.slider.Slider} sl Slider Component.
+    * @param {Ext.slider.Thumb} thumb The thumb being dragged.
+    * @param {Array} value The start value.
+    * @param {Ext.EventObject} e
+    */
+
+<span id='Ext-field-Slider-event-drag'>    /**
+</span>    * @event drag
+    * Fires when the slider thumb starts a drag operation.
+    * @param {Ext.field.Slider} this
+    * @param {Ext.slider.Slider} sl Slider Component.
+    * @param {Ext.slider.Thumb} thumb The thumb being dragged.
+    * @param {Ext.EventObject} e
+    */
+
+<span id='Ext-field-Slider-event-dragend'>    /**
+</span>    * @event dragend
+    * Fires when the slider thumb ends a drag operation.
+    * @param {Ext.field.Slider} this
+    * @param {Ext.slider.Slider} sl Slider Component.
+    * @param {Ext.slider.Thumb} thumb The thumb being dragged.
+    * @param {Array} value The end value.
+    * @param {Ext.EventObject} e
+    */
 
     config: {
 <span id='Ext-field-Slider-cfg-cls'>        /**
@@ -103,37 +133,50 @@ Ext.define('Ext.field.Slider', {
 </span>         * @cfg
          * @inheritdoc
          */
-        tabIndex: -1
+        tabIndex: -1,
+
+<span id='Ext-field-Slider-cfg-readOnly'>        /**
+</span>         * Will make this field read only, meaning it cannot be changed with used interaction.
+         * @cfg {Boolean} readOnly
+         * @accessor
+         */
+        readOnly: false
     },
 
-    proxyConfig: {
+<span id='Ext-field-Slider-property-proxyConfig'>    proxyConfig: {
+</span>
+<span id='Ext-field-Slider-cfg-increment'>        /**
+</span>         * @inheritdoc Ext.slider.Slider#increment
+         * @cfg {Number} increment
+         * @accessor
+         */
+        increment : 1,
+
 <span id='Ext-field-Slider-cfg-value'>        /**
-</span>         * @cfg {Number/Number[]} value See {@link Ext.slider.Slider#value}
+</span>         * @inheritdoc Ext.slider.Slider#value
+         * @cfg {Number/Number[]} value
          * @accessor
          */
         value: 0,
 
 <span id='Ext-field-Slider-cfg-minValue'>        /**
-</span>         * @cfg {Number} minValue See {@link Ext.slider.Slider#minValue}
+</span>         * @inheritdoc Ext.slider.Slider#minValue
+         * @cfg {Number} minValue
          * @accessor
          */
         minValue: 0,
 
 <span id='Ext-field-Slider-cfg-maxValue'>        /**
-</span>         * @cfg {Number} maxValue See {@link Ext.slider.Slider#maxValue}
+</span>         * @inheritdoc Ext.slider.Slider#maxValue
+         * @cfg {Number} maxValue
          * @accessor
          */
-        maxValue: 100,
-
-<span id='Ext-field-Slider-cfg-increment'>        /**
-</span>         * @cfg {Number} increment See {@link Ext.slider.Slider#increment}
-         * @accessor
-         */
-        increment: 1
+        maxValue: 100
     },
 
 <span id='Ext-field-Slider-cfg-values'>    /**
-</span>     * @cfg {Number/Number[]} values See {@link Ext.slider.Slider#values}
+</span>     * @inheritdoc Ext.slider.Slider#values
+     * @cfg {Number/Number[]} values
      */
 
     constructor: function(config) {
@@ -146,50 +189,80 @@ Ext.define('Ext.field.Slider', {
         this.callParent([config]);
     },
 
-    // @private
-    initialize: function() {
+<span id='Ext-field-Slider-method-initialize'>    // @private
+</span>    initialize: function() {
         this.callParent();
 
         this.getComponent().on({
             scope: this,
-            change: 'onSliderChange'
+
+            change: 'onSliderChange',
+            dragstart: 'onSliderDragStart',
+            drag: 'onSliderDrag',
+            dragend: 'onSliderDragEnd'
         });
     },
 
-    // @private
-    applyComponent: function(config) {
+<span id='Ext-field-Slider-method-applyComponent'>    // @private
+</span>    applyComponent: function(config) {
         return Ext.factory(config, Ext.slider.Slider);
     },
 
-    onSliderChange: function(me, thumb, newValue, oldValue) {
-        this.fireEvent('change', this, thumb, newValue, oldValue);
+<span id='Ext-field-Slider-method-onSliderChange'>    onSliderChange: function() {
+</span>        this.fireEvent.apply(this, [].concat('change', this, Array.prototype.slice.call(arguments)));
+    },
+
+<span id='Ext-field-Slider-method-onSliderDragStart'>    onSliderDragStart: function() {
+</span>        this.fireEvent.apply(this, [].concat('dragstart', this, Array.prototype.slice.call(arguments)));
+    },
+
+<span id='Ext-field-Slider-method-onSliderDrag'>    onSliderDrag: function() {
+</span>        this.fireEvent.apply(this, [].concat('drag', this, Array.prototype.slice.call(arguments)));
+    },
+
+<span id='Ext-field-Slider-method-onSliderDragEnd'>    onSliderDragEnd: function() {
+</span>        this.fireEvent.apply(this, [].concat('dragend', this, Array.prototype.slice.call(arguments)));
     },
 
 <span id='Ext-field-Slider-method-setValues'>    /**
-</span>     * Convience method. Calls {@link #setValue}
+</span>     * Convenience method. Calls {@link #setValue}.
+     * @param {Object} value
      */
     setValues: function(value) {
         this.setValue(value);
     },
 
 <span id='Ext-field-Slider-method-getValues'>    /**
-</span>     * Convience method. Calls {@link #getValue}
+</span>     * Convenience method. Calls {@link #getValue}
+     * @return {Object}
      */
     getValues: function() {
         return this.getValue();
     },
 
-    reset: function() {
-        var config = this.config,
+<span id='Ext-field-Slider-method-reset'>    reset: function() {
+</span>        var config = this.config,
             initialValue = (this.config.hasOwnProperty('values')) ? config.values : config.value;
 
         this.setValue(initialValue);
     },
 
-    doSetDisabled: function(disabled) {
-        this.callParent(arguments);
+<span id='Ext-field-Slider-method-doSetDisabled'>    doSetDisabled: function(disabled) {
+</span>        this.callParent(arguments);
 
         this.getComponent().setDisabled(disabled);
+    },
+
+<span id='Ext-field-Slider-method-updateReadOnly'>    updateReadOnly: function(newValue) {
+</span>        this.getComponent().setReadOnly(newValue);
+    },
+
+<span id='Ext-field-Slider-method-isDirty'>    isDirty : function () {
+</span>        if (this.getDisabled()) {
+            return false;
+        }
+
+        return this.getValue() !== this.originalValue;
     }
 });
 </pre>

@@ -24,10 +24,10 @@ Ext.define('Ext.fx.layout.card.Cover', {
     alias: 'fx.layout.card.cover',
 
     config: {
-        reverse: null,
-
-        inAnimation: {
-            before: {
+<span id='Ext-fx-layout-card-Cover-cfg-reverse'>        reverse: null,
+</span>
+<span id='Ext-fx-layout-card-Cover-cfg-inAnimation'>        inAnimation: {
+</span>            before: {
                 'z-index': 100
             },
             after: {
@@ -36,8 +36,8 @@ Ext.define('Ext.fx.layout.card.Cover', {
             type: 'slide',
             easing: 'ease-out'
         },
-        outAnimation: {
-            easing: 'ease-out',
+<span id='Ext-fx-layout-card-Cover-cfg-outAnimation'>        outAnimation: {
+</span>            easing: 'ease-out',
             from: {
                 opacity: 0.99
             },
@@ -48,8 +48,8 @@ Ext.define('Ext.fx.layout.card.Cover', {
         }
     },
 
-    updateReverse: function(reverse) {
-        this.getInAnimation().setReverse(reverse);
+<span id='Ext-fx-layout-card-Cover-method-updateReverse'>    updateReverse: function(reverse) {
+</span>        this.getInAnimation().setReverse(reverse);
         this.getOutAnimation().setReverse(reverse);
     }
 });

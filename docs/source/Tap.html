@@ -16,14 +16,14 @@
 </head>
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js"><span id='Ext-event-recognizer-Tap'>/**
-</span> * A simple event recogniser which knows when you tap.
+</span> * A simple event recognizer which knows when you tap.
  *
  * @private
  */
 Ext.define('Ext.event.recognizer.Tap', {
 
-    handledEvents: ['tap'],
-
+<span id='Ext-event-recognizer-Tap-property-handledEvents'>    handledEvents: ['tap'],
+</span>
 <span id='Ext-dom-Element-event-tap'>    /**
 </span>     * @member Ext.dom.Element
      * @event tap
@@ -67,12 +67,12 @@ Ext.define('Ext.event.recognizer.Tap', {
 
     extend: 'Ext.event.recognizer.SingleTouch',
 
-    onTouchMove: function() {
-        return this.fail(this.self.TOUCH_MOVED);
+<span id='Ext-event-recognizer-Tap-method-onTouchMove'>    onTouchMove: function() {
+</span>        return this.fail(this.self.TOUCH_MOVED);
     },
 
-    onTouchEnd: function(e) {
-        var touch = e.changedTouches[0];
+<span id='Ext-event-recognizer-Tap-method-onTouchEnd'>    onTouchEnd: function(e) {
+</span>        var touch = e.changedTouches[0];
 
         this.fire('tap', e, [touch]);
     }

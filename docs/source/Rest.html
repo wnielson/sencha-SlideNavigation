@@ -21,7 +21,7 @@
  *
  * The Rest proxy is a specialization of the {@link Ext.data.proxy.Ajax AjaxProxy} which simply maps the four actions
  * (create, read, update and destroy) to RESTful HTTP verbs. For example, let's set up a {@link Ext.data.Model Model}
- * with an inline Rest proxy
+ * with an inline Rest proxy:
  *
  *     Ext.define('User', {
  *         extend: 'Ext.data.Model',
@@ -56,7 +56,7 @@
  * Now that we're no longer creating a new Model instance, the request method is changed to an HTTP PUT, targeting the
  * relevant url for that user. Now let's delete this user, which will use the DELETE method:
  *
- *         user.destroy(); //DELETE /users/123
+ *         user.erase(); //DELETE /users/123
  *
  * Finally, when we perform a load of a Model or Store, Rest proxy will use the GET method:
  *
@@ -123,26 +123,26 @@ Ext.define('Ext.data.proxy.Rest', {
     config: {
 <span id='Ext-data-proxy-Rest-cfg-appendId'>        /**
 </span>         * @cfg {Boolean} appendId
-         * True to automatically append the ID of a Model instance when performing a request based on that single instance.
-         * See Rest proxy intro docs for more details. Defaults to true.
+         * `true` to automatically append the ID of a Model instance when performing a request based on that single instance.
+         * See Rest proxy intro docs for more details.
          */
         appendId: true,
 
 <span id='Ext-data-proxy-Rest-cfg-format'>        /**
 </span>         * @cfg {String} format
          * Optional data format to send to the server when making any request (e.g. 'json'). See the Rest proxy intro docs
-         * for full details. Defaults to null.
+         * for full details.
          */
         format: null,
 
 <span id='Ext-data-proxy-Rest-cfg-batchActions'>        /**
 </span>         * @cfg {Boolean} batchActions
-         * True to batch actions of a particular type when synchronizing the store. Defaults to false.
+         * `true` to batch actions of a particular type when synchronizing the store.
          */
         batchActions: false,
 
-        actionMethods: {
-            create : 'POST',
+<span id='Ext-data-proxy-Rest-cfg-actionMethods'>        actionMethods: {
+</span>            create : 'POST',
             read   : 'GET',
             update : 'PUT',
             destroy: 'DELETE'
@@ -150,10 +150,11 @@ Ext.define('Ext.data.proxy.Rest', {
     },
 
 <span id='Ext-data-proxy-Rest-method-buildUrl'>    /**
-</span>     * Specialized version of buildUrl that incorporates the {@link #appendId} and {@link #format} options into the
-     * generated url. Override this to provide further customizations, but remember to call the superclass buildUrl so
+</span>     * Specialized version of `buildUrl` that incorporates the {@link #appendId} and {@link #format} options into the
+     * generated url. Override this to provide further customizations, but remember to call the superclass `buildUrl` so
      * that additional parameters like the cache buster string are appended.
      * @param {Object} request
+     * @return {Object}
      */
     buildUrl: function(request) {
         var me        = this,

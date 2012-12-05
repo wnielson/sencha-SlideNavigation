@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-chart-interactions-RotatePie3D'>/**
+</span> * @class Ext.chart.interactions.RotatePie3D
+ * @extends Ext.chart.interactions.Rotate
+ *
+ * A special version of the Rotate interaction used by Pie3D Chart.
+ */
+Ext.define('Ext.chart.interactions.RotatePie3D', {
+
+    extend: 'Ext.chart.interactions.Rotate',
+
+<span id='Ext-chart-interactions-RotatePie3D-property-type'>    type: 'rotatePie3d',
+</span>
+    alias: 'interaction.rotatePie3d',
+
+<span id='Ext-chart-interactions-RotatePie3D-method-getAngle'>    getAngle: function (e) {
+</span>        var me = this,
+            chart = me.getChart(),
+            xy = chart.element.getXY(),
+            region = chart.getMainRegion();
+        return Math.atan2(e.pageY - xy[1] - region[3] * 0.5, e.pageX - xy[0] - region[2] * 0.5);
+    }
+});
+</pre>
+</body>
+</html>

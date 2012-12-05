@@ -29,14 +29,15 @@
  *         useCurrentLocation: true
  *     });
  *
+ * @aside example maps
  */
 Ext.define('Ext.Map', {
-    extend: 'Ext.Component',
+    extend: 'Ext.Container',
     xtype : 'map',
     requires: ['Ext.util.Geolocation'],
 
-    isMap: true,
-
+<span id='Ext-Map-property-isMap'>    isMap: true,
+</span>
     config: {
 <span id='Ext-Map-event-maprender'>        /**
 </span>         * @event maprender
@@ -71,7 +72,7 @@ Ext.define('Ext.Map', {
 
 <span id='Ext-Map-cfg-baseCls'>        /**
 </span>         * @cfg {String} baseCls
-         * The base CSS class to apply to the Maps's element
+         * The base CSS class to apply to the Map's element
          * @accessor
          */
         baseCls: Ext.baseCSSPrefix + 'map',
@@ -101,40 +102,55 @@ Ext.define('Ext.Map', {
 <span id='Ext-Map-cfg-mapOptions'>        /**
 </span>         * @cfg {Object} mapOptions
          * MapOptions as specified by the Google Documentation:
-         * http://code.google.com/apis/maps/documentation/v3/reference.html
+         * [http://code.google.com/apis/maps/documentation/v3/reference.html](http://code.google.com/apis/maps/documentation/v3/reference.html)
          * @accessor
          */
         mapOptions: {}
     },
 
-    constructor: function() {
-        this.callParent(arguments);
-        this.element.setVisibilityMode(Ext.Element.OFFSETS);
+<span id='Ext-Map-method-constructor'>    constructor: function() {
+</span>        this.callParent(arguments);
+        // this.element.setVisibilityMode(Ext.Element.OFFSETS);
 
         if (!(window.google || {}).maps) {
             this.setHtml('Google Maps API is required');
         }
     },
 
-    initialize: function() {
-        this.callParent();
+<span id='Ext-Map-method-initialize'>    initialize: function() {
+</span>        this.callParent();
         this.on({
             painted: 'doResize',
             scope: this
         });
-        this.element.on('touchstart', 'onTouchStart', this);
+        this.innerElement.on('touchstart', 'onTouchStart', this);
     },
 
-    onTouchStart: function(e) {
-        e.makeUnpreventable();
+<span id='Ext-Map-method-getElementConfig'>    getElementConfig: function() {
+</span>        return {
+            reference: 'element',
+            className: 'x-container',
+            children: [{
+                reference: 'innerElement',
+                className: 'x-inner',
+                children: [{
+                    reference: 'mapContainer',
+                    className: Ext.baseCSSPrefix + 'map-container'
+                }]
+            }]
+        };
     },
 
-    applyMapOptions: function(options) {
-        return Ext.merge({}, this.options, options);
+<span id='Ext-Map-method-onTouchStart'>    onTouchStart: function(e) {
+</span>        e.makeUnpreventable();
     },
 
-    updateMapOptions: function(newOptions) {
-        var me = this,
+<span id='Ext-Map-method-applyMapOptions'>    applyMapOptions: function(options) {
+</span>        return Ext.merge({}, this.options, options);
+    },
+
+<span id='Ext-Map-method-updateMapOptions'>    updateMapOptions: function(newOptions) {
+</span>        var me = this,
             gm = (window.google || {}).maps,
             map = this.getMap();
 
@@ -143,27 +159,27 @@ Ext.define('Ext.Map', {
         }
         if (newOptions.center &amp;&amp; !me.isPainted()) {
             me.un('painted', 'setMapCenter', this);
-            me.on('painted', 'setMapCenter', this, { delay: 50, single: true, args: [newOptions.center] });
+            me.on('painted', 'setMapCenter', this, { delay: 150, single: true, args: [newOptions.center] });
         }
     },
 
-    getMapOptions: function() {
-        return Ext.merge({}, this.options || this.getInitialConfig('mapOptions'));
+<span id='Ext-Map-method-getMapOptions'>    getMapOptions: function() {
+</span>        return Ext.merge({}, this.options || this.getInitialConfig('mapOptions'));
     },
 
-    updateUseCurrentLocation: function(useCurrentLocation) {
-        this.setGeo(useCurrentLocation);
+<span id='Ext-Map-method-updateUseCurrentLocation'>    updateUseCurrentLocation: function(useCurrentLocation) {
+</span>        this.setGeo(useCurrentLocation);
         if (!useCurrentLocation) {
             this.renderMap();
         }
     },
 
-    applyGeo: function(config) {
-        return Ext.factory(config, Ext.util.Geolocation, this.getGeo());
+<span id='Ext-Map-method-applyGeo'>    applyGeo: function(config) {
+</span>        return Ext.factory(config, Ext.util.Geolocation, this.getGeo());
     },
 
-    updateGeo: function(newGeo, oldGeo) {
-        var events = {
+<span id='Ext-Map-method-updateGeo'>    updateGeo: function(newGeo, oldGeo) {
+</span>        var events = {
             locationupdate : 'onGeoUpdate',
             locationerror : 'onGeoError',
             scope : this
@@ -179,8 +195,8 @@ Ext.define('Ext.Map', {
         }
     },
 
-    doResize: function() {
-        var gm = (window.google || {}).maps,
+<span id='Ext-Map-method-doResize'>    doResize: function() {
+</span>        var gm = (window.google || {}).maps,
             map = this.getMap();
 
         if (gm &amp;&amp; map) {
@@ -188,11 +204,11 @@ Ext.define('Ext.Map', {
         }
     },
 
-    // @private
-    renderMap: function() {
+<span id='Ext-Map-method-renderMap'>    // @private
+</span>    renderMap: function() {
         var me = this,
             gm = (window.google || {}).maps,
-            element = me.element,
+            element = me.mapContainer,
             mapOptions = me.getMapOptions(),
             map = me.getMap(),
             event;
@@ -238,15 +254,15 @@ Ext.define('Ext.Map', {
         }
     },
 
-    // @private
-    onGeoUpdate: function(geo) {
+<span id='Ext-Map-method-onGeoUpdate'>    // @private
+</span>    onGeoUpdate: function(geo) {
         if (geo) {
             this.setMapCenter(new google.maps.LatLng(geo.getLatitude(), geo.getLongitude()));
         }
     },
 
-    // @private
-    onGeoError: Ext.emptyFn,
+<span id='Ext-Map-method-onGeoError'>    // @private
+</span>    onGeoError: Ext.emptyFn,
 
 <span id='Ext-Map-method-setMapCenter'>    /**
 </span>     * Moves the map center to the designated coordinates hash of the form:
@@ -266,7 +282,7 @@ Ext.define('Ext.Map', {
         if (gm) {
             if (!me.isPainted()) {
                 me.un('painted', 'setMapCenter', this);
-                me.on('painted', 'setMapCenter', this, { delay: 50, single: true, args: [coordinates] });
+                me.on('painted', 'setMapCenter', this, { delay: 150, single: true, args: [coordinates] });
                 return;
             }
             coordinates = coordinates || new gm.LatLng(37.381592, -122.135672);
@@ -291,8 +307,8 @@ Ext.define('Ext.Map', {
         }
     },
 
-    // @private
-    onZoomChange : function() {
+<span id='Ext-Map-method-onZoomChange'>    // @private
+</span>    onZoomChange : function() {
         var mapOptions = this.getMapOptions(),
             map = this.getMap(),
             zoom;
@@ -306,8 +322,8 @@ Ext.define('Ext.Map', {
         this.fireEvent('zoomchange', this, map, zoom);
     },
 
-    // @private
-    onTypeChange : function() {
+<span id='Ext-Map-method-onTypeChange'>    // @private
+</span>    onTypeChange : function() {
         var mapOptions = this.getMapOptions(),
             map = this.getMap(),
             mapTypeId;
@@ -321,8 +337,8 @@ Ext.define('Ext.Map', {
         this.fireEvent('typechange', this, map, mapTypeId);
     },
 
-    // @private
-    onCenterChange: function() {
+<span id='Ext-Map-method-onCenterChange'>    // @private
+</span>    onCenterChange: function() {
         var mapOptions = this.getMapOptions(),
             map = this.getMap(),
             center;
@@ -337,8 +353,8 @@ Ext.define('Ext.Map', {
 
     },
 
-    // @private
-    destroy: function() {
+<span id='Ext-Map-method-destroy'>    // @private
+</span>    destroy: function() {
         Ext.destroy(this.getGeo());
         var map = this.getMap();
 

@@ -41,14 +41,14 @@ Ext.define('Ext.dom.CompositeElement', {
 
     extend: 'Ext.dom.CompositeElementLite',
 
-    // private
-    getElement: function(el) {
+<span id='Ext-dom-CompositeElement-method-getElement'>    // @private
+</span>    getElement: function(el) {
         // In this case just return it, since we already have a reference to it
         return el;
     },
 
-    // private
-    transformElement: function(el) {
+<span id='Ext-dom-CompositeElement-method-transformElement'>    // @private
+</span>    transformElement: function(el) {
         return Ext.get(el);
     }
 

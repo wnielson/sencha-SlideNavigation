@@ -22,24 +22,24 @@
 Ext.define('Ext.viewport.Ios', {
     extend: 'Ext.viewport.Default',
 
-    isFullscreen: function() {
-        return this.isHomeScreen();
+<span id='Ext-viewport-Ios-method-isFullscreen'>    isFullscreen: function() {
+</span>        return this.isHomeScreen();
     },
 
-    isHomeScreen: function() {
-        return window.navigator.standalone === true;
+<span id='Ext-viewport-Ios-method-isHomeScreen'>    isHomeScreen: function() {
+</span>        return window.navigator.standalone === true;
     },
 
-    constructor: function() {
-        this.callParent(arguments);
+<span id='Ext-viewport-Ios-method-constructor'>    constructor: function() {
+</span>        this.callParent(arguments);
 
         if (this.getAutoMaximize() &amp;&amp; !this.isFullscreen()) {
             this.addWindowListener('touchstart', Ext.Function.bind(this.onTouchStart, this));
         }
     },
 
-    maximize: function() {
-        if (this.isFullscreen()) {
+<span id='Ext-viewport-Ios-method-maximize'>    maximize: function() {
+</span>        if (this.isFullscreen()) {
             return this.callParent();
         }
 
@@ -86,34 +86,34 @@ Ext.define('Ext.viewport.Ios', {
         }
     },
 
-    getScreenHeight: function() {
-        return window.screen[this.orientation === this.PORTRAIT ? 'height' : 'width'];
+<span id='Ext-viewport-Ios-method-getScreenHeight'>    getScreenHeight: function() {
+</span>        return window.screen[this.orientation === this.PORTRAIT ? 'height' : 'width'];
     },
 
-    onElementFocus: function() {
-        if (this.getAutoMaximize() &amp;&amp; !this.isFullscreen()) {
+<span id='Ext-viewport-Ios-method-onElementFocus'>    onElementFocus: function() {
+</span>        if (this.getAutoMaximize() &amp;&amp; !this.isFullscreen()) {
             clearTimeout(this.scrollToTopTimer);
         }
 
         this.callParent(arguments);
     },
 
-    onElementBlur: function() {
-        if (this.getAutoMaximize() &amp;&amp; !this.isFullscreen()) {
+<span id='Ext-viewport-Ios-method-onElementBlur'>    onElementBlur: function() {
+</span>        if (this.getAutoMaximize() &amp;&amp; !this.isFullscreen()) {
             this.scrollToTopTimer = setTimeout(this.scrollToTop, 500);
         }
 
         this.callParent(arguments);
     },
 
-    onTouchStart: function() {
-        if (this.focusedElement === null) {
+<span id='Ext-viewport-Ios-method-onTouchStart'>    onTouchStart: function() {
+</span>        if (this.focusedElement === null) {
             this.scrollToTop();
         }
     },
 
-    scrollToTop: function() {
-        window.scrollTo(0, 0);
+<span id='Ext-viewport-Ios-method-scrollToTop'>    scrollToTop: function() {
+</span>        window.scrollTo(0, 0);
     }
 
 }, function() {

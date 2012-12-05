@@ -17,6 +17,7 @@
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js"><span id='Ext-Sortable'>/**
 </span> * A mixin which allows a data component to be sorted
+ * @ignore
  */
 Ext.define('Ext.Sortable', {
     mixins: {
@@ -35,7 +36,7 @@ Ext.define('Ext.Sortable', {
 <span id='Ext-Sortable-cfg-delay'>        /**
 </span>         * @cfg {Number} delay
          * How many milliseconds a user must hold the draggable before starting a
-         * drag operation. Defaults to 0 or immediate.
+         * drag operation.
          * @private
          * @accessor
          */
@@ -45,8 +46,7 @@ Ext.define('Ext.Sortable', {
 
 <span id='Ext-Sortable-cfg-direction'>    /**
 </span>     * @cfg {String} direction
-     * Possible values: 'vertical', 'horizontal'
-     * Defaults to 'vertical'
+     * Possible values: 'vertical', 'horizontal'.
      */
     direction: 'vertical',
 
@@ -64,15 +64,15 @@ Ext.define('Ext.Sortable', {
 
 <span id='Ext-Sortable-cfg-constrain'>    /**
 </span>     * @cfg {HTMLElement/Boolean} constrain
-     * An Element to constrain the Sortable dragging to. Defaults to &lt;tt&gt;window&lt;/tt&gt;.
-     * If &lt;tt&gt;true&lt;/tt&gt; is specified, the dragging will be constrained to the element
+     * An Element to constrain the Sortable dragging to.
+     * If `true` is specified, the dragging will be constrained to the element
      * of the sortable.
      */
     constrain: window,
 <span id='Ext-Sortable-cfg-group'>    /**
 </span>     * @cfg {String} group
      * Draggable and Droppable objects can participate in a group which are
-     * capable of interacting. Defaults to 'base'
+     * capable of interacting.
      */
     group: 'base',
 
@@ -97,7 +97,7 @@ Ext.define('Ext.Sortable', {
 
 <span id='Ext-Sortable-cfg-disabled'>    /**
 </span>     * @cfg {Boolean} disabled
-     * Passing in true will disable this Sortable.
+     * Passing in `true` will disable this Sortable.
      */
     disabled: false,
 
@@ -107,6 +107,7 @@ Ext.define('Ext.Sortable', {
 </span>     * Read-only property that indicates whether a Sortable is currently sorting.
      * @type Boolean
      * @private
+     * @readonly
      */
     sorting: false,
 
@@ -115,6 +116,7 @@ Ext.define('Ext.Sortable', {
      * This is automatically calculated by Draggable by the direction configuration.
      * @type Boolean
      * @private
+     * @readonly
      */
     vertical: false,
 
@@ -180,8 +182,8 @@ Ext.define('Ext.Sortable', {
         }
     },
 
-    // @private
-    onStart : function(e, t) {
+<span id='Ext-Sortable-method-onStart'>    // @private
+</span>    onStart : function(e, t) {
         if (this.cancelSelector &amp;&amp; e.getTarget(this.cancelSelector)) {
             return;
         }
@@ -194,8 +196,8 @@ Ext.define('Ext.Sortable', {
         }
     },
 
-    // @private
-    onSortStart : function(e, t) {
+<span id='Ext-Sortable-method-onSortStart'>    // @private
+</span>    onSortStart : function(e, t) {
         this.sorting = true;
         var draggable = Ext.create('Ext.util.Draggable', t, {
             threshold: 0,
@@ -220,8 +222,8 @@ Ext.define('Ext.Sortable', {
         this.fireEvent('sortstart', this, e);
     },
 
-    // @private
-    calculateBoxes : function() {
+<span id='Ext-Sortable-method-calculateBoxes'>    // @private
+</span>    calculateBoxes : function() {
         this.items = [];
         var els = this.el.select(this.itemSelector, false),
             ln = els.length, i, item, el, box;
@@ -236,8 +238,8 @@ Ext.define('Ext.Sortable', {
         }
     },
 
-    // @private
-    onDrag : function(draggable, e) {
+<span id='Ext-Sortable-method-onDrag'>    // @private
+</span>    onDrag : function(draggable, e) {
         var items = this.items,
             ln = items.length,
             region = draggable.region,
@@ -284,8 +286,8 @@ Ext.define('Ext.Sortable', {
         }
     },
 
-    // @private
-    onDragEnd : function(draggable, e) {
+<span id='Ext-Sortable-method-onDragEnd'>    // @private
+</span>    onDragEnd : function(draggable, e) {
         draggable.destroy();
         this.sorting = false;
         this.fireEvent('sortend', this, draggable, e);
@@ -294,7 +296,7 @@ Ext.define('Ext.Sortable', {
 <span id='Ext-Sortable-method-enable'>    /**
 </span>     * Enables sorting for this Sortable.
      * This method is invoked immediately after construction of a Sortable unless
-     * the disabled configuration is set to true.
+     * the disabled configuration is set to `true`.
      */
     enable : function() {
         this.el.on(this.startEventName, this.onStart, this, {delegate: this.itemSelector, holdThreshold: this.getDelay()});
@@ -311,7 +313,7 @@ Ext.define('Ext.Sortable', {
 
 <span id='Ext-Sortable-method-isDisabled'>    /**
 </span>     * Method to determine whether this Sortable is currently disabled.
-     * @return {Boolean} the disabled state of this Sortable.
+     * @return {Boolean} The disabled state of this Sortable.
      */
     isDisabled: function() {
         return this.disabled;
@@ -319,7 +321,7 @@ Ext.define('Ext.Sortable', {
 
 <span id='Ext-Sortable-method-isSorting'>    /**
 </span>     * Method to determine whether this Sortable is currently sorting.
-     * @return {Boolean} the sorting state of this Sortable.
+     * @return {Boolean} The sorting state of this Sortable.
      */
     isSorting : function() {
         return this.sorting;
@@ -327,7 +329,7 @@ Ext.define('Ext.Sortable', {
 
 <span id='Ext-Sortable-method-isVertical'>    /**
 </span>     * Method to determine whether this Sortable is currently disabled.
-     * @return {Boolean} the disabled state of this Sortable.
+     * @return {Boolean} The disabled state of this Sortable.
      */
     isVertical : function() {
         return this.vertical;
@@ -335,7 +337,7 @@ Ext.define('Ext.Sortable', {
 
 <span id='Ext-Sortable-method-isHorizontal'>    /**
 </span>     * Method to determine whether this Sortable is currently sorting.
-     * @return {Boolean} the sorting state of this Sortable.
+     * @return {Boolean} The sorting state of this Sortable.
      */
     isHorizontal : function() {
         return this.horizontal;

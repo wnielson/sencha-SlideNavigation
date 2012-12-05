@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-util-TranslatableGroup'>/**
+</span> * @private
+ */
+Ext.define('Ext.util.TranslatableGroup', {
+    extend: 'Ext.util.translatable.Abstract',
+
+    config: {
+<span id='Ext-util-TranslatableGroup-cfg-items'>        items: [],
+</span>
+<span id='Ext-util-TranslatableGroup-cfg-activeIndex'>        activeIndex: 0,
+</span>
+<span id='Ext-util-TranslatableGroup-cfg-itemLength'>        itemLength: {
+</span>            x: 0,
+            y: 0
+        }
+    },
+
+<span id='Ext-util-TranslatableGroup-method-applyItems'>    applyItems: function(items) {
+</span>        return Ext.Array.from(items);
+    },
+
+<span id='Ext-util-TranslatableGroup-method-doTranslate'>    doTranslate: function(x, y) {
+</span>        var items = this.getItems(),
+            activeIndex = this.getActiveIndex(),
+            itemLength = this.getItemLength(),
+            itemLengthX = itemLength.x,
+            itemLengthY = itemLength.y,
+            useX = typeof x == 'number',
+            useY = typeof y == 'number',
+            offset, i, ln, item, translateX, translateY;
+
+        for (i = 0, ln = items.length; i &lt; ln; i++) {
+            item = items[i];
+
+            if (item) {
+                offset = (i - activeIndex);
+
+                if (useX) {
+                    translateX = x + offset * itemLengthX;
+                }
+
+                if (useY) {
+                    translateY = y + offset * itemLengthY;
+                }
+
+                item.translate(translateX, translateY);
+            }
+        }
+    }
+});</pre>
+</body>
+</html>

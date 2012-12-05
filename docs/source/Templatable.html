@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-mixin-Templatable'>/**
+</span> *
+ */
+Ext.define('Ext.mixin.Templatable', {
+    extend: 'Ext.mixin.Mixin',
+
+<span id='Ext-mixin-Templatable-property-mixinConfig'>    mixinConfig: {
+</span>        id: 'templatable'
+    },
+
+<span id='Ext-mixin-Templatable-property-referenceAttributeName'>    referenceAttributeName: 'reference',
+</span>
+<span id='Ext-mixin-Templatable-property-referenceSelector'>    referenceSelector: '[reference]',
+</span>
+<span id='Ext-mixin-Templatable-method-getElementConfig'>    getElementConfig: function() {
+</span>        return {
+            reference: 'element'
+        };
+    },
+
+<span id='Ext-mixin-Templatable-method-getElementTemplate'>    getElementTemplate: function() {
+</span>        var elementTemplate = document.createDocumentFragment();
+        elementTemplate.appendChild(Ext.Element.create(this.getElementConfig(), true));
+        return elementTemplate;
+    },
+
+<span id='Ext-mixin-Templatable-method-initElement'>    initElement: function() {
+</span>        var prototype = this.self.prototype;
+
+        prototype.elementTemplate = this.getElementTemplate();
+        prototype.initElement = prototype.doInitElement;
+
+        this.initElement.apply(this, arguments);
+    },
+
+<span id='Ext-mixin-Templatable-method-linkElement'>    linkElement: function(reference, node) {
+</span>        this.link(reference, node);
+    },
+
+<span id='Ext-mixin-Templatable-method-doInitElement'>    doInitElement: function() {
+</span>        var referenceAttributeName = this.referenceAttributeName,
+            renderElement, referenceNodes, i, ln, referenceNode, reference;
+
+        renderElement = this.elementTemplate.cloneNode(true);
+        referenceNodes = renderElement.querySelectorAll(this.referenceSelector);
+
+        for (i = 0,ln = referenceNodes.length; i &lt; ln; i++) {
+            referenceNode = referenceNodes[i];
+            reference = referenceNode.getAttribute(referenceAttributeName);
+            referenceNode.removeAttribute(referenceAttributeName);
+            this.linkElement(reference, referenceNode);
+        }
+    }
+});
+</pre>
+</body>
+</html>

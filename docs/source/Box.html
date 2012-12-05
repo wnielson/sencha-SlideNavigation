@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-layout-Box'>/**
+</span> *
+ */
+Ext.define('Ext.layout.Box', {
+    extend: 'Ext.layout.Default',
+
+    config: {
+<span id='Ext-layout-Box-cfg-orient'>        orient: 'horizontal',
+</span>
+<span id='Ext-layout-Box-cfg-align'>        align: 'start',
+</span>
+<span id='Ext-layout-Box-cfg-pack'>        pack: 'start'
+</span>    },
+
+    alias: 'layout.tablebox',
+
+<span id='Ext-layout-Box-property-layoutBaseClass'>    layoutBaseClass: 'x-layout-tablebox',
+</span>
+<span id='Ext-layout-Box-property-itemClass'>    itemClass: 'x-layout-tablebox-item',
+</span>
+<span id='Ext-layout-Box-method-setContainer'>    setContainer: function(container) {
+</span>        this.callSuper(arguments);
+
+        container.innerElement.addCls(this.layoutBaseClass);
+
+        container.on('flexchange', 'onItemFlexChange', this, {
+            delegate: '&gt; component'
+        });
+    },
+
+<span id='Ext-layout-Box-method-onItemInnerStateChange'>    onItemInnerStateChange: function(item, isInner) {
+</span>        this.callSuper(arguments);
+
+        item.toggleCls(this.itemClass, isInner);
+    },
+
+<span id='Ext-layout-Box-method-onItemFlexChange'>    onItemFlexChange: function() {
+</span>
+    }
+});
+</pre>
+</body>
+</html>

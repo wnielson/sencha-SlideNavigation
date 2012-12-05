@@ -51,12 +51,10 @@
  *
  * ## Further Reading
  *
- * &lt;ul style=&quot;list-style-type: disc; padding-left: 20px;&quot;&gt;
- *   &lt;li&gt;{@link Ext.data.association.HasMany hasMany associations}&lt;/li&gt;
- *   &lt;li&gt;{@link Ext.data.association.BelongsTo belongsTo associations}&lt;/li&gt;
- *   &lt;li&gt;{@link Ext.data.association.HasOne hasOne associations}&lt;/li&gt;
- *   &lt;li&gt;{@link Ext.data.Model using Models}&lt;/li&gt;
- * &lt;/ul&gt;
+ * - {@link Ext.data.association.HasMany hasMany associations}
+ * - {@link Ext.data.association.BelongsTo belongsTo associations}
+ * - {@link Ext.data.association.HasOne hasOne associations}
+ * - {@link Ext.data.Model using Models}
  *
  * ### Self-associating Models
  *
@@ -74,19 +72,21 @@
  *                 &quot;parent_id&quot;: null,
  *                 &quot;name&quot;: &quot;Parent Group&quot;
  *             },
- *             &quot;child_groups&quot;: [{
- *                 &quot;id&quot;: 2,
- *                 &quot;parent_id&quot;: 10,
- *                 &quot;name&quot;: &quot;Child Group 1&quot;
- *             },{
- *                 &quot;id&quot;: 3,
- *                 &quot;parent_id&quot;: 10,
- *                 &quot;name&quot;: &quot;Child Group 2&quot;
- *             },{
- *                 &quot;id&quot;: 4,
- *                 &quot;parent_id&quot;: 10,
- *                 &quot;name&quot;: &quot;Child Group 3&quot;
- *             }]
+ *             &quot;nested&quot; : {
+ *                 &quot;child_groups&quot;: [{
+ *                     &quot;id&quot;: 2,
+ *                     &quot;parent_id&quot;: 10,
+ *                     &quot;name&quot;: &quot;Child Group 1&quot;
+ *                 },{
+ *                     &quot;id&quot;: 3,
+ *                     &quot;parent_id&quot;: 10,
+ *                     &quot;name&quot;: &quot;Child Group 2&quot;
+ *                 },{
+ *                     &quot;id&quot;: 4,
+ *                     &quot;parent_id&quot;: 10,
+ *                     &quot;name&quot;: &quot;Child Group 3&quot;
+ *                 }]
+ *             }
  *         }
  *     }
  *
@@ -109,7 +109,7 @@
  *                 primaryKey: 'id',
  *                 foreignKey: 'parent_id',
  *                 autoLoad: true,
- *                 associationKey: 'child_groups' // read child data from child_groups
+ *                 associationKey: 'nested.child_groups' // read child data from nested.child_groups
  *             }, {
  *                 type: 'belongsTo',
  *                 model: 'MyApp.model.Group',
@@ -141,20 +141,20 @@ Ext.define('Ext.data.association.Association', {
 
     config: {
 <span id='Ext-data-association-Association-cfg-ownerModel'>        /**
-</span>         * @cfg {Ext.data.Model/String} ownerModel The full class name or reference to the class that owns this
+</span>         * @cfg {Ext.data.Model/String} ownerModel (required) The full class name or reference to the class that owns this
          * associations. This is a required configuration on every association.
          * @accessor
          */
         ownerModel: null,
 
-        /*
-         * @cfg {String} ownerName The name for the owner model. This defaults to the last part
+<span id='Ext-data-association-Association-cfg-ownerName'>        /*
+</span>         * @cfg {String} ownerName The name for the owner model. This defaults to the last part
          * of the class name of the {@link #ownerModel}.
          */
         ownerName: undefined,
 
 <span id='Ext-data-association-Association-cfg-associatedModel'>        /**
-</span>         * @cfg {String} associatedModel The full class name or reference to the class that the {@link #ownerModel}
+</span>         * @cfg {String} associatedModel (required) The full class name or reference to the class that the {@link #ownerModel}
          * is being associated with. This is a required configuration on every association.
          * @accessor
          */
@@ -170,39 +170,38 @@ Ext.define('Ext.data.association.Association', {
 
 <span id='Ext-data-association-Association-cfg-associationKey'>        /**
 </span>         * @cfg {String} associationKey The name of the property in the data to read the association from.
-         * Defaults to the {@link #associatedName} plus _id.
+         * Defaults to the {@link #associatedName} plus '_id'.
          */
         associationKey: undefined,
 
 <span id='Ext-data-association-Association-cfg-primaryKey'>        /**
-</span>         * @cfg {String} primaryKey The name of the primary key on the associated model. Defaults to 'id'.
+</span>         * @cfg {String} primaryKey The name of the primary key on the associated model.
          * In general this will be the {@link Ext.data.Model#idProperty} of the Model.
          */
         primaryKey: 'id',
 
 <span id='Ext-data-association-Association-cfg-reader'>        /**
-</span>         * @cfg {Ext.data.reader.Reader} reader A special reader to read associated data
+</span>         * @cfg {Ext.data.reader.Reader} reader A special reader to read associated data.
          */
         reader: null,
 
 <span id='Ext-data-association-Association-cfg-type'>        /**
 </span>         * @cfg {String} type The type configuration can be used when creating associations using a configuration object.
-         * Use 'hasMany' to create a HasMany association
-         * &lt;pre&gt;&lt;code&gt;
-    associations: [{
-        type: 'hasMany',
-        model: 'User'
-    }]
-         * &lt;/code&gt;&lt;/pre&gt;
+         * Use `hasMany` to create a HasMany association.
+         *
+         *     associations: [{
+         *         type: 'hasMany',
+         *         model: 'User'
+         *     }]
          */
         type: null,
 
-        name: undefined
-    },
+<span id='Ext-data-association-Association-cfg-name'>        name: undefined
+</span>    },
 
     statics: {
-        create: function(association) {
-            if (!association.isAssociation) {
+<span id='Ext-data-association-Association-method-create'>        create: function(association) {
+</span>            if (!association.isAssociation) {
                 if (Ext.isString(association)) {
                     association = {
                         type: association
@@ -224,59 +223,59 @@ Ext.define('Ext.data.association.Association', {
         this.initConfig(config);
     },
 
-    applyName: function(name) {
-        if (!name) {
+<span id='Ext-data-association-Association-method-applyName'>    applyName: function(name) {
+</span>        if (!name) {
             name = this.getAssociatedName();
         }
         return name;
     },
 
-    applyOwnerModel: function(ownerName) {
-        var ownerModel = Ext.data.ModelManager.getModel(ownerName);
+<span id='Ext-data-association-Association-method-applyOwnerModel'>    applyOwnerModel: function(ownerName) {
+</span>        var ownerModel = Ext.data.ModelManager.getModel(ownerName);
         if (ownerModel === undefined) {
             Ext.Logger.error('The configured ownerModel was not valid (you tried ' + ownerName + ')');
         }
         return ownerModel;
     },
 
-    applyOwnerName: function(ownerName) {
-        if (!ownerName) {
+<span id='Ext-data-association-Association-method-applyOwnerName'>    applyOwnerName: function(ownerName) {
+</span>        if (!ownerName) {
             ownerName = this.getOwnerModel().modelName;
         }
         ownerName = ownerName.slice(ownerName.lastIndexOf('.')+1);
         return ownerName;
     },
 
-    updateOwnerModel: function(ownerModel, oldOwnerModel) {
-        if (oldOwnerModel) {
+<span id='Ext-data-association-Association-method-updateOwnerModel'>    updateOwnerModel: function(ownerModel, oldOwnerModel) {
+</span>        if (oldOwnerModel) {
             this.setOwnerName(ownerModel.modelName);
         }
     },
 
-    applyAssociatedModel: function(associatedName) {
-        var associatedModel = Ext.data.ModelManager.types[associatedName];
+<span id='Ext-data-association-Association-method-applyAssociatedModel'>    applyAssociatedModel: function(associatedName) {
+</span>        var associatedModel = Ext.data.ModelManager.types[associatedName];
         if (associatedModel === undefined) {
             Ext.Logger.error('The configured associatedModel was not valid (you tried ' + associatedName + ')');
         }
         return associatedModel;
     },
 
-    applyAssociatedName: function(associatedName) {
-        if (!associatedName) {
+<span id='Ext-data-association-Association-method-applyAssociatedName'>    applyAssociatedName: function(associatedName) {
+</span>        if (!associatedName) {
             associatedName = this.getAssociatedModel().modelName;
         }
         associatedName = associatedName.slice(associatedName.lastIndexOf('.')+1);
         return associatedName;
     },
 
-    updateAssociatedModel: function(associatedModel, oldAssociatedModel) {
-        if (oldAssociatedModel) {
+<span id='Ext-data-association-Association-method-updateAssociatedModel'>    updateAssociatedModel: function(associatedModel, oldAssociatedModel) {
+</span>        if (oldAssociatedModel) {
             this.setAssociatedName(associatedModel.modelName);
         }
     },
 
-    applyReader: function(reader) {
-        if (reader) {
+<span id='Ext-data-association-Association-method-applyReader'>    applyReader: function(reader) {
+</span>        if (reader) {
             if (Ext.isString(reader)) {
                 reader = {
                     type: reader
@@ -293,12 +292,12 @@ Ext.define('Ext.data.association.Association', {
         return Ext.factory(reader, Ext.data.Reader, this.getReader(), 'reader');
     },
 
-    updateReader: function(reader) {
-        reader.setModel(this.getAssociatedModel());
+<span id='Ext-data-association-Association-method-updateReader'>    updateReader: function(reader) {
+</span>        reader.setModel(this.getAssociatedModel());
     }
 
-    // Convert old properties in data into a config object
-    // &lt;deprecated product=touch since=2.0&gt;
+<span id='Ext-data-association-Association-method-onClassExtended'>    // Convert old properties in data into a config object
+</span>    // &lt;deprecated product=touch since=2.0&gt;
     ,onClassExtended: function(cls, data, hooks) {
         var Component = this,
             defaultConfig = Component.prototype.config,

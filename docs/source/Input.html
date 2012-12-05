@@ -24,7 +24,7 @@ Ext.define('Ext.field.Input', {
 
 <span id='Ext-field-Input-event-clearicontap'>    /**
 </span>     * @event clearicontap
-     * Fires whenever the clear icon is tapped
+     * Fires whenever the clear icon is tapped.
      * @param {Ext.field.Input} this
      * @param {Ext.EventObject} e The event object
      */
@@ -32,74 +32,74 @@ Ext.define('Ext.field.Input', {
 <span id='Ext-field-Input-event-masktap'>    /**
 </span>     * @event masktap
      * @preventable doMaskTap
-     * Fires whenever a mask is tapped
+     * Fires whenever a mask is tapped.
      * @param {Ext.field.Input} this
-     * @param {Ext.EventObject} e The event object
+     * @param {Ext.EventObject} e The event object.
      */
 
 <span id='Ext-field-Input-event-focus'>    /**
 </span>     * @event focus
      * @preventable doFocus
-     * Fires whenever the input get focus
-     * @param {Ext.EventObject} e The event object
+     * Fires whenever the input get focus.
+     * @param {Ext.EventObject} e The event object.
      */
 
 <span id='Ext-field-Input-event-blur'>    /**
 </span>     * @event blur
      * @preventable doBlur
-     * Fires whenever the input loses focus
-     * @param {Ext.EventObject} e The event object
+     * Fires whenever the input loses focus.
+     * @param {Ext.EventObject} e The event object.
      */
 
 <span id='Ext-field-Input-event-click'>    /**
 </span>     * @event click
-     * Fires whenever the input is clicked
-     * @param {Ext.EventObject} e The event object
+     * Fires whenever the input is clicked.
+     * @param {Ext.EventObject} e The event object.
      */
 
 <span id='Ext-field-Input-event-keyup'>    /**
 </span>     * @event keyup
-     * Fires whenever keyup is detected
-     * @param {Ext.EventObject} e The event object
+     * Fires whenever keyup is detected.
+     * @param {Ext.EventObject} e The event object.
      */
 
 <span id='Ext-field-Input-event-paste'>    /**
 </span>     * @event paste
-     * Fires whenever paste is detected
-     * @param {Ext.EventObject} e The event object
+     * Fires whenever paste is detected.
+     * @param {Ext.EventObject} e The event object.
      */
 
 <span id='Ext-field-Input-event-mousedown'>    /**
 </span>     * @event mousedown
-     * Fires whenever the input has a mousedown occur
-     * @param {Ext.EventObject} e The event object
+     * Fires whenever the input has a mousedown occur.
+     * @param {Ext.EventObject} e The event object.
      */
 
 <span id='Ext-field-Input-property-tag'>    /**
-</span>     * @property {String} tag The el tag
+</span>     * @property {String} tag The el tag.
      * @private
      */
     tag: 'input',
 
     cachedConfig: {
 <span id='Ext-field-Input-cfg-cls'>        /**
-</span>         * @cfg {String} cls The className to be applied to this input
+</span>         * @cfg {String} cls The `className` to be applied to this input.
          * @accessor
          */
         cls: Ext.baseCSSPrefix + 'form-field',
 
 <span id='Ext-field-Input-cfg-focusCls'>        /**
-</span>         * @cfg {String} focusCls The CSS class to use when the field receives focus
+</span>         * @cfg {String} focusCls The CSS class to use when the field receives focus.
          * @accessor
          */
         focusCls: Ext.baseCSSPrefix + 'field-focus',
 
-        // @private
-        maskCls: Ext.baseCSSPrefix + 'field-mask',
+<span id='Ext-field-Input-cfg-maskCls'>        // @private
+</span>        maskCls: Ext.baseCSSPrefix + 'field-mask',
 
 <span id='Ext-field-Input-cfg-useMask'>        /**
-</span>         * True to use a mask on this field, or `auto` to automatically select when you should use it.
-         * @cfg {String/Boolean} useMask
+</span>          * @cfg {String/Boolean} useMask
+         * `true` to use a mask on this field, or `auto` to automatically select when you should use it.
          * @private
          * @accessor
          */
@@ -114,7 +114,7 @@ Ext.define('Ext.field.Input', {
         type: 'text',
 
 <span id='Ext-field-Input-cfg-checked'>        /**
-</span>         * @cfg {Boolean} checked &lt;tt&gt;true&lt;/tt&gt; if the checkbox should render initially checked (defaults to &lt;tt&gt;false&lt;/tt&gt;)
+</span>         * @cfg {Boolean} checked `true` if the checkbox should render initially checked.
          * @accessor
          */
         checked: false
@@ -128,28 +128,29 @@ Ext.define('Ext.field.Input', {
         baseCls: Ext.baseCSSPrefix + 'field-input',
 
 <span id='Ext-field-Input-cfg-name'>        /**
-</span>         * @cfg {String} name The field's HTML name attribute
-         * &lt;b&gt;Note&lt;/b&gt;: this property must be set if this field is to be automatically included with
+</span>         * @cfg {String} name The field's HTML name attribute.
+         * __Note:__ This property must be set if this field is to be automatically included with
          * {@link Ext.form.Panel#method-submit form submit()}.
          * @accessor
          */
         name: null,
 
 <span id='Ext-field-Input-cfg-value'>        /**
-</span>         * @cfg {Mixed} value A value to initialize this field with (defaults to undefined).
+</span>         * @cfg {Mixed} value A value to initialize this field with.
          * @accessor
          */
         value: null,
 
 <span id='Ext-field-Input-property-isFocused'>        /**
-</span>         * @property {Boolean} &lt;tt&gt;True&lt;/tt&gt; if the field currently has focus.
+</span>         * @property {Boolean} `true` if the field currently has focus.
          * @accessor
          */
         isFocused: false,
 
 <span id='Ext-field-Input-cfg-tabIndex'>        /**
-</span>         * @cfg {Number} tabIndex The tabIndex for this field. Note this only applies to fields that are rendered,
-         * not those which are built via applyTo (defaults to undefined).
+</span>         * @cfg {Number} tabIndex The `tabIndex` for this field.
+         * 
+         * __Note:__ This only applies to fields that are rendered, not those which are built via `applyTo`.
          * @accessor
          */
         tabIndex: null,
@@ -161,89 +162,112 @@ Ext.define('Ext.field.Input', {
         placeHolder: null,
 
 <span id='Ext-field-Input-cfg-minValue'>        /**
-</span>         * @cfg {Number} minValue The minimum value that this Number field can accept (defaults to undefined, e.g. no minimium)
+</span>         * @cfg {Number} [minValue=undefined] The minimum value that this Number field can accept (defaults to `undefined`, e.g. no minimum).
          * @accessor
          */
         minValue: null,
 
 <span id='Ext-field-Input-cfg-maxValue'>        /**
-</span>         * @cfg {Number} maxValue The maximum value that this Number field can accept (defaults to undefined, e.g. no maximum)
+</span>         * @cfg {Number} [maxValue=undefined] The maximum value that this Number field can accept (defaults to `undefined`, e.g. no maximum).
          * @accessor
          */
         maxValue: null,
 
 <span id='Ext-field-Input-cfg-stepValue'>        /**
-</span>         * @cfg {Number} stepValue The amount by which the field is incremented or decremented each time the spinner is tapped.
-         * Defaults to undefined, which means that the field goes up or down by 1 each time the spinner is tapped
+</span>         * @cfg {Number} [stepValue=undefined] The amount by which the field is incremented or decremented each time the spinner is tapped.
+         * Defaults to `undefined`, which means that the field goes up or down by 1 each time the spinner is tapped.
          * @accessor
          */
         stepValue: null,
 
 <span id='Ext-field-Input-cfg-maxLength'>        /**
-</span>         * @cfg {Number} maxLength The maximum number of permitted input characters (defaults to 0).
+</span>         * @cfg {Number} [maxLength=0] The maximum number of permitted input characters.
          * @accessor
          */
         maxLength: null,
 
 <span id='Ext-field-Input-cfg-autoComplete'>        /**
-</span>         * True to set the field's DOM element autocomplete attribute to &quot;on&quot;, false to set to &quot;off&quot;. Defaults to undefined, leaving the attribute unset
-         * @cfg {Boolean} autoComplete
+</span>         * @cfg {Boolean} [autoComplete=undefined]
+         * `true` to set the field's DOM element `autocomplete` attribute to `&quot;on&quot;`, `false` to set to `&quot;off&quot;`. Defaults to `undefined`, leaving the attribute unset.
          * @accessor
          */
         autoComplete: null,
 
 <span id='Ext-field-Input-cfg-autoCapitalize'>        /**
-</span>         * True to set the field's DOM element autocapitalize attribute to &quot;on&quot;, false to set to &quot;off&quot;. Defaults to undefined, leaving the attribute unset
-         * @cfg {Boolean} autoCapitalize
+</span>         * @cfg {Boolean} [autoCapitalize=undefined]
+         * `true` to set the field's DOM element `autocapitalize` attribute to `&quot;on&quot;`, `false` to set to `&quot;off&quot;`. Defaults to `undefined`, leaving the attribute unset
          * @accessor
          */
         autoCapitalize: null,
 
 <span id='Ext-field-Input-cfg-autoCorrect'>        /**
-</span>         * True to set the field DOM element autocorrect attribute to &quot;on&quot;, false to set to &quot;off&quot;. Defaults to undefined, leaving the attribute unset.
+</span>         * `true` to set the field DOM element `autocorrect` attribute to `&quot;on&quot;`, `false` to set to `&quot;off&quot;`. Defaults to `undefined`, leaving the attribute unset.
          * @cfg {Boolean} autoCorrect
          * @accessor
          */
         autoCorrect: null,
 
 <span id='Ext-field-Input-cfg-readOnly'>        /**
-</span>         * True to set the field DOM element readonly attribute to &quot;true&quot;. Defaults to undefined, leaving the attribute unset.
-         * @cfg {Boolean} readOnly
+</span>         * @cfg {Boolean} [readOnly=undefined]
+         * `true` to set the field DOM element `readonly` attribute to `&quot;true&quot;`. Defaults to `undefined`, leaving the attribute unset.
          * @accessor
          */
         readOnly: null,
 
 <span id='Ext-field-Input-cfg-maxRows'>        /**
-</span>         * Sets the field DOM element maxRows attribute. Defaults to undefined, leaving the attribute unset.
-         * @cfg {Number} maxRows
+</span>         * @cfg {Number} [maxRows=undefined]
+         * Sets the field DOM element `maxRows` attribute. Defaults to `undefined`, leaving the attribute unset.
          * @accessor
          */
         maxRows: null,
 
+<span id='Ext-field-Input-cfg-pattern'>        /**
+</span>         * @cfg {String} pattern The value for the HTML5 `pattern` attribute.
+         * You can use this to change which keyboard layout will be used.
+         *
+         *     Ext.define('Ux.field.Pattern', {
+         *         extend : 'Ext.field.Text',
+         *         xtype  : 'patternfield',
+         *         
+         *         config : {
+         *             component : {
+         *                 pattern : '[0-9]*'
+         *             }
+         *         }
+         *     });
+         *
+         * Even though it extends {@link Ext.field.Text}, it will display the number keyboard.
+         *
+         * @accessor
+         */
+        pattern: null,
+
 <span id='Ext-field-Input-cfg-disabled'>        /**
-</span>         * @cfg {Boolean} disabled True to disable the field (defaults to false).
-         * &lt;p&gt;Be aware that conformant with the &lt;a href=&quot;http://www.w3.org/TR/html401/interact/forms.html#h-17.12.1&quot;&gt;HTML specification&lt;/a&gt;,
-         * disabled Fields will not be {@link Ext.form.Panel#method-submit submitted}.&lt;/p&gt;
+</span>         * @cfg {Boolean} [disabled=false] `true` to disable the field.
+         *
+         * Be aware that conformant with the [HTML specification](http://www.w3.org/TR/html401/interact/forms.html),
+         * disabled Fields will not be {@link Ext.form.Panel#method-submit submitted}.
          * @accessor
          */
 
 <span id='Ext-field-Input-cfg-startValue'>        /**
-</span>         * &lt;p&gt;The value that the Field had at the time it was last focused. This is the value that is passed
-         * to the {@link Ext.field.Text#change} event which is fired if the value has been changed when the Field is blurred.&lt;/p&gt;
-         * &lt;p&gt;&lt;b&gt;This will be undefined until the Field has been visited.&lt;/b&gt; Compare {@link #originalValue}.&lt;/p&gt;
-         * @cfg {Mixed} startValue
+</span>         * @cfg {Mixed} startValue
+         * The value that the Field had at the time it was last focused. This is the value that is passed
+         * to the {@link Ext.field.Text#change} event which is fired if the value has been changed when the Field is blurred.
+         *
+         * __This will be `undefined` until the Field has been visited.__ Compare {@link #originalValue}.
          * @accessor
          */
         startValue: false
     },
 
 <span id='Ext-field-Input-cfg-originalValue'>    /**
-</span>     * @cfg {String/Number} originalValue The original value when the input is rendered
+</span>     * @cfg {String/Number} originalValue The original value when the input is rendered.
      * @private
      */
 
-    // @private
-    getTemplate: function() {
+<span id='Ext-field-Input-method-getTemplate'>    // @private
+</span>    getTemplate: function() {
         var items = [
             {
                 reference: 'input',
@@ -263,18 +287,20 @@ Ext.define('Ext.field.Input', {
         return items;
     },
 
-    initElement: function() {
-        var me = this;
+<span id='Ext-field-Input-method-initElement'>    initElement: function() {
+</span>        var me = this;
 
         me.callParent();
 
         me.input.on({
             scope: me,
 
-            keyup    : 'onKeyUp',
-            focus    : 'onFocus',
-            blur     : 'onBlur',
-            paste    : 'onPaste'
+            keyup: 'onKeyUp',
+            keydown: 'onKeyDown',
+            focus: 'onFocus',
+            blur: 'onBlur',
+            input: 'onInput',
+            paste: 'onPaste'
         });
 
         me.mask.on({
@@ -290,8 +316,8 @@ Ext.define('Ext.field.Input', {
         }
     },
 
-    applyUseMask: function(useMask) {
-        if (useMask === 'auto') {
+<span id='Ext-field-Input-method-applyUseMask'>    applyUseMask: function(useMask) {
+</span>        if (useMask === 'auto') {
             useMask = Ext.os.is.iOS &amp;&amp; Ext.os.version.lt('5');
         }
 
@@ -305,8 +331,12 @@ Ext.define('Ext.field.Input', {
         this.mask[newUseMask ? 'show' : 'hide']();
     },
 
+<span id='Ext-field-Input-method-updatePattern'>    updatePattern : function (pattern) {
+</span>        this.updateFieldAttribute('pattern', pattern);
+    },
+
 <span id='Ext-field-Input-method-updateFieldAttribute'>    /**
-</span>     * Helper method to update a specified attribute on the fieldEl, or remove the attribute all together
+</span>     * Helper method to update a specified attribute on the `fieldEl`, or remove the attribute all together.
      * @private
      */
     updateFieldAttribute: function(attribute, newValue) {
@@ -320,7 +350,7 @@ Ext.define('Ext.field.Input', {
     },
 
 <span id='Ext-field-Input-method-updateCls'>    /**
-</span>     * Updates the {@link #cls} configuration
+</span>     * Updates the {@link #cls} configuration.
      */
     updateCls: function(newCls, oldCls) {
         this.input.addCls(Ext.baseCSSPrefix + 'input-el');
@@ -328,7 +358,7 @@ Ext.define('Ext.field.Input', {
     },
 
 <span id='Ext-field-Input-method-updateType'>    /**
-</span>     * Updates the type attribute with the {@link #type} configuration
+</span>     * Updates the type attribute with the {@link #type} configuration.
      * @private
      */
     updateType: function(newType, oldType) {
@@ -339,7 +369,7 @@ Ext.define('Ext.field.Input', {
     },
 
 <span id='Ext-field-Input-method-updateName'>    /**
-</span>     * Updates the name attribute with the {@link #name} configuration
+</span>     * Updates the name attribute with the {@link #name} configuration.
      * @private
      */
     updateName: function(newName) {
@@ -347,8 +377,8 @@ Ext.define('Ext.field.Input', {
     },
 
 <span id='Ext-field-Input-method-getValue'>    /**
-</span>     * Returns the field data value
-     * @return {Mixed} value The field value
+</span>     * Returns the field data value.
+     * @return {Mixed} value The field value.
      */
     getValue: function() {
         var input = this.input;
@@ -360,13 +390,13 @@ Ext.define('Ext.field.Input', {
         return this._value;
     },
 
-    // @private
-    applyValue: function(value) {
+<span id='Ext-field-Input-method-applyValue'>    // @private
+</span>    applyValue: function(value) {
         return (Ext.isEmpty(value)) ? '' : value;
     },
 
 <span id='Ext-field-Input-method-updateValue'>    /**
-</span>     * Updates the {@link #value} configuration
+</span>     * Updates the {@link #value} configuration.
      * @private
      */
     updateValue: function(newValue) {
@@ -377,13 +407,22 @@ Ext.define('Ext.field.Input', {
         }
     },
 
-    setValue: function(newValue) {
+<span id='Ext-field-Input-method-setValue'>    setValue: function(newValue) {
+</span>        var oldValue = this._value;
+
         this.updateValue(this.applyValue(newValue));
+
+        newValue = this.getValue();
+
+        if (String(newValue) != String(oldValue) &amp;&amp; this.initialized) {
+            this.onChange(this, newValue, oldValue);
+        }
+
         return this;
     },
 
-    //&lt;debug&gt;
-    // @private
+<span id='Ext-field-Input-method-applyTabIndex'>    //&lt;debug&gt;
+</span>    // @private
     applyTabIndex: function(tabIndex) {
         if (tabIndex !== null &amp;&amp; typeof tabIndex != 'number') {
             throw new Error(&quot;Ext.field.Field: [applyTabIndex] trying to pass a value which is not a number&quot;);
@@ -400,13 +439,13 @@ Ext.define('Ext.field.Input', {
         this.updateFieldAttribute('tabIndex', newTabIndex);
     },
 
-    // @private
-    testAutoFn: function(value) {
+<span id='Ext-field-Input-method-testAutoFn'>    // @private
+</span>    testAutoFn: function(value) {
         return [true, 'on'].indexOf(value) !== -1;
     },
 
-    //&lt;debug&gt;
-    applyMaxLength: function(maxLength) {
+<span id='Ext-field-Input-method-applyMaxLength'>    //&lt;debug&gt;
+</span>    applyMaxLength: function(maxLength) {
         if (maxLength !== null &amp;&amp; typeof maxLength != 'number') {
             throw new Error(&quot;Ext.field.Text: [applyMaxLength] trying to pass a value which is not a number&quot;);
         }
@@ -415,7 +454,7 @@ Ext.define('Ext.field.Input', {
     //&lt;/debug&gt;
 
 <span id='Ext-field-Input-method-updateMaxLength'>    /**
-</span>     * Updates the maxlength attribute with the {@link #maxLength} configuration
+</span>     * Updates the `maxlength` attribute with the {@link #maxLength} configuration.
      * @private
      */
     updateMaxLength: function(newMaxLength) {
@@ -423,20 +462,20 @@ Ext.define('Ext.field.Input', {
     },
 
 <span id='Ext-field-Input-method-updatePlaceHolder'>    /**
-</span>     * Updates the placeholder attribute with the {@link #placeHolder} configuration
+</span>     * Updates the `placeholder` attribute with the {@link #placeHolder} configuration.
      * @private
      */
     updatePlaceHolder: function(newPlaceHolder) {
         this.updateFieldAttribute('placeholder', newPlaceHolder);
     },
 
-    // @private
-    applyAutoComplete: function(autoComplete) {
+<span id='Ext-field-Input-method-applyAutoComplete'>    // @private
+</span>    applyAutoComplete: function(autoComplete) {
         return this.testAutoFn(autoComplete);
     },
 
 <span id='Ext-field-Input-method-updateAutoComplete'>    /**
-</span>     * Updates the autocomplete attribute with the {@link #autoComplete} configuration
+</span>     * Updates the `autocomplete` attribute with the {@link #autoComplete} configuration.
      * @private
      */
     updateAutoComplete: function(newAutoComplete) {
@@ -444,13 +483,13 @@ Ext.define('Ext.field.Input', {
         this.updateFieldAttribute('autocomplete', value);
     },
 
-    // @private
-    applyAutoCapitalize: function(autoCapitalize) {
+<span id='Ext-field-Input-method-applyAutoCapitalize'>    // @private
+</span>    applyAutoCapitalize: function(autoCapitalize) {
         return this.testAutoFn(autoCapitalize);
     },
 
 <span id='Ext-field-Input-method-updateAutoCapitalize'>    /**
-</span>     * Updates the autocapitalize attribute with the {@link #autoCapitalize} configuration
+</span>     * Updates the `autocapitalize` attribute with the {@link #autoCapitalize} configuration.
      * @private
      */
     updateAutoCapitalize: function(newAutoCapitalize) {
@@ -458,13 +497,13 @@ Ext.define('Ext.field.Input', {
         this.updateFieldAttribute('autocapitalize', value);
     },
 
-    // @private
-    applyAutoCorrect: function(autoCorrect) {
+<span id='Ext-field-Input-method-applyAutoCorrect'>    // @private
+</span>    applyAutoCorrect: function(autoCorrect) {
         return this.testAutoFn(autoCorrect);
     },
 
 <span id='Ext-field-Input-method-updateAutoCorrect'>    /**
-</span>     * Updates the autocorrect attribute with the {@link #autoCorrect} configuration
+</span>     * Updates the `autocorrect` attribute with the {@link #autoCorrect} configuration.
      * @private
      */
     updateAutoCorrect: function(newAutoCorrect) {
@@ -473,7 +512,7 @@ Ext.define('Ext.field.Input', {
     },
 
 <span id='Ext-field-Input-method-updateMinValue'>    /**
-</span>     * Updates the min attribute with the {@link #minValue} configuration
+</span>     * Updates the `min` attribute with the {@link #minValue} configuration.
      * @private
      */
     updateMinValue: function(newMinValue) {
@@ -481,7 +520,7 @@ Ext.define('Ext.field.Input', {
     },
 
 <span id='Ext-field-Input-method-updateMaxValue'>    /**
-</span>     * Updates the max attribute with the {@link #maxValue} configuration
+</span>     * Updates the `max` attribute with the {@link #maxValue} configuration.
      * @private
      */
     updateMaxValue: function(newMaxValue) {
@@ -489,18 +528,18 @@ Ext.define('Ext.field.Input', {
     },
 
 <span id='Ext-field-Input-method-updateStepValue'>    /**
-</span>     * Updates the step attribute with the {@link #stepValue} configuration
+</span>     * Updates the `step` attribute with the {@link #stepValue} configuration
      * @private
      */
     updateStepValue: function(newStepValue) {
         this.updateFieldAttribute('step', newStepValue);
     },
 
-    // @private
-    checkedRe: /^(true|1|on)/i,
+<span id='Ext-field-Input-property-checkedRe'>    // @private
+</span>    checkedRe: /^(true|1|on)/i,
 
 <span id='Ext-field-Input-method-getChecked'>    /**
-</span>     * Returns the checked value of this field
+</span>     * Returns the `checked` value of this field
      * @return {Mixed} value The field value
      */
     getChecked: function() {
@@ -515,18 +554,18 @@ Ext.define('Ext.field.Input', {
         return checked;
     },
 
-    // @private
-    applyChecked: function(checked) {
+<span id='Ext-field-Input-method-applyChecked'>    // @private
+</span>    applyChecked: function(checked) {
         return !!this.checkedRe.test(String(checked));
     },
 
-    setChecked: function(newChecked) {
-        this.updateChecked(this.applyChecked(newChecked));
+<span id='Ext-field-Input-method-setChecked'>    setChecked: function(newChecked) {
+</span>        this.updateChecked(this.applyChecked(newChecked));
         this._checked = newChecked;
     },
 
 <span id='Ext-field-Input-method-updateChecked'>    /**
-</span>     * Updates the autocorrect attribute with the {@link #autoCorrect} configuration
+</span>     * Updates the `autocorrect` attribute with the {@link #autoCorrect} configuration
      * @private
      */
     updateChecked: function(newChecked) {
@@ -534,15 +573,15 @@ Ext.define('Ext.field.Input', {
     },
 
 <span id='Ext-field-Input-method-updateReadOnly'>    /**
-</span>     * Updates the readonly attribute with the {@link #readOnly} configuration
+</span>     * Updates the `readonly` attribute with the {@link #readOnly} configuration
      * @private
      */
     updateReadOnly: function(readOnly) {
         this.updateFieldAttribute('readonly', readOnly);
     },
 
-    //&lt;debug&gt;
-    // @private
+<span id='Ext-field-Input-method-applyMaxRows'>    //&lt;debug&gt;
+</span>    // @private
     applyMaxRows: function(maxRows) {
         if (maxRows !== null &amp;&amp; typeof maxRows !== 'number') {
             throw new Error(&quot;Ext.field.Input: [applyMaxRows] trying to pass a value which is not a number&quot;);
@@ -550,14 +589,14 @@ Ext.define('Ext.field.Input', {
 
         return maxRows;
     },
-    //&lt;/debug&gt;
-
+<span id='Ext-field-Input-method-updateMaxRows'>    //&lt;/debug&gt;
+</span>
     updateMaxRows: function(newRows) {
         this.updateFieldAttribute('rows', newRows);
     },
 
-    doSetDisabled: function(disabled) {
-        this.callParent(arguments);
+<span id='Ext-field-Input-method-doSetDisabled'>    doSetDisabled: function(disabled) {
+</span>        this.callParent(arguments);
 
         this.input.dom.disabled = disabled;
 
@@ -567,8 +606,9 @@ Ext.define('Ext.field.Input', {
     },
 
 <span id='Ext-field-Input-method-isDirty'>    /**
-</span>     * &lt;p&gt;Returns true if the value of this Field has been changed from its original value.
-     * Will return false if the field is disabled or has not been rendered yet.&lt;/p&gt;
+</span>     * Returns `true` if the value of this Field has been changed from its original value.
+     * Will return `false` if the field is disabled or has not been rendered yet.
+     * @return {Boolean}
      */
     isDirty: function() {
         if (this.getDisabled()) {
@@ -585,13 +625,13 @@ Ext.define('Ext.field.Input', {
         this.setValue(this.originalValue);
     },
 
-    // @private
-    onMaskTap: function(e) {
+<span id='Ext-field-Input-method-onMaskTap'>    // @private
+</span>    onMaskTap: function(e) {
         this.fireAction('masktap', [this, e], 'doMaskTap');
     },
 
-    // @private
-    doMaskTap: function(me, e) {
+<span id='Ext-field-Input-method-doMaskTap'>    // @private
+</span>    doMaskTap: function(me, e) {
         if (me.getDisabled()) {
             return false;
         }
@@ -600,15 +640,15 @@ Ext.define('Ext.field.Input', {
         me.hideMask();
     },
 
-    // @private
-    showMask: function(e) {
+<span id='Ext-field-Input-method-showMask'>    // @private
+</span>    showMask: function(e) {
         if (this.mask) {
             this.mask.setStyle('display', 'block');
         }
     },
 
-    // @private
-    hideMask: function(e) {
+<span id='Ext-field-Input-method-hideMask'>    // @private
+</span>    hideMask: function(e) {
         if (this.mask) {
             this.mask.setStyle('display', 'none');
         }
@@ -631,6 +671,7 @@ Ext.define('Ext.field.Input', {
 <span id='Ext-field-Input-method-blur'>    /**
 </span>     * Attempts to forcefully blur input focus for the field.
      * @return {Ext.field.Input} this
+     * @chainable
      */
     blur: function() {
         var me = this,
@@ -645,6 +686,7 @@ Ext.define('Ext.field.Input', {
 <span id='Ext-field-Input-method-select'>    /**
 </span>     * Attempts to forcefully select all the contents of the input field.
      * @return {Ext.field.Input} this
+     * @chainable
      */
     select: function() {
         var me = this,
@@ -656,12 +698,12 @@ Ext.define('Ext.field.Input', {
         return me;
     },
 
-    onFocus: function(e) {
-        this.fireAction('focus', [e], 'doFocus');
+<span id='Ext-field-Input-method-onFocus'>    onFocus: function(e) {
+</span>        this.fireAction('focus', [e], 'doFocus');
     },
 
-    // @private
-    doFocus: function(e) {
+<span id='Ext-field-Input-method-doFocus'>    // @private
+</span>    doFocus: function(e) {
         var me = this;
 
         if (me.mask) {
@@ -677,12 +719,12 @@ Ext.define('Ext.field.Input', {
         }
     },
 
-    onBlur: function(e) {
-        this.fireAction('blur', [e], 'doBlur');
+<span id='Ext-field-Input-method-onBlur'>    onBlur: function(e) {
+</span>        this.fireAction('blur', [e], 'doBlur');
     },
 
-    // @private
-    doBlur: function(e) {
+<span id='Ext-field-Input-method-doBlur'>    // @private
+</span>    doBlur: function(e) {
         var me         = this,
             value      = me.getValue(),
             startValue = me.getStartValue();
@@ -696,18 +738,9 @@ Ext.define('Ext.field.Input', {
         me.showMask();
     },
 
-    // @private
-    onClearIconTap: function(e) {
-        var oldValue = this.getValue(),
-            newValue;
-
+<span id='Ext-field-Input-method-onClearIconTap'>    // @private
+</span>    onClearIconTap: function(e) {
         this.fireEvent('clearicontap', this, e);
-
-        newValue = this.getValue();
-
-        if (String(newValue) != String(oldValue)) {
-            this.onChange(this, newValue, oldValue);
-        }
 
         //focus the field after cleartap happens, but only on android.
         //this is to stop the keyboard from hiding. TOUCH-2064
@@ -716,24 +749,49 @@ Ext.define('Ext.field.Input', {
         }
     },
 
-    onClick: function(e) {
-        this.fireEvent('click', e);
+<span id='Ext-field-Input-method-onClick'>    onClick: function(e) {
+</span>        this.fireEvent('click', e);
     },
 
-    onChange: function(me, value, startValue) {
-        this.fireEvent('change', me, value, startValue);
+<span id='Ext-field-Input-method-onChange'>    onChange: function(me, value, startValue) {
+</span>        this.fireEvent('change', me, value, startValue);
     },
 
-    onKeyUp: function(e) {
-        this.fireEvent('keyup', e);
+<span id='Ext-field-Input-method-onPaste'>    onPaste: function(e) {
+</span>        this.fireEvent('paste', e);
     },
 
-    onPaste: function(e) {
-        this.fireEvent('paste', e);
+<span id='Ext-field-Input-method-onKeyUp'>    onKeyUp: function(e) {
+</span>        this.fireEvent('keyup', e);
     },
 
-    onMouseDown: function(e) {
-        this.fireEvent('mousedown', e);
+<span id='Ext-field-Input-method-onKeyDown'>    onKeyDown: function() {
+</span>        // tell the class to ignore the input event. this happens when we want to listen to the field change
+        // when the input autocompletes
+        this.ignoreInput = true;
+    },
+
+<span id='Ext-field-Input-method-onInput'>    onInput: function(e) {
+</span>        var me = this;
+
+        // if we should ignore input, stop now.
+        if (me.ignoreInput) {
+            me.ignoreInput = false;
+            return;
+        }
+
+        // set a timeout for 10ms to check if we want to stop the input event.
+        // if not, then continue with the event (keyup)
+        setTimeout(function() {
+            if (!me.ignoreInput) {
+                me.fireEvent('keyup', e);
+                me.ignoreInput = false;
+            }
+        }, 10);
+    },
+
+<span id='Ext-field-Input-method-onMouseDown'>    onMouseDown: function(e) {
+</span>        this.fireEvent('mousedown', e);
     }
 });
 </pre>

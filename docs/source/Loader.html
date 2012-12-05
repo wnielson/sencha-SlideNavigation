@@ -15,7 +15,11 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-Loader'>/**
+  <pre class="prettyprint lang-js">//@tag foundation,core
+//@define Ext.Loader
+//@require Ext.ClassManager
+
+<span id='Ext-Loader'>/**
 </span> * @class Ext.Loader
  *
  * @author Jacky Nguyen &lt;jacky@sencha.com&gt;
@@ -27,7 +31,7 @@
  * approaches, and leverage their advantages for the best development flow.
  * We'll discuss about the pros and cons of each approach.
  *
- * **Note** The Loader is only enabled by default in development versions of the library (eg sencha-touch-debug.js). To
+ * __Note:__ The Loader is only enabled by default in development versions of the library (eg sencha-touch-debug.js). To
  * explicitly enable the loader, use `Ext.Loader.setConfig({ enabled: true });` before the start of your script.
  *
  * ## Asynchronous Loading
@@ -44,7 +48,7 @@
  * ### Method 1: Explicitly include what you need: ###
  *
  *     // Syntax
- *     Ext.require({String/Array} expressions);
+ *     // Ext.require({String/Array} expressions);
  *
  *     // Example: Single alias
  *     Ext.require('widget.window');
@@ -61,8 +65,8 @@
  * ### Method 2: Explicitly exclude what you don't need: ###
  *
  *     // Syntax: Note that it must be in this chaining format.
- *     Ext.exclude({String/Array} expressions)
- *        .require({String/Array} expressions);
+ *     // Ext.exclude({String/Array} expressions)
+ *     //    .require({String/Array} expressions);
  *
  *     // Include everything except Ext.data.*
  *     Ext.exclude('Ext.data.*').require('*');
@@ -84,7 +88,7 @@
  *
  * There's one simple rule to follow: Instantiate everything with Ext.create instead of the `new` keyword
  *
- *     Ext.create('widget.window', { ... }); // Instead of new Ext.window.Window({...});
+ *     Ext.create('widget.window', {}); // Instead of new Ext.window.Window({...});
  *
  *     Ext.create('Ext.window.Window', {}); // Same as above, using full class name instead of alias
  *
@@ -98,8 +102,9 @@
  *
  * It has all the advantages combined from asynchronous and synchronous loading. The development flow is simple:
  *
- * ### Step 1: Start writing your application using synchronous approach. Ext.Loader will automatically fetch all
- *  dependencies on demand as they're needed during run-time. For example: ###
+ * ### Step 1: Start writing your application using synchronous approach. ###
+ * Ext.Loader will automatically fetch all dependencies on demand as they're 
+ * needed during run-time. For example:
  *
  *     Ext.onReady(function(){
  *         var window = Ext.createWidget('window', {
@@ -124,7 +129,7 @@
  *         });
  *
  *         window.show();
- *     })
+ *     });
  *
  * ### Step 2: Along the way, when you need better debugging ability, watch the console for warnings like these: ###
  *
@@ -137,7 +142,9 @@
  *     Ext.require('Ext.window.Window');
  *     Ext.require('Ext.layout.container.Border');
  *
- *     Ext.onReady(...);
+ *     Ext.onReady(function () {
+ *         // ...
+ *     });
  *
  * Everything should now load via asynchronous mode.
  *
@@ -163,7 +170,8 @@
         isJsdb = isNonBrowser &amp;&amp; typeof system != 'undefined' &amp;&amp; system.program.search(/jsdb/) !== -1,
         //&lt;/if&gt;
         dependencyProperties = ['extend', 'mixins', 'requires'],
-        Loader;
+        Loader,
+        setPathCount = 0;;
 
     Loader = Ext.Loader = {
 
@@ -174,7 +182,7 @@
 
 <span id='Ext-Loader-property-history'>        /**
 </span>         * An array of class names to keep track of the dependency loading order.
-         * This is not guaranteed to be the same everytime due to the asynchronous
+         * This is not guaranteed to be the same every time due to the asynchronous
          * nature of the Loader.
          *
          * @property history
@@ -188,39 +196,38 @@
          */
         config: {
 <span id='Ext-Loader-cfg-enabled'>            /**
-</span>             * Whether or not to enable the dynamic dependency loading feature
-             * Defaults to true
+</span>             * Whether or not to enable the dynamic dependency loading feature.
              * @cfg {Boolean} enabled
              */
             enabled: true,
 
 <span id='Ext-Loader-cfg-disableCaching'>            /**
 </span>             * @cfg {Boolean} disableCaching
-             * Appends current timestamp to script files to prevent caching
-             * Defaults to true
+             * Appends current timestamp to script files to prevent caching.
              */
             disableCaching: true,
 
 <span id='Ext-Loader-cfg-disableCachingParam'>            /**
 </span>             * @cfg {String} disableCachingParam
              * The get parameter name for the cache buster's timestamp.
-             * Defaults to '_dc'
              */
             disableCachingParam: '_dc',
 
 <span id='Ext-Loader-cfg-paths'>            /**
 </span>             * @cfg {Object} paths
-             * The mapping from namespaces to file paths
-             *    {
-             *        'Ext': '.', // This is set by default, Ext.layout.container.Container will be
-             *                    // loaded from ./layout/Container.js
+             * The mapping from namespaces to file paths.
              *
-             *        'My': './src/my_own_folder' // My.layout.Container will be loaded from
-             *                                    // ./src/my_own_folder/layout/Container.js
-             *    }
+             *     {
+             *         'Ext': '.', // This is set by default, Ext.layout.container.Container will be
+             *                     // loaded from ./layout/Container.js
+             *
+             *         'My': './src/my_own_folder' // My.layout.Container will be loaded from
+             *                                     // ./src/my_own_folder/layout/Container.js
+             *     }
+             *
              * Note that all relative paths are relative to the current HTML document.
-             * If not being specified, for example, &lt;code&gt;Other.awesome.Class&lt;/code&gt;
-             * will simply be loaded from &lt;code&gt;./Other/awesome/Class.js&lt;/code&gt;
+             * If not being specified, for example, `Other.awesome.Class`
+             * will simply be loaded from `./Other/awesome/Class.js`.
              */
             paths: {
                 'Ext': '.'
@@ -248,11 +255,10 @@
          *         });
          *     &lt;/script&gt;
          *
-         * Refer to config options of {@link Ext.Loader} for the list of possible properties
+         * Refer to config options of {@link Ext.Loader} for the list of possible properties.
          *
-         * @param {Object} config The config object to override the default values
+         * @param {Object} config The config object to override the default values.
          * @return {Ext.Loader} this
-         * @markdown
          */
         setConfig: function(name, value) {
             if (Ext.isObject(name) &amp;&amp; arguments.length === 1) {
@@ -261,13 +267,13 @@
             else {
                 this.config[name] = (Ext.isObject(value)) ? Ext.merge(this.config[name], value) : value;
             }
-
+            setPathCount += 1;
             return this;
         },
 
 <span id='Ext-Loader-method-getConfig'>        /**
-</span>         * Get the config value corresponding to the specified name. If no name is given, will return the config object
-         * @param {String} name The config property name
+</span>         * Get the config value corresponding to the specified name. If no name is given, will return the config object.
+         * @param {String} name The config property name.
          * @return {Object/Mixed}
          */
         getConfig: function(name) {
@@ -280,20 +286,40 @@
 
 <span id='Ext-Loader-method-setPath'>        /**
 </span>         * Sets the path of a namespace.
-         * For Example:
+         * For example:
          *
-         *    Ext.Loader.setPath('Ext', '.');
+         *     Ext.Loader.setPath('Ext', '.');
          *
          * @param {String/Object} name See {@link Ext.Function#flexSetter flexSetter}
-         * @param {String} path See {@link Ext.Function#flexSetter flexSetter}
+         * @param {String} [path] See {@link Ext.Function#flexSetter flexSetter}
          * @return {Ext.Loader} this
          * @method
          */
         setPath: flexSetter(function(name, path) {
             this.config.paths[name] = path;
-
+            setPathCount += 1;
             return this;
         }),
+
+<span id='Ext-Loader-method-addClassPathMappings'>        /**
+</span>         * Sets a batch of path entries
+         *
+         * @param {Object } paths a set of className: path mappings
+         * @return {Ext.Loader} this
+         */
+        addClassPathMappings: function(paths) {
+            var name;
+
+            if(setPathCount == 0){
+                Loader.config.paths = paths;
+            } else {
+                for(name in paths){
+                    Loader.config.paths[name] = paths[name];
+                }
+            }
+            setPathCount++;
+            return Loader;
+        },
 
 <span id='Ext-Loader-method-getPath'>        /**
 </span>         * Translates a className to a file path by adding the
@@ -303,7 +329,7 @@
          *
          *     alert(Ext.Loader.getPath('My.awesome.Class')); // alerts '/path/to/My/awesome/Class.js'
          *
-         *          * Note that the deeper namespace levels, if explicitly set, are always resolved first. For example:
+         * Note that the deeper namespace levels, if explicitly set, are always resolved first. For example:
          *
          *     Ext.Loader.setPath({
          *         'My': '/path/to/lib',
@@ -368,12 +394,11 @@
 
 <span id='Ext-Loader-method-require'>        /**
 </span>         * Loads all classes by the given names and all their direct dependencies; optionally executes the given callback function when
-         * finishes, within the optional scope. This method is aliased by {@link Ext#require Ext.require} for convenience
-         * @param {String/Array} expressions Can either be a string or an array of string
-         * @param {Function} fn (Optional) The callback function
-         * @param {Object} scope (Optional) The execution scope (`this`) of the callback function
-         * @param {String/Array} excludes (Optional) Classes to be excluded, useful when being used with expressions
-         * @markdown
+         * finishes, within the optional scope. This method is aliased by {@link Ext#require Ext.require} for convenience.
+         * @param {String/Array} expressions Can either be a string or an array of string.
+         * @param {Function} fn (optional) The callback function.
+         * @param {Object} scope (optional) The execution scope (`this`) of the callback function.
+         * @param {String/Array} excludes (optional) Classes to be excluded, useful when being used with expressions.
          */
         require: function(expressions, fn, scope, excludes) {
             if (fn) {
@@ -384,10 +409,9 @@
 <span id='Ext-Loader-method-syncRequire'>        /**
 </span>         * Synchronously loads all classes by the given names and all their direct dependencies; optionally executes the given callback function when finishes, within the optional scope. This method is aliased by {@link Ext#syncRequire} for convenience
          * @param {String/Array} expressions Can either be a string or an array of string
-         * @param {Function} fn (Optional) The callback function
-         * @param {Object} scope (Optional) The execution scope (`this`) of the callback function
-         * @param {String/Array} excludes (Optional) Classes to be excluded, useful when being used with expressions
-         * @markdown
+         * @param {Function} fn (optional) The callback function
+         * @param {Object} scope (optional) The execution scope (`this`) of the callback function
+         * @param {String/Array} excludes (optional) Classes to be excluded, useful when being used with expressions
          */
         syncRequire: function() {},
 
@@ -400,8 +424,7 @@
          *     Ext.exclude('widget.button*').require('widget.*');
          *
          * @param {Array} excludes
-         * @return {Object} object contains `require` method for chaining
-         * @markdown
+         * @return {Object} object contains `require` method for chaining.
          */
         exclude: function(excludes) {
             var me = this;
@@ -418,11 +441,11 @@
         },
 
 <span id='Ext-Loader-method-onReady'>        /**
-</span>         * Add a new listener to be executed when all required scripts are fully loaded
+</span>         * Add a new listener to be executed when all required scripts are fully loaded.
          *
-         * @param {Function} fn The function callback to be executed
-         * @param {Object} scope The execution scope (&lt;code&gt;this&lt;/code&gt;) of the callback function
-         * @param {Boolean} withDomReady Whether or not to wait for document dom ready as well
+         * @param {Function} fn The function callback to be executed.
+         * @param {Object} scope The execution scope (`this`) of the callback function.
+         * @param {Boolean} withDomReady Whether or not to wait for document DOM ready as well.
          */
         onReady: function(fn, scope, withDomReady, options) {
             var oldFn;
@@ -454,10 +477,11 @@
 
 <span id='Ext-Loader-property-queue'>        /**
 </span>         * Maintain the queue for all dependencies. Each item in the array is an object of the format:
-         * {
-         *      requires: [...], // The required classes for this queue item
-         *      callback: function() { ... } // The function to execute when all classes specified in requires exist
-         * }
+         * 
+         *     {
+         *         requires: [...], // The required classes for this queue item
+         *         callback: function() { ... } // The function to execute when all classes specified in requires exist
+         *     }
          * @private
          */
         queue: [],
@@ -640,8 +664,7 @@
                 isFileLoaded = this.isFileLoaded,
                 scriptElements = this.scriptElements,
                 noCacheUrl = url + (this.getConfig('disableCaching') ? ('?' + this.getConfig('disableCachingParam') + '=' + Ext.Date.now()) : ''),
-                isCrossOriginRestricted = false,
-                xhr, status, onScriptError;
+                xhr, status, content, onScriptError;
 
             if (isFileLoaded[url]) {
                 return this;
@@ -677,7 +700,7 @@
                 }
 
                 try {
-                    xhr.open('GET', url, false);
+                    xhr.open('GET', noCacheUrl, false);
                     xhr.send(null);
                 }
                 catch (e) {
@@ -689,13 +712,13 @@
                     //&lt;/debug&gt;
                 }
 
-                status = (xhr.status === 1223) ? 204 : xhr.status;
+                status = (xhr.status == 1223) ? 204 : xhr.status;
+                content = xhr.responseText;
 
-                if (status === 0 || (status &gt;= 200 &amp;&amp; status &lt; 300)) {
+                if ((status &gt;= 200 &amp;&amp; status &lt; 300) || status == 304 || (status == 0 &amp;&amp; content.length &gt; 0)) {
                     // Debugger friendly, file names are still shown even though they're eval'ed code
                     // Breakpoints work on both Firebug and Chrome's Web Inspector
-                    Ext.globalEval(xhr.responseText + &quot;\n//@ sourceURL=&quot; + url);
-
+                    Ext.globalEval(content + &quot;\n//@ sourceURL=&quot; + url);
                     onLoad.call(scope);
                 }
                 else {
@@ -839,7 +862,7 @@
 
                 filePath = this.getPath(className);
 
-                // If we are synchronously loading a file that has already been asychronously loaded before
+                // If we are synchronously loading a file that has already been asynchronously loaded before
                 // we need to destroy the script tag and revert the count
                 // This file will then be forced loaded in synchronous
                 if (syncModeEnabled &amp;&amp; isClassFileLoaded.hasOwnProperty(className)) {
@@ -1091,8 +1114,7 @@
     Ext.exclude = alias(Loader, 'exclude');
 
 <span id='Ext-method-onReady'>    /**
-</span>     * Adds a listener to be notified when the document is ready (before onload and before images are loaded).
-     * Shorthand of {@link Ext.Loader#onReady}(fn, scope, true, options).
+</span>     * Adds a listener to be notified when the document is ready and all dependencies are loaded.
      *
      * @param {Function} fn The method the event invokes.
      * @param {Object} [scope] The scope in which the handler function executes. Defaults to the browser window.
@@ -1258,7 +1280,7 @@
 <span id='Ext-Class-cfg-uses'>    /**
 </span>     * @cfg {String[]} uses
      * @member Ext.Class
-     * List of optional classes to load together with this class. These aren't neccessarily loaded before
+     * List of optional classes to load together with this class. These aren't necessarily loaded before
      * this class is created, but are guaranteed to be available before Ext.onReady listeners are
      * invoked
      */
@@ -1285,6 +1307,37 @@
 
 })(Ext.ClassManager, Ext.Class, Ext.Function.flexSetter, Ext.Function.alias,
    Ext.Function.pass, Ext.Array.from, Ext.Array.erase, Ext.Array.include);
+
+// initalize the default path of the framework
+// trimmed down version of sench-touch-debug-suffix.js
+// with alias / alternates removed, as those are handled separately by
+// compiler-generated metadata
+(function() {
+    var scripts = document.getElementsByTagName('script'),
+        currentScript = scripts[scripts.length - 1],
+        src = currentScript.src,
+        path = src.substring(0, src.lastIndexOf('/') + 1),
+        Loader = Ext.Loader;
+
+    //&lt;debug&gt;
+    // if we're running in dev mode out of the repo src tree, then this
+    // file will potentially be loaded from the touch/src/core/class folder
+    // so we'll need to adjust for that
+    if(src.indexOf(&quot;src/core/class/&quot;) != -1) {
+        path = path + &quot;../../../&quot;;
+    }
+    //&lt;/debug&gt;
+    
+
+    Loader.setConfig({
+        enabled: true,
+        disableCaching: !/[?&amp;](cache|breakpoint)/i.test(location.search),
+        paths: {
+            'Ext' : path + 'src'
+        }
+    });
+    
+})();
 </pre>
 </body>
 </html>

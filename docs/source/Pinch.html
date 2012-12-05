@@ -16,17 +16,17 @@
 </head>
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js"><span id='Ext-event-recognizer-Pinch'>/**
-</span> * A event recogniser which knows when you pinch.
+</span> * A event recognizer which knows when you pinch.
  *
  * @private
  */
 Ext.define('Ext.event.recognizer.Pinch', {
     extend: 'Ext.event.recognizer.MultiTouch',
 
-    requiredTouchesCount: 2,
-
-    handledEvents: ['pinchstart', 'pinch', 'pinchend'],
-
+<span id='Ext-event-recognizer-Pinch-property-requiredTouchesCount'>    requiredTouchesCount: 2,
+</span>
+<span id='Ext-event-recognizer-Pinch-property-handledEvents'>    handledEvents: ['pinchstart', 'pinch', 'pinchend'],
+</span>
 <span id='Ext-dom-Element-event-pinchstart'>    /**
 </span>     * @member Ext.dom.Element
      * @event pinchstart
@@ -64,10 +64,10 @@ Ext.define('Ext.event.recognizer.Pinch', {
 
     startDistance: 0,
 
-    lastTouches: null,
-
-    onTouchMove: function(e) {
-        if (!this.isTracking) {
+<span id='Ext-event-recognizer-Pinch-property-lastTouches'>    lastTouches: null,
+</span>
+<span id='Ext-event-recognizer-Pinch-method-onTouchMove'>    onTouchMove: function(e) {
+</span>        if (!this.isTracking) {
             return;
         }
 
@@ -106,12 +106,12 @@ Ext.define('Ext.event.recognizer.Pinch', {
         this.lastTouches = touches;
     },
 
-    fireEnd: function(e) {
-        this.fire('pinchend', e, this.lastTouches);
+<span id='Ext-event-recognizer-Pinch-method-fireEnd'>    fireEnd: function(e) {
+</span>        this.fire('pinchend', e, this.lastTouches);
     },
 
-    fail: function() {
-        return this.callParent(arguments);
+<span id='Ext-event-recognizer-Pinch-method-fail'>    fail: function() {
+</span>        return this.callParent(arguments);
     }
 });
 </pre>

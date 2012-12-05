@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-chart-series-Polar'>/**
+</span> * Polar series.
+ */
+Ext.define('Ext.chart.series.Polar', {
+
+    extend: 'Ext.chart.series.Series',
+
+    config: {
+<span id='Ext-chart-series-Polar-cfg-rotation'>        /**
+</span>         * @cfg {Number} rotation
+         * The angle in degrees at which the first polar series item should start.
+         */
+        rotation: 0,
+
+<span id='Ext-chart-series-Polar-cfg-radius'>        /**
+</span>         * @cfg {Number} radius
+         * The radius of the polar series. Set to `null` will fit the polar series to the boundary.
+         */
+        radius: null,
+
+<span id='Ext-chart-series-Polar-cfg-center'>        /**
+</span>         * @cfg {Array} center for the polar series.
+         */
+        center: [0, 0],
+
+<span id='Ext-chart-series-Polar-cfg-offsetX'>        /**
+</span>         * @cfg {Number} offsetX
+         * The x-offset of center of the polar series related to the center of the boundary.
+         */
+        offsetX: 0,
+
+<span id='Ext-chart-series-Polar-cfg-offsetY'>        /**
+</span>         * @cfg {Number} offsetY
+         * The y-offset of center of the polar series related to the center of the boundary.
+         */
+        offsetY: 0,
+
+<span id='Ext-chart-series-Polar-cfg-showInLegend'>        /**
+</span>         * @cfg {Boolean} showInLegend
+         * Whether to add the series elements as legend items.
+         */
+        showInLegend: true,
+
+<span id='Ext-chart-series-Polar-cfg-xField'>        /**
+</span>         * @cfg {String} xField
+         * The store record field name for the labels used in the radar series.
+         */
+        xField: null,
+
+<span id='Ext-chart-series-Polar-cfg-yField'>        /**
+</span>         * @cfg {String} yField
+         * The store record field name for the deflection of the graph in the radar series.
+         */
+        yField: null,
+
+<span id='Ext-chart-series-Polar-cfg-xAxis'>        xAxis: null,
+</span>
+<span id='Ext-chart-series-Polar-cfg-yAxis'>        yAxis: null
+</span>    },
+
+<span id='Ext-chart-series-Polar-property-directions'>    directions: ['X', 'Y'],
+</span>
+<span id='Ext-chart-series-Polar-property-fieldCategoryX'>    fieldCategoryX: ['X'],
+</span><span id='Ext-chart-series-Polar-property-fieldCategoryY'>    fieldCategoryY: ['Y'],
+</span>
+<span id='Ext-chart-series-Polar-method-getDefaultSpriteConfig'>    getDefaultSpriteConfig: function () {
+</span>        return {
+            type: this.seriesType,
+            centerX: 0,
+            centerY: 0,
+            rotationCenterX: 0,
+            rotationCenterY: 0,
+            fx: {
+                customDuration: {
+                    translationX: 0,
+                    translationY: 0,
+                    centerX: 0,
+                    centerY: 0,
+                    startRho: 0,
+                    endRho: 0,
+                    baseRotation: 0,
+                    rotationCenterX: 0,
+                    rotationCenterY: 0,
+                    rotationRads: 0
+                }
+            }
+        };
+    },
+
+<span id='Ext-chart-series-Polar-method-applyRotation'>    applyRotation: function (rotation) {
+</span>        var twoPie = Math.PI * 2;
+        return (rotation % twoPie + Math.PI) % twoPie - Math.PI;
+    },
+
+<span id='Ext-chart-series-Polar-method-updateRotation'>    updateRotation: function (rotation) {
+</span>        var sprites = this.getSprites();
+        if (sprites &amp;&amp; sprites[0]) {
+            sprites[0].setAttributes({
+                baseRotation: rotation
+            });
+        }
+    }
+});</pre>
+</body>
+</html>

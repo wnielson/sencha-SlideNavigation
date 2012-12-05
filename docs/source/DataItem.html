@@ -27,25 +27,25 @@
  * (getText), and then give that property a value of an object, which then has 'setHtml' (the html setter) as the key,
  * and 'text' (the field name) as the value. You can continue this for a as many sub-components as you wish.
  *
- *        dataMap: {
- *           // When the record is updated, get the text configuration, and
- *           // call {@link #setHtml} with the 'text' field of the record.
- *           getText: {
- *              setHtml: 'text'
- *          },
+ *     dataMap: {
+ *         // When the record is updated, get the text configuration, and
+ *         // call {@link #setHtml} with the 'text' field of the record.
+ *         getText: {
+ *             setHtml: 'text'
+ *         },
  *
- *          // When the record is updated, get the userName configuration, and
- *          // call {@link #setHtml} with the 'from_user' field of the record.
- *          getUserName: {
- *              setHtml: 'from_user'
- *          },
+ *         // When the record is updated, get the userName configuration, and
+ *         // call {@link #setHtml} with the 'from_user' field of the record.
+ *         getUserName: {
+ *             setHtml: 'from_user'
+ *         },
  *
- *          // When the record is updated, get the avatar configuration, and
- *          // call `setSrc` with the 'profile_image_url' field of the record.
- *          getAvatar: {
- *              setSrc: 'profile_image_url'
- *          }
- *      },
+ *         // When the record is updated, get the avatar configuration, and
+ *         // call `setSrc` with the 'profile_image_url' field of the record.
+ *         getAvatar: {
+ *             setSrc: 'profile_image_url'
+ *         }
+ *     }
  */
 
 Ext.define('Ext.dataview.component.DataItem', {
@@ -53,12 +53,12 @@ Ext.define('Ext.dataview.component.DataItem', {
     xtype : 'dataitem',
 
     config: {
-        baseCls: Ext.baseCSSPrefix + 'data-item',
-
-        defaultType: 'component',
-
+<span id='Ext-dataview-component-DataItem-cfg-baseCls'>        baseCls: Ext.baseCSSPrefix + 'data-item',
+</span>
+<span id='Ext-dataview-component-DataItem-cfg-defaultType'>        defaultType: 'component',
+</span>
 <span id='Ext-dataview-component-DataItem-cfg-record'>        /**
-</span>         * @cfg {Ext.data.Model} record The model instance of this DataItem. It is controlled by the Component DataView
+</span>         * @cfg {Ext.data.Model} record The model instance of this DataItem. It is controlled by the Component DataView.
          * @accessor
          */
         record: null,
@@ -84,24 +84,29 @@ Ext.define('Ext.dataview.component.DataItem', {
          *          }
          *      }
          *
-         * In this example, it is simply a matter of setting the key of the object to be the getter of the config (getText), and then give that
-         * property a value of an object, which then has 'setHtml' (the html setter) as the key, and 'text' (the field name) as the value.
+         * In this example, it is simply a matter of setting the key of the object to be the getter of the config (`getText`), and then give that
+         * property a value of an object, which then has `setHtml` (the html setter) as the key, and `text` (the field name) as the value.
          */
         dataMap: {},
 
-        items: [{
-            xtype: 'component'
+<span id='Ext-dataview-component-DataItem-cfg-dataview'>        /*
+</span>         * @private dataview
+         */
+        dataview: null,
+
+<span id='Ext-dataview-component-DataItem-cfg-items'>        items: [{
+</span>            xtype: 'component'
         }]
     },
 
-    updateBaseCls: function(newBaseCls, oldBaseCls) {
-        var me = this;
+<span id='Ext-dataview-component-DataItem-method-updateBaseCls'>    updateBaseCls: function(newBaseCls, oldBaseCls) {
+</span>        var me = this;
 
         me.callParent(arguments);
     },
 
-    updateItemCls: function(newCls, oldCls) {
-        if (oldCls) {
+<span id='Ext-dataview-component-DataItem-method-updateItemCls'>    updateItemCls: function(newCls, oldCls) {
+</span>        if (oldCls) {
             this.removeCls(oldCls);
         }
         if (newCls) {
@@ -109,8 +114,29 @@ Ext.define('Ext.dataview.component.DataItem', {
         }
     },
 
+<span id='Ext-dataview-component-DataItem-method-doMapData'>    doMapData: function(dataMap, data, item) {
+</span>        var componentName, component, setterMap, setterName;
+
+        for (componentName in dataMap) {
+            setterMap = dataMap[componentName];
+            component = this[componentName]();
+            if (component) {
+                for (setterName in setterMap) {
+                    if (data &amp;&amp; component[setterName] &amp;&amp; data[setterMap[setterName]]) {
+                        component[setterName](data[setterMap[setterName]]);
+                    }
+                }
+            }
+        }
+
+        if (item) {
+            // Bypassing setter because sometimes we pass the same object (different properties)
+            item.updateData(data);
+        }
+    },
+
 <span id='Ext-dataview-component-DataItem-method-updateRecord'>    /**
-</span>     * Updates this container's child items, passing through the dataMap.
+</span>     * Updates this container's child items, passing through the `dataMap`.
      * @param newRecord
      * @private
      */
@@ -121,38 +147,26 @@ Ext.define('Ext.dataview.component.DataItem', {
         this._record = newRecord;
 
         var me = this,
-            dataview = me.config.dataview,
+            dataview = me.dataview || this.getDataview(),
             data = dataview.prepareData(newRecord.getData(true), dataview.getStore().indexOf(newRecord), newRecord),
             items = me.getItems(),
             item = items.first(),
-            dataMap = me.getDataMap(),
-            componentName, component, setterMap, setterName;
+            dataMap = me.getDataMap();
 
         if (!item) {
             return;
         }
-        for (componentName in dataMap) {
-            setterMap = dataMap[componentName];
-            component = me[componentName]();
-            if (component) {
-                for (setterName in setterMap) {
-                    if (component[setterName]) {
-                        component[setterName](data[setterMap[setterName]]);
-                    }
-                }
-            }
+        if (dataMap) {
+            this.doMapData(dataMap, data, item);
         }
 
 <span id='Ext-dataview-component-DataItem-event-updatedata'>        /**
 </span>         * @event updatedata
-         * Fires whenever the data of the DataItem is updated
-         * @param {Ext.dataview.component.DataItem} this The DataItem instance
-         * @param {Object} newData The new data
+         * Fires whenever the data of the DataItem is updated.
+         * @param {Ext.dataview.component.DataItem} this The DataItem instance.
+         * @param {Object} newData The new data.
          */
         me.fireEvent('updatedata', me, data);
-
-        // Bypassing setter because sometimes we pass the same object (different properties)
-        item.updateData(data);
     }
 });
 </pre>

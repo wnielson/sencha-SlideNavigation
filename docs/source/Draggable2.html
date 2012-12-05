@@ -19,14 +19,13 @@
 </span> * A core util class to bring Draggable behavior to any DOM element
  */
 Ext.define('Ext.util.Draggable', {
-    isDraggable: true,
-
+<span id='Ext-util-Draggable-property-isDraggable'>    isDraggable: true,
+</span>
     mixins: [
         'Ext.mixin.Observable'
     ],
 
     requires: [
-        'Ext.util.SizeMonitor',
         'Ext.util.Translatable'
     ],
 
@@ -59,16 +58,16 @@ Ext.define('Ext.util.Draggable', {
      */
 
     config: {
-        cls: Ext.baseCSSPrefix + 'draggable',
-
-        draggingCls: Ext.baseCSSPrefix + 'dragging',
-
-        element: null,
-
-        constraint: 'container',
-
-        disabled: null,
-
+<span id='Ext-util-Draggable-cfg-cls'>        cls: Ext.baseCSSPrefix + 'draggable',
+</span>
+<span id='Ext-util-Draggable-cfg-draggingCls'>        draggingCls: Ext.baseCSSPrefix + 'dragging',
+</span>
+<span id='Ext-util-Draggable-cfg-element'>        element: null,
+</span>
+<span id='Ext-util-Draggable-cfg-constraint'>        constraint: 'container',
+</span>
+<span id='Ext-util-Draggable-cfg-disabled'>        disabled: null,
+</span>
 <span id='Ext-util-Draggable-cfg-direction'>        /**
 </span>         * @cfg {String} direction
          * Possible values: 'vertical', 'horizontal', or 'both'
@@ -86,27 +85,34 @@ Ext.define('Ext.util.Draggable', {
             y: 0
         },
 
-        translatable: {}
-    },
+<span id='Ext-util-Draggable-cfg-translatable'>        translatable: {}
+</span>    },
 
-    DIRECTION_BOTH: 'both',
-
-    DIRECTION_VERTICAL: 'vertical',
-
-    DIRECTION_HORIZONTAL: 'horizontal',
-
-    defaultConstraint: {
-        min: { x: -Infinity, y: -Infinity },
+<span id='Ext-util-Draggable-property-DIRECTION_BOTH'>    DIRECTION_BOTH: 'both',
+</span>
+<span id='Ext-util-Draggable-property-DIRECTION_VERTICAL'>    DIRECTION_VERTICAL: 'vertical',
+</span>
+<span id='Ext-util-Draggable-property-DIRECTION_HORIZONTAL'>    DIRECTION_HORIZONTAL: 'horizontal',
+</span>
+<span id='Ext-util-Draggable-property-defaultConstraint'>    defaultConstraint: {
+</span>        min: { x: -Infinity, y: -Infinity },
         max: { x: Infinity, y: Infinity }
     },
+
+<span id='Ext-util-Draggable-property-containerWidth'>    containerWidth: 0,
+</span>
+<span id='Ext-util-Draggable-property-containerHeight'>    containerHeight: 0,
+</span>
+<span id='Ext-util-Draggable-property-width'>    width: 0,
+</span>
+<span id='Ext-util-Draggable-property-height'>    height: 0,
+</span>
 <span id='Ext-util-Draggable-method-constructor'>    /**
 </span>     * Creates new Draggable.
      * @param {Object} config The configuration object for this Draggable.
      */
     constructor: function(config) {
         var element;
-
-        this.sizeMonitors = {};
 
         this.extraConstraint = {};
 
@@ -121,7 +127,7 @@ Ext.define('Ext.util.Draggable', {
             dragstart: 'onDragStart',
             drag     : 'onDrag',
             dragend  : 'onDragEnd',
-
+            resize   : 'onElementResize',
             scope: this
         };
 
@@ -135,28 +141,22 @@ Ext.define('Ext.util.Draggable', {
         return this;
     },
 
-    applyElement: function(element) {
-        if (!element) {
+<span id='Ext-util-Draggable-method-applyElement'>    applyElement: function(element) {
+</span>        if (!element) {
             return;
         }
 
         return Ext.get(element);
     },
 
-    updateElement: function(element) {
-        element.on(this.listeners);
-
-        this.sizeMonitors.element = new Ext.util.SizeMonitor({
-            element: element,
-            callback: this.doRefresh,
-            scope: this
-        });
+<span id='Ext-util-Draggable-method-updateElement'>    updateElement: function(element) {
+</span>        element.on(this.listeners);
 
         this.initConfig(this.initialConfig);
     },
 
-    updateInitialOffset: function(initialOffset) {
-        if (typeof initialOffset == 'number') {
+<span id='Ext-util-Draggable-method-updateInitialOffset'>    updateInitialOffset: function(initialOffset) {
+</span>        if (typeof initialOffset == 'number') {
             initialOffset = {
                 x: initialOffset,
                 y: initialOffset
@@ -169,38 +169,38 @@ Ext.define('Ext.util.Draggable', {
         offset.x = x = initialOffset.x;
         offset.y = y = initialOffset.y;
 
-        this.getTranslatable().doTranslate(x, y);
+        this.getTranslatable().translate(x, y);
     },
 
-    updateCls: function(cls) {
-        this.getElement().addCls(cls);
+<span id='Ext-util-Draggable-method-updateCls'>    updateCls: function(cls) {
+</span>        this.getElement().addCls(cls);
     },
 
-    applyTranslatable: function(translatable, currentInstance) {
-        translatable = Ext.factory(translatable, Ext.util.Translatable, currentInstance);
+<span id='Ext-util-Draggable-method-applyTranslatable'>    applyTranslatable: function(translatable, currentInstance) {
+</span>        translatable = Ext.factory(translatable, Ext.util.Translatable, currentInstance);
         translatable.setElement(this.getElement());
 
         return translatable;
     },
 
-    setExtraConstraint: function(constraint) {
-        this.extraConstraint = constraint || {};
+<span id='Ext-util-Draggable-method-setExtraConstraint'>    setExtraConstraint: function(constraint) {
+</span>        this.extraConstraint = constraint || {};
 
         this.refreshConstraint();
 
         return this;
     },
 
-    addExtraConstraint: function(constraint) {
-        Ext.merge(this.extraConstraint, constraint);
+<span id='Ext-util-Draggable-method-addExtraConstraint'>    addExtraConstraint: function(constraint) {
+</span>        Ext.merge(this.extraConstraint, constraint);
 
         this.refreshConstraint();
 
         return this;
     },
 
-    applyConstraint: function(newConstraint) {
-        this.currentConstraint = newConstraint;
+<span id='Ext-util-Draggable-method-applyConstraint'>    applyConstraint: function(newConstraint) {
+</span>        this.currentConstraint = newConstraint;
 
         if (!newConstraint) {
             newConstraint = this.defaultConstraint;
@@ -213,57 +213,69 @@ Ext.define('Ext.util.Draggable', {
         return Ext.merge({}, this.extraConstraint, newConstraint);
     },
 
-    updateConstraint: function() {
-        this.refreshOffset();
+<span id='Ext-util-Draggable-method-updateConstraint'>    updateConstraint: function() {
+</span>        this.refreshOffset();
     },
 
-    getContainerConstraint: function() {
-        var container = this.getContainer(),
+<span id='Ext-util-Draggable-method-getContainerConstraint'>    getContainerConstraint: function() {
+</span>        var container = this.getContainer(),
             element = this.getElement();
 
         if (!container || !element.dom) {
             return this.defaultConstraint;
         }
 
-        var dom = element.dom,
-            containerDom = container.dom,
-            width = dom.offsetWidth,
-            height = dom.offsetHeight,
-            containerWidth = containerDom.offsetWidth,
-            containerHeight = containerDom.offsetHeight;
-
         return {
             min: { x: 0, y: 0 },
-            max: { x: containerWidth - width, y: containerHeight - height }
+            max: { x: this.containerWidth - this.width, y: this.containerHeight - this.height }
         };
     },
 
-    getContainer: function() {
-        var container = this.container;
+<span id='Ext-util-Draggable-method-getContainer'>    getContainer: function() {
+</span>        var container = this.container;
 
         if (!container) {
             container = this.getElement().getParent();
 
             if (container) {
-                this.sizeMonitors.container = new Ext.util.SizeMonitor({
-                    element: container,
-                    callback: this.doRefresh,
+                this.container = container;
+
+                container.on({
+                    resize: 'onContainerResize',
+                    destroy: 'onContainerDestroy',
                     scope: this
                 });
-
-                this.container = container;
             }
         }
 
         return container;
     },
 
-    detachListeners: function() {
-        this.getElement().un(this.listeners);
+<span id='Ext-util-Draggable-method-onElementResize'>    onElementResize: function(element, info) {
+</span>        this.width = info.width;
+        this.height = info.height;
+
+        this.refresh();
     },
 
-    isAxisEnabled: function(axis) {
-        var direction = this.getDirection();
+<span id='Ext-util-Draggable-method-onContainerResize'>    onContainerResize: function(container, info) {
+</span>        this.containerWidth = info.width;
+        this.containerHeight = info.height;
+
+        this.refresh();
+    },
+
+<span id='Ext-util-Draggable-method-onContainerDestroy'>    onContainerDestroy: function() {
+</span>        delete this.container;
+        delete this.containerSizeMonitor;
+    },
+
+<span id='Ext-util-Draggable-method-detachListeners'>    detachListeners: function() {
+</span>        this.getElement().un(this.listeners);
+    },
+
+<span id='Ext-util-Draggable-method-isAxisEnabled'>    isAxisEnabled: function(axis) {
+</span>        var direction = this.getDirection();
 
         if (axis === 'x') {
             return (direction === this.DIRECTION_BOTH || direction === this.DIRECTION_HORIZONTAL);
@@ -272,8 +284,8 @@ Ext.define('Ext.util.Draggable', {
         return (direction === this.DIRECTION_BOTH || direction === this.DIRECTION_VERTICAL);
     },
 
-    onDragStart: function(e) {
-        if (this.getDisabled()) {
+<span id='Ext-util-Draggable-method-onDragStart'>    onDragStart: function(e) {
+</span>        if (this.getDisabled()) {
             return false;
         }
 
@@ -282,8 +294,8 @@ Ext.define('Ext.util.Draggable', {
         this.fireAction('dragstart', [this, e, offset.x, offset.y], this.initDragStart);
     },
 
-    initDragStart: function(me, e, offsetX, offsetY) {
-        this.dragStartOffset = {
+<span id='Ext-util-Draggable-method-initDragStart'>    initDragStart: function(me, e, offsetX, offsetY) {
+</span>        this.dragStartOffset = {
             x: offsetX,
             y: offsetY
         };
@@ -293,8 +305,8 @@ Ext.define('Ext.util.Draggable', {
         this.getElement().addCls(this.getDraggingCls());
     },
 
-    onDrag: function(e) {
-        if (!this.isDragging) {
+<span id='Ext-util-Draggable-method-onDrag'>    onDrag: function(e) {
+</span>        if (!this.isDragging) {
             return;
         }
 
@@ -303,12 +315,12 @@ Ext.define('Ext.util.Draggable', {
         this.fireAction('drag', [this, e, startOffset.x + e.deltaX, startOffset.y + e.deltaY], this.doDrag);
     },
 
-    doDrag: function(me, e, offsetX, offsetY) {
-        me.setOffset(offsetX, offsetY);
+<span id='Ext-util-Draggable-method-doDrag'>    doDrag: function(me, e, offsetX, offsetY) {
+</span>        me.setOffset(offsetX, offsetY);
     },
 
-    onDragEnd: function(e) {
-        if (!this.isDragging) {
+<span id='Ext-util-Draggable-method-onDragEnd'>    onDragEnd: function(e) {
+</span>        if (!this.isDragging) {
             return;
         }
 
@@ -321,8 +333,8 @@ Ext.define('Ext.util.Draggable', {
         this.fireEvent('dragend', this, e, this.offset.x, this.offset.y);
     },
 
-    setOffset: function(x, y, animation) {
-        var currentOffset = this.offset,
+<span id='Ext-util-Draggable-method-setOffset'>    setOffset: function(x, y, animation) {
+</span>        var currentOffset = this.offset,
             constraint = this.getConstraint(),
             minOffset = constraint.min,
             maxOffset = constraint.max,
@@ -349,38 +361,24 @@ Ext.define('Ext.util.Draggable', {
         this.getTranslatable().translate(x, y, animation);
     },
 
-    getOffset: function() {
-        return this.offset;
+<span id='Ext-util-Draggable-method-getOffset'>    getOffset: function() {
+</span>        return this.offset;
     },
 
-    refreshConstraint: function() {
-        this.setConstraint(this.currentConstraint);
+<span id='Ext-util-Draggable-method-refreshConstraint'>    refreshConstraint: function() {
+</span>        this.setConstraint(this.currentConstraint);
     },
 
-    refreshOffset: function() {
-        var offset = this.offset;
+<span id='Ext-util-Draggable-method-refreshOffset'>    refreshOffset: function() {
+</span>        var offset = this.offset;
 
         this.setOffset(offset.x, offset.y);
     },
 
-    doRefresh: function() {
-        this.refreshConstraint();
+<span id='Ext-util-Draggable-method-refresh'>    refresh: function() {
+</span>        this.refreshConstraint();
         this.getTranslatable().refresh();
         this.refreshOffset();
-    },
-
-    refresh: function() {
-        var sizeMonitors = this.sizeMonitors;
-
-        if (sizeMonitors.element) {
-            sizeMonitors.element.refresh();
-        }
-
-        if (sizeMonitors.container) {
-            sizeMonitors.container.refresh();
-        }
-
-        this.doRefresh();
     },
 
 <span id='Ext-util-Draggable-method-enable'>    /**
@@ -399,17 +397,8 @@ Ext.define('Ext.util.Draggable', {
         return this.setDisabled(true);
     },
 
-    destroy: function() {
-        var sizeMonitors = this.sizeMonitors,
-            translatable = this.getTranslatable();
-
-        if (sizeMonitors.element) {
-            sizeMonitors.element.destroy();
-        }
-
-        if (sizeMonitors.container) {
-            sizeMonitors.container.destroy();
-        }
+<span id='Ext-util-Draggable-method-destroy'>    destroy: function() {
+</span>        var translatable = this.getTranslatable();
 
         var element = this.getElement();
         if (element &amp;&amp; !element.isDestroyed) {

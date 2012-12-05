@@ -15,19 +15,27 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-DomQuery'>/**
+  <pre class="prettyprint lang-js">//@tag dom,core
+//@define Ext.DomQuery
+//@define Ext.core.DomQuery
+//@require Ext.env.Feature
+
+<span id='Ext-DomQuery'>/**
 </span> * @class Ext.DomQuery
  * @alternateClassName Ext.dom.Query
  *
- * Provides functionality to select elements on the page based on a CSS selector. All selectors, attribute filters and
- * pseudos below can be combined infinitely in any order. For example &quot;div.foo:nth-child(odd)[@foo=bar].bar:first&quot;
- * would be a perfectly valid selector.
+ * Provides functionality to select elements on the page based on a CSS selector. Delegates to
+ * document.querySelectorAll. More information can be found at
+ * [http://www.w3.org/TR/css3-selectors/](http://www.w3.org/TR/css3-selectors/)
+ *
+ * All selectors, attribute filters and pseudos below can be combined infinitely in any order. For example
+ * `div.foo:nth-child(odd)[@foo=bar].bar:first` would be a perfectly valid selector.
  *
  * ## Element Selectors:
  *
  * * \* any element
  * * E an element with the tag E
- * * E F All descendent elements of E that have the tag F
+ * * E F All descendant elements of E that have the tag F
  * * E &gt; F or E/F all direct children elements of E that have the tag F
  * * E + F all elements with the tag F that are immediately preceded by an element with the tag E
  * * E ~ F all elements with the tag F that are preceded by a sibling element with the tag E
@@ -58,22 +66,20 @@
  * * E:nth(n) the nth E in the resultset (1 based)
  * * E:odd shortcut for :nth-child(odd)
  * * E:even shortcut for :nth-child(even)
- * * E:contains(foo) E's innerHTML contains the substring &quot;foo&quot;
- * * E:nodeValue(foo) E contains a textNode with a nodeValue that equals &quot;foo&quot;
  * * E:not(S) an E element that does not match simple selector S
- * * E:has(S) an E element that has a descendent that matches simple selector S
+ * * E:has(S) an E element that has a descendant that matches simple selector S
  * * E:next(S) an E element whose next sibling matches simple selector S
  * * E:prev(S) an E element whose previous sibling matches simple selector S
  * * E:any(S1|S2|S2) an E element which matches any of the simple selectors S1, S2 or S3//\\
  *
  * ## CSS Value Selectors:
  *
- * * E{display=none} css value &quot;display&quot; that equals &quot;none&quot;
- * * E{display^=none} css value &quot;display&quot; that starts with &quot;none&quot;
- * * E{display$=none} css value &quot;display&quot; that ends with &quot;none&quot;
- * * E{display*=none} css value &quot;display&quot; that contains the substring &quot;none&quot;
- * * E{display%=2} css value &quot;display&quot; that is evenly divisible by 2
- * * E{display!=none} css value &quot;display&quot; that does not equal &quot;none&quot;
+ * * E{display=none} CSS value &quot;display&quot; that equals &quot;none&quot;
+ * * E{display^=none} CSS value &quot;display&quot; that starts with &quot;none&quot;
+ * * E{display$=none} CSS value &quot;display&quot; that ends with &quot;none&quot;
+ * * E{display*=none} CSS value &quot;display&quot; that contains the substring &quot;none&quot;
+ * * E{display%=2} CSS value &quot;display&quot; that is evenly divisible by 2
+ * * E{display!=none} CSS value &quot;display&quot; that does not equal &quot;none&quot;
  */
 Ext.define('Ext.dom.Query', {
 <span id='Ext-DomQuery-method-select'>    /**
@@ -143,8 +149,8 @@ Ext.define('Ext.dom.Query', {
         return this.select(q).indexOf(el) !== -1;
     },
 
-    isXml: function(el) {
-        var docEl = (el ? el.ownerDocument || el : 0).documentElement;
+<span id='Ext-DomQuery-method-isXml'>    isXml: function(el) {
+</span>        var docEl = (el ? el.ownerDocument || el : 0).documentElement;
         return docEl ? docEl.nodeName !== &quot;HTML&quot; : false;
     }
 

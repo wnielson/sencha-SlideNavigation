@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-chart-AbstractChart'>/**
+</span> * The Ext.chart package provides the capability to visualize data.
+ * Each chart binds directly to an {@link Ext.data.Store} enabling automatic updates of the chart.
+ * A chart configuration object has some overall styling options as well as an array of axes
+ * and series. A chart instance example could look like:
+ *
+ *     new Ext.chart.CartesianChart({
+ *         width: 800,
+ *         height: 600,
+ *         animate: true,
+ *         store: store1,
+ *         legend: {
+ *             position: 'right'
+ *         },
+ *         axes: [
+ *             // ...some axes options...
+ *         ],
+ *         series: [
+ *             // ...some series options...
+ *         ]
+ *     });
+ *
+ * In this example we set the `width` and `height` of a cartesian chart; We decide whether our series are
+ * animated or not and we select a store to be bound to the chart; We also set the legend to the right part of the
+ * chart.
+ *
+ * You can register certain interactions such as {@link Ext.chart.interactions.PanZoom} on the chart by specify an
+ * array of names or more specific config objects. All the events will be wired automatically.
+ *
+ * You can also listen to `itemXXX` events directly on charts. That case all the contained series will relay this event to the
+ * chart.
+ *
+ * For more information about the axes and series configurations please check the documentation of
+ * each series (Line, Bar, Pie, etc).
+ *
+ */
+
+Ext.define('Ext.chart.AbstractChart', {
+
+    extend: 'Ext.draw.Component',
+
+    requires: [
+        'Ext.chart.series.Series',
+        'Ext.chart.interactions.Abstract',
+        'Ext.chart.axis.Axis',
+        'Ext.data.StoreManager',
+        'Ext.chart.Legend',
+        'Ext.data.Store'
+    ],
+<span id='Ext-chart-AbstractChart-event-beforerefresh'>    /**
+</span>     * @event beforerefresh
+     * Fires before a refresh to the chart data is called.  If the `beforerefresh` handler returns
+     * `false` the {@link #refresh} action will be canceled.
+     * @param {Ext.chart.AbstractChart} this
+     */
+
+<span id='Ext-chart-AbstractChart-event-refresh'>    /**
+</span>     * @event refresh
+     * Fires after the chart data has been refreshed.
+     * @param {Ext.chart.AbstractChart} this
+     */
+
+<span id='Ext-chart-AbstractChart-event-redraw'>    /**
+</span>     * @event redraw
+     * Fires after the chart is redrawn.
+     * @param {Ext.chart.AbstractChart} this
+     */
+
+<span id='Ext-chart-AbstractChart-event-itemmousemove'>    /**
+</span>     * @event itemmousemove
+     * Fires when the mouse is moved on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itemmouseup'>    /**
+</span>     * @event itemmouseup
+     * Fires when a mouseup event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itemmousedown'>    /**
+</span>     * @event itemmousedown
+     * Fires when a mousedown event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itemmouseover'>    /**
+</span>     * @event itemmouseover
+     * Fires when the mouse enters a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itemmouseout'>    /**
+</span>     * @event itemmouseout
+     * Fires when the mouse exits a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itemclick'>    /**
+</span>     * @event itemclick
+     * Fires when a click event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itemdoubleclick'>    /**
+</span>     * @event itemdoubleclick
+     * Fires when a doubleclick event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itemtap'>    /**
+</span>     * @event itemtap
+     * Fires when a tap event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itemtapstart'>    /**
+</span>     * @event itemtapstart
+     * Fires when a tapstart event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itemtapend'>    /**
+</span>     * @event itemtapend
+     * Fires when a tapend event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itemtapcancel'>    /**
+</span>     * @event itemtapcancel
+     * Fires when a tapcancel event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itemtaphold'>    /**
+</span>     * @event itemtaphold
+     * Fires when a taphold event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itemdoubletap'>    /**
+</span>     * @event itemdoubletap
+     * Fires when a doubletap event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itemsingletap'>    /**
+</span>     * @event itemsingletap
+     * Fires when a singletap event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itemtouchstart'>    /**
+</span>     * @event itemtouchstart
+     * Fires when a touchstart event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itemtouchmove'>    /**
+</span>     * @event itemtouchmove
+     * Fires when a touchmove event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itemtouchend'>    /**
+</span>     * @event itemtouchend
+     * Fires when a touchend event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itemdragstart'>    /**
+</span>     * @event itemdragstart
+     * Fires when a dragstart event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itemdrag'>    /**
+</span>     * @event itemdrag
+     * Fires when a drag event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itemdragend'>    /**
+</span>     * @event itemdragend
+     * Fires when a dragend event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itempinchstart'>    /**
+</span>     * @event itempinchstart
+     * Fires when a pinchstart event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itempinch'>    /**
+</span>     * @event itempinch
+     * Fires when a pinch event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itempinchend'>    /**
+</span>     * @event itempinchend
+     * Fires when a pinchend event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+<span id='Ext-chart-AbstractChart-event-itemswipe'>    /**
+</span>     * @event itemswipe
+     * Fires when a swipe event occurs on a series item.
+     * @param {Ext.chart.series.Series} series
+     * @param {Object} item
+     * @param {Event} event
+     */
+
+<span id='Ext-chart-AbstractChart-property-version'>    /**
+</span>     * @property version Current Version of Touch Charts
+     * @type {String}
+     */
+    version: '2.0.0',
+
+<span id='global-property-viewBox'>    // @ignore
+</span>    viewBox: false,
+
+<span id='Ext-chart-AbstractChart-property-delegationRegex'>    delegationRegex: /^item([a-z]+)$/i,
+</span>
+<span id='Ext-chart-AbstractChart-property-domEvents'>    domEvents: /click|focus|blur|paste|input|mousemove|mousedown|mouseup|mouseover|mouseout|keyup|keydown|keypress|submit|pinch|pinchstart|pinchend|touchstart|touchend|rotate|rotatestart|rotateend|drag|dragstart|dragend|tap|doubletap|singletap/,
+</span>
+    config: {
+
+<span id='Ext-chart-AbstractChart-cfg-store'>        /**
+</span>         * @cfg {Ext.data.Store} store
+         * The store that supplies data to this chart.
+         */
+        store: null,
+
+<span id='Ext-chart-AbstractChart-cfg-shadow'>        /**
+</span>         * @cfg {Boolean/Object} shadow (optional) `true` for the default shadow configuration `{shadowOffsetX: 2, shadowOffsetY: 2, shadowBlur: 3, shadowColor: '#444'}`
+         * or a standard shadow config object to be used for default chart shadows.
+         */
+        shadow: false,
+
+<span id='Ext-chart-AbstractChart-cfg-animate'>        /**
+</span>         * @cfg {Boolean/Object} animate (optional) `true` for the default animation (easing: 'ease' and duration: 500)
+         * or a standard animation config object to be used for default chart animations.
+         */
+        animate: true,
+
+<span id='Ext-chart-AbstractChart-cfg-series'>        /**
+</span>         * @cfg {Ext.chart.series.Series/Array} series
+         * Array of {@link Ext.chart.series.Series Series} instances or config objects. For example:
+         *
+         *     series: [{
+         *         type: 'column',
+         *         axis: 'left',
+         *         listeners: {
+         *             'afterrender': function() {
+         *                 console.log('afterrender');
+         *             }
+         *         },
+         *         xField: 'category',
+         *         yField: 'data1'
+         *     }]
+         */
+        series: [],
+
+<span id='Ext-chart-AbstractChart-cfg-axes'>        /**
+</span>         * @cfg {Ext.chart.axis.Axis/Array/Object} axes
+         * Array of {@link Ext.chart.axis.Axis Axis} instances or config objects. For example:
+         *
+         *     axes: [{
+         *         type: 'Numeric',
+         *         position: 'left',
+         *         fields: ['data1'],
+         *         title: 'Number of Hits',
+         *         minimum: 0,
+         *         // one minor tick between two major ticks
+         *         minorTickSteps: 1
+         *     }, {
+         *         type: 'Category',
+         *         position: 'bottom',
+         *         fields: ['name'],
+         *         title: 'Month of the Year'
+         *     }]
+         */
+        axes: [],
+
+<span id='Ext-chart-AbstractChart-cfg-legend'>        /**
+</span>         * @cfg {Ext.chart.Legend/Object} legend
+         */
+        legend: null,
+
+<span id='Ext-chart-AbstractChart-cfg-colors'>        /**
+</span>         * @cfg {Boolean/Array} colors Array of colors/gradients to override the color of items and legends.
+         */
+        colors: null,
+
+<span id='Ext-chart-AbstractChart-cfg-insetPadding'>        /**
+</span>         * @cfg {Object|Number} insetPadding The amount of inset padding in pixels for the chart. Inset padding is
+         * the padding from the boundary of the chart to any of its contents.
+         * @cfg {Number} insetPadding.top
+         */
+        insetPadding: {
+            top: 10,
+            left: 10,
+            right: 10,
+            bottom: 10
+        },
+
+<span id='Ext-chart-AbstractChart-cfg-innerPadding'>        /**
+</span>         * @cfg {Object} innerPadding The amount of inner padding in pixel. Inner padding is the padding from
+         * axis to the series.
+         */
+        innerPadding: {
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0
+        },
+
+<span id='Ext-chart-AbstractChart-cfg-background'>        /**
+</span>         * @cfg {Object|Boolean} background (optional) Set the chart background. This can be a gradient object, image, or color.
+         *
+         * For example, if `background` were to be a color we could set the object as
+         *
+         *     background: {
+         *         //color string
+         *         fill: '#ccc'
+         *     }
+         *
+         * You can specify an image by using:
+         *
+         *     background: {
+         *         image: 'http://path.to.image/'
+         *     }
+         *
+         * Also you can specify a gradient by using the gradient object syntax:
+         *
+         *     background: {
+         *         gradient: {
+         *             id: 'gradientId',
+         *             angle: 45,
+         *             stops: {
+         *                 0: {
+         *                     color: '#555'
+         *                 },
+         *                 100: {
+         *                     color: '#ddd'
+         *                 }
+         *             }
+         *         }
+         *     }
+         */
+        background: null,
+
+<span id='Ext-chart-AbstractChart-cfg-interactions'>        /**
+</span>         * @cfg {Array} interactions
+         * Interactions are optional modules that can be plugged in to a chart to allow the user to interact
+         * with the chart and its data in special ways. The `interactions` config takes an Array of Object
+         * configurations, each one corresponding to a particular interaction class identified by a `type` property:
+         *
+         *     new Ext.chart.AbstractChart({
+         *         renderTo: Ext.getBody(),
+         *         width: 800,
+         *         height: 600,
+         *         store: store1,
+         *         axes: [
+         *             // ...some axes options...
+         *         ],
+         *         series: [
+         *             // ...some series options...
+         *         ],
+         *         interactions: [{
+         *             type: 'interactiontype'
+         *             // ...additional configs for the interaction...
+         *         }]
+         *     });
+         *
+         * When adding an interaction which uses only its default configuration (no extra properties other than `type`),
+         * you can alternately specify only the type as a String rather than the full Object:
+         *
+         *     interactions: ['reset', 'rotate']
+         *
+         * The current supported interaction types include:
+         *
+         * - {@link Ext.chart.interactions.PanZoom panzoom} - allows pan and zoom of axes
+         * - {@link Ext.chart.interactions.ItemHighlight itemhighlight} - allows highlighting of series data points
+         * - {@link Ext.chart.interactions.ItemInfo iteminfo} - allows displaying details of a data point in a popup panel
+         * - {@link Ext.chart.interactions.Rotate rotate} - allows rotation of pie and radar series
+         *
+         * See the documentation for each of those interaction classes to see how they can be configured.
+         *
+         * Additional custom interactions can be registered using `'interactions.'` alias prefix.
+         */
+        interactions: [],
+
+<span id='Ext-chart-AbstractChart-cfg-mainRegion'>        /**
+</span>         * @private
+         * The main region of the chart.
+         */
+        mainRegion: null,
+
+<span id='Ext-chart-AbstractChart-cfg-autoSize'>        /**
+</span>         * @private
+         * Override value
+         */
+        autoSize: false,
+
+<span id='Ext-chart-AbstractChart-cfg-viewBox'>        /**
+</span>         * @private
+         * Override value
+         */
+        viewBox: false,
+
+<span id='Ext-chart-AbstractChart-cfg-fitSurface'>        /**
+</span>         * @private
+         * Override value
+         */
+        fitSurface: false,
+
+<span id='Ext-chart-AbstractChart-cfg-resizeHandler'>        /**
+</span>         * @private
+         * Override value
+         */
+        resizeHandler: null,
+
+<span id='Ext-chart-AbstractChart-cfg-highlightItem'>        /**
+</span>         * @readonly
+         * @cfg {Object} highlightItem
+         * The current highlight item in the chart.
+         * The object must be the one that you get from item events.
+         *
+         * Note that series can also own highlight items.
+         * This notion is separate from this one and should not be used at the same time.
+         */
+        highlightItem: null
+    },
+
+<span id='Ext-chart-AbstractChart-property-resizing'>    /**
+</span>     * @private
+     */
+    resizing: 0,
+
+<span id='Ext-chart-AbstractChart-property-surfaceZIndexes'>    /**
+</span>     * @private The z-indexes to use for the various surfaces
+     */
+    surfaceZIndexes: {
+        main: 0,
+        grid: 1,
+        series: 2,
+        axis: 3,
+        overlay: 4,
+        events: 5
+    },
+
+<span id='Ext-chart-AbstractChart-property-animating'>    animating: 0,
+</span>
+<span id='Ext-chart-AbstractChart-method-applyAnimate'>    applyAnimate: function (newAnimate, oldAnimate) {
+</span>        if (!newAnimate) {
+            newAnimate = {
+                duration: 0
+            };
+        } else if (newAnimate === true) {
+            newAnimate = {
+                easing: 'easeInOut',
+                duration: 500
+            };
+        }
+        if (!oldAnimate) {
+            return newAnimate;
+        } else {
+            oldAnimate = Ext.apply({}, newAnimate, oldAnimate);
+        }
+        return oldAnimate;
+    },
+
+<span id='Ext-chart-AbstractChart-method-applyInsetPadding'>    applyInsetPadding: function (padding, oldPadding) {
+</span>        if (Ext.isNumber(padding)) {
+            return {
+                top: padding,
+                left: padding,
+                right: padding,
+                bottom: padding
+            };
+        } else if (!oldPadding) {
+            return padding;
+        } else {
+            return Ext.apply(oldPadding, padding);
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-applyInnerPadding'>    applyInnerPadding: function (padding, oldPadding) {
+</span>        if (Ext.isNumber(padding)) {
+            return {
+                top: padding,
+                left: padding,
+                right: padding,
+                bottom: padding
+            };
+        } else if (!oldPadding) {
+            return padding;
+        } else {
+            return Ext.apply(oldPadding, padding);
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-scheduleLayout'>    scheduleLayout: function () {
+</span>        if (!this.scheduledLayoutId) {
+            this.scheduledLayoutId = Ext.draw.Animator.schedule('doScheduleLayout', this);
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-doScheduleLayout'>    doScheduleLayout: function () {
+</span>        this.scheduledLayoutId = null;
+        this.performLayout();
+    },
+
+<span id='Ext-chart-AbstractChart-method-getAnimate'>    getAnimate: function () {
+</span>        if (this.resizing) {
+            return {
+                duration: 0
+            };
+        } else {
+            return this._animate;
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-constructor'>    constructor: function () {
+</span>        var me = this;
+        me.itemListeners = {};
+        me.surfaceMap = {};
+        me.legendStore = new Ext.data.Store({
+            storeId: this.getId() + '-legendStore',
+            fields: [
+                'id', 'name', 'mark', 'disabled', 'series', 'index'
+            ]
+        });
+        me.callSuper(arguments);
+        me.refreshLegendStore();
+        me.getLegendStore().on('updaterecord', 'onUpdateLegendStore', me);
+    },
+
+<span id='Ext-chart-AbstractChart-method-getLegendStore'>    /**
+</span>     * Return the legend store that contains all the legend information. These
+     * information are collected from all the series.
+     * @return {Ext.data.Store} 
+     */
+    getLegendStore: function () {
+        return this.legendStore;
+    },
+
+<span id='Ext-chart-AbstractChart-method-refreshLegendStore'>    refreshLegendStore: function () {
+</span>        if (this.getLegendStore()) {
+            var i, ln,
+                series = this.getSeries(), seriesItem,
+                legendData = [];
+            if (series) {
+                for (i = 0, ln = series.length; i &lt; ln; i++) {
+                    seriesItem = series[i];
+                    if (seriesItem.getShowInLegend()) {
+                        seriesItem.provideLegendInfo(legendData);
+                    }
+                }
+            }
+            this.getLegendStore().setData(legendData);
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-onUpdateLegendStore'>    onUpdateLegendStore: function (store, record) {
+</span>        var series = this.getSeries(), seriesItem;
+        if (record &amp;&amp; series) {
+            seriesItem = series.map[record.get('series')];
+            if (seriesItem) {
+                seriesItem.setHiddenByIndex(record.get('index'), record.get('disabled'));
+                this.redraw();
+            }
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-initialized'>    initialized: function () {
+</span>        var me = this;
+        me.callSuper();
+        me.getSurface('main');
+        me.getSurface('overlay');
+        me.applyStyles();
+    },
+
+<span id='Ext-chart-AbstractChart-method-resizeHandler'>    resizeHandler: function (size) {
+</span>        var me = this;
+        me.getSurface('overlay').setRegion([0, 0, size.width, size.height]);
+        me.performLayout();
+    },
+
+<span id='Ext-chart-AbstractChart-method-applyMainRegion'>    applyMainRegion: function (newRegion, region) {
+</span>        if (!region) {
+            return newRegion;
+        }
+        this.getSeries();
+        this.getAxes();
+        if (newRegion[0] === region[0] &amp;&amp;
+            newRegion[1] === region[1] &amp;&amp;
+            newRegion[2] === region[2] &amp;&amp;
+            newRegion[3] === region[3]) {
+            return region;
+        } else {
+            return newRegion;
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-getSurface'>    getSurface: function (name, type) {
+</span>        name = name || 'main';
+        type = type || name;
+        var me = this,
+            surface = this.callSuper([name]),
+            zIndexes = me.surfaceZIndexes;
+        if (type in zIndexes) {
+            surface.element.setStyle('zIndex', zIndexes[type]);
+        }
+        if (!me.surfaceMap[type]) {
+            me.surfaceMap[type] = [];
+        }
+        surface.type = type;
+        me.surfaceMap[type].push(surface);
+        return surface;
+    },
+
+<span id='Ext-chart-AbstractChart-method-updateColors'>    updateColors: function (colors) {
+</span>        var series = this.getSeries(),
+            seriesItem;
+        for (var i = 0; i &lt; series.length; i++) {
+            seriesItem = series[i];
+            if (!seriesItem.getColors()) {
+                seriesItem.updateColors(colors);
+            }
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-applyAxes'>    applyAxes: function (newAxes, oldAxes) {
+</span>        this.resizing++;
+        try {
+            if (!oldAxes) {
+                oldAxes = [];
+                oldAxes.map = {};
+            }
+            var result = [], i, ln, axis, oldAxis, oldMap = oldAxes.map;
+            result.map = {};
+            newAxes = Ext.Array.from(newAxes, true);
+            for (i = 0, ln = newAxes.length; i &lt; ln; i++) {
+                axis = newAxes[i];
+                if (!axis) {
+                    continue;
+                }
+                axis = Ext.factory(axis, null, oldAxis = oldMap[axis.getId &amp;&amp; axis.getId() || axis.id], 'axis');
+                axis.setChart(this);
+                if (axis) {
+                    result.push(axis);
+                    result.map[axis.getId()] = axis;
+                    if (!oldAxis) {
+                        axis.on('animationstart', 'onAnimationStart', this);
+                        axis.on('animationend', 'onAnimationEnd', this);
+                    }
+                }
+            }
+
+            for (i in oldMap) {
+                if (!result.map[oldMap[i]]) {
+                    oldMap[i].destroy();
+                }
+            }
+            return result;
+        } finally {
+            this.resizing--;
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-updateAxes'>    updateAxes: function (newAxes) {
+</span>        var i, ln, axis;
+        for (i = 0, ln = newAxes.length; i &lt; ln; i++) {
+            axis = newAxes[i];
+            axis.setChart(this);
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-applySeries'>    applySeries: function (newSeries, oldSeries) {
+</span>        this.resizing++;
+        try {
+            this.getAxes();
+            if (!oldSeries) {
+                oldSeries = [];
+                oldSeries.map = {};
+            }
+            var me = this,
+                result = [],
+                i, ln, series, oldMap = oldSeries.map, oldSeriesItem;
+            result.map = {};
+            newSeries = Ext.Array.from(newSeries, true);
+            for (i = 0, ln = newSeries.length; i &lt; ln; i++) {
+                series = newSeries[i];
+                if (!series) {
+                    continue;
+                }
+                oldSeriesItem = oldSeries.map[series.getId &amp;&amp; series.getId() || series.id];
+                if (series instanceof Ext.chart.series.Series) {
+                    if (oldSeriesItem !== series) {
+                        // Replacing
+                        if (oldSeriesItem) {
+                            oldSeriesItem.destroy();
+                        }
+                        me.addItemListenersToSeries(series);
+                    }
+                    series.setChart(this);
+                } else if (Ext.isObject(series)) {
+                    if (oldSeriesItem) {
+                        // Update
+                        oldSeriesItem.setConfig(series);
+                        series = oldSeriesItem;
+                    } else {
+                        if (Ext.isString(series)) {
+                            series = Ext.create(series.xclass || (&quot;series.&quot; + series), {chart: this});
+                        } else {
+                            series.chart = this;
+                            series = Ext.create(series.xclass || (&quot;series.&quot; + series.type), series);
+                        }
+                        series.on('animationstart', 'onAnimationStart', this);
+                        series.on('animationend', 'onAnimationEnd', this);
+                        me.addItemListenersToSeries(series);
+                    }
+                }
+
+                result.push(series);
+                result.map[series.getId()] = series;
+            }
+
+            for (i in oldMap) {
+                if (!result.map[oldMap[i]]) {
+                    oldMap[i].destroy();
+                }
+            }
+            return result;
+        } finally {
+            this.resizing--;
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-applyLegend'>    applyLegend: function (newLegend, oldLegend) {
+</span>        return Ext.factory(newLegend, Ext.chart.Legend, oldLegend);
+    },
+
+<span id='Ext-chart-AbstractChart-method-updateLegend'>    updateLegend: function (legend) {
+</span>        if (legend) {
+            // On create
+            legend.setStore(this.getLegendStore());
+            if (!legend.getDocked()) {
+                legend.setDocked('bottom');
+            }
+            if (this.getParent()) {
+                this.getParent().add(legend);
+            }
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-setParent'>    setParent: function (parent) {
+</span>        this.callSuper(arguments);
+        if (parent &amp;&amp; this.getLegend()) {
+            parent.add(this.getLegend());
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-updateSeries'>    updateSeries: function (newSeries, oldSeries) {
+</span>        this.resizing++;
+        try {
+            this.fireEvent('serieschanged', this, newSeries, oldSeries);
+            var i, ln, seriesItem;
+            for (i = 0, ln = newSeries.length; i &lt; ln; i++) {
+                seriesItem = newSeries[i];
+            }
+            this.refreshLegendStore();
+        } finally {
+            this.resizing--;
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-applyInteractions'>    applyInteractions: function (interations, oldInterations) {
+</span>        if (!oldInterations) {
+            oldInterations = [];
+            oldInterations.map = {};
+        }
+        var me = this,
+            result = [], oldMap = oldInterations.map;
+        result.map = {};
+        interations = Ext.Array.from(interations, true);
+        for (var i = 0, ln = interations.length; i &lt; ln; i++) {
+            var interation = interations[i];
+            if (!interation) {
+                continue;
+            }
+            interation = Ext.factory(interation, null, oldMap[interation.getId &amp;&amp; interation.getId() || interation.id], 'interaction');
+            interation.setChart(me);
+            if (interation) {
+                result.push(interation);
+                result.map[interation.getId()] = interation;
+            }
+        }
+
+        for (i in oldMap) {
+            if (!result.map[oldMap[i]]) {
+                oldMap[i].destroy();
+            }
+        }
+        return result;
+    },
+
+<span id='Ext-chart-AbstractChart-method-applyStore'>    applyStore: function (store) {
+</span>        return Ext.StoreManager.lookup(store);
+    },
+
+<span id='Ext-chart-AbstractChart-method-updateStore'>    updateStore: function (newStore, oldStore) {
+</span>        var me = this;
+        if (oldStore) {
+            oldStore.un('refresh', 'onRefresh', me, null, 'after');
+            if (oldStore.autoDestroy) {
+                oldStore.destroy();
+            }
+        }
+        if (newStore) {
+            newStore.on('refresh', 'onRefresh', me, null, 'after');
+            me.fireEvent('storechanged', newStore, oldStore);
+            me.onRefresh();
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-redraw'>    /**
+</span>     * Redraw the chart. If animations are set this will animate the chart too.
+     */
+    redraw: function () {
+        this.fireEvent('redraw');
+    },
+
+<span id='Ext-chart-AbstractChart-method-getEventXY'>    getEventXY: function (e) {
+</span>        e = (e.changedTouches &amp;&amp; e.changedTouches[0]) || e.event || e.browserEvent || e;
+        var me = this,
+            xy = me.element.getXY(),
+            region = me.getMainRegion();
+        return [e.pageX - xy[0] - region[0], e.pageY - xy[1] - region[1]];
+    },
+
+<span id='Ext-chart-AbstractChart-method-getItemForPoint'>    /**
+</span>     * Given an x/y point relative to the chart, find and return the first series item that
+     * matches that point.
+     * @param {Number} x
+     * @param {Number} y
+     * @return {Object} An object with `series` and `item` properties, or `false` if no item found.
+     */
+    getItemForPoint: function (x, y) {
+        var me = this,
+            i = 0,
+            items = me.getSeries(),
+            l = items.length,
+            series, item;
+
+        for (; i &lt; l; i++) {
+            series = items[i];
+            item = series.getItemForPoint(x, y);
+            if (item) {
+                return item;
+            }
+        }
+
+        return null;
+    },
+
+<span id='Ext-chart-AbstractChart-method-getItemsForPoint'>    /**
+</span>     * Given an x/y point relative to the chart, find and return all series items that match that point.
+     * @param {Number} x
+     * @param {Number} y
+     * @return {Array} An array of objects with `series` and `item` properties.
+     */
+    getItemsForPoint: function (x, y) {
+        var me = this,
+            series = me.getSeries(),
+            seriesItem,
+            items = [];
+
+        for (var i = 0; i &lt; series.length; i++) {
+            seriesItem = series[i];
+            var item = seriesItem.getItemForPoint(x, y);
+            if (item) {
+                items.push(item);
+            }
+        }
+
+        return items;
+    },
+
+<span id='Ext-chart-AbstractChart-property-delayThicknessChanged'>    /**
+</span>     * @private
+     */
+    delayThicknessChanged: 0,
+
+<span id='Ext-chart-AbstractChart-property-thicknessChanged'>    /**
+</span>     * @private
+     */
+    thicknessChanged: false,
+
+<span id='Ext-chart-AbstractChart-method-suspendThicknessChanged'>    /**
+</span>     * Suspend the layout initialized by thickness change
+     */
+    suspendThicknessChanged: function () {
+        this.delayThicknessChanged++;
+    },
+
+<span id='Ext-chart-AbstractChart-method-resumeThicknessChanged'>    /**
+</span>     * Resume the layout initialized by thickness change
+     */
+    resumeThicknessChanged: function () {
+        this.delayThicknessChanged--;
+        if (this.delayThicknessChanged === 0 &amp;&amp; this.thicknessChanged) {
+            this.onThicknessChanged();
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-onAnimationStart'>    onAnimationStart: function () {
+</span>        this.fireEvent(&quot;animationstart&quot;, this);   
+    },
+
+<span id='Ext-chart-AbstractChart-method-onAnimationEnd'>    onAnimationEnd: function () {
+</span>        this.fireEvent(&quot;animationend&quot;, this);
+    },
+
+<span id='Ext-chart-AbstractChart-method-onThicknessChanged'>    onThicknessChanged: function () {
+</span>        if (this.delayThicknessChanged === 0) {
+            this.thicknessChanged = false;
+            this.performLayout();
+        } else {
+            this.thicknessChanged = true;
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-onRefresh'>    /**
+</span>     * @private
+     */
+    onRefresh: function () {
+        var region = this.getMainRegion(),
+            axes = this.getAxes(),
+            store = this.getStore(),
+            series = this.getSeries();
+        if (!store || !axes || !series || !region) {
+            return;
+        }
+        this.redraw();
+    },
+
+<span id='Ext-chart-AbstractChart-method-bindStore'>    /**
+</span>     * Changes the data store bound to this chart and refreshes it.
+     * @param {Ext.data.Store} store The store to bind to this chart.
+     */
+    bindStore: function (store) {
+        this.setStore(store);
+    },
+
+<span id='Ext-chart-AbstractChart-method-applyHighlightItem'>    applyHighlightItem: function (newHighlightItem, oldHighlightItem) {
+</span>        if (newHighlightItem === oldHighlightItem) {
+            return;
+        }
+        if (Ext.isObject(newHighlightItem) &amp;&amp; Ext.isObject(oldHighlightItem)) {
+            if (newHighlightItem.sprite === oldHighlightItem.sprite &amp;&amp;
+                newHighlightItem.index === oldHighlightItem.index
+                ) {
+                return;
+            }
+        }
+        return newHighlightItem;
+    },
+
+<span id='Ext-chart-AbstractChart-method-updateHighlightItem'>    updateHighlightItem: function (newHighlightItem, oldHighlightItem) {
+</span>        if (oldHighlightItem) {
+            oldHighlightItem.series.setAttributesForItem(oldHighlightItem, {highlighted: false});
+        }
+        if (newHighlightItem) {
+            newHighlightItem.series.setAttributesForItem(newHighlightItem, {highlighted: true});
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-reset'>    /**
+</span>     * Reset the chart back to its initial state, before any user interaction.
+     * @param {Boolean} skipRedraw If `true`, redrawing of the chart will be skipped.
+     */
+    reset: function (skipRedraw) {
+        var me = this,
+            i, ln,
+            axes = me.getAxes(), axis,
+            series = me.getSeries(), seriesItem;
+
+        for (i = 0, ln = axes.length; i &lt; ln; i++) {
+            axis = axes[i];
+            if (axis.reset) {
+                axis.reset();
+            }
+        }
+
+        for (i = 0, ln = series.length; i &lt; ln; i++) {
+            seriesItem = series[i];
+            if (seriesItem.reset) {
+                seriesItem.reset();
+            }
+        }
+
+        if (!skipRedraw) {
+            me.redraw();
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-addItemListenersToSeries'>    addItemListenersToSeries: function (series) {
+</span>        for (var name in this.itemListeners) {
+            var listenerMap = this.itemListeners[name], i, ln;
+            for (i = 0, ln = listenerMap.length; i &lt; ln; i++) {
+                series.addListener.apply(series, listenerMap[i]);
+            }
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-addItemListener'>    addItemListener: function (name, fn, scope, options, order) {
+</span>        var listenerMap = this.itemListeners[name] || (this.itemListeners[name] = []),
+            series = this.getSeries(), seriesItem,
+            i, ln;
+        listenerMap.push([name, fn, scope, options, order]);
+        if (series) {
+            for (i = 0, ln = series.length; i &lt; ln; i++) {
+                seriesItem = series[i];
+                seriesItem.addListener(name, fn, scope, options, order);
+            }
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-remoteItemListener'>    remoteItemListener: function (name, fn, scope, options, order) {
+</span>        var listenerMap = this.itemListeners[name],
+            series = this.getSeries(), seriesItem,
+            i, ln;
+        if (listenerMap) {
+            for (i = 0, ln = listenerMap.length; i &lt; ln; i++) {
+                if (listenerMap[i].fn === fn) {
+                    listenerMap.splice(i, 1);
+                    if (series) {
+                        for (i = 0, ln = series.length; i &lt; ln; i++) {
+                            seriesItem = series[i];
+                            seriesItem.removeListener(name, fn, scope, options, order);
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-doAddListener'>    doAddListener: function (name, fn, scope, options, order) {
+</span>        if (name.match(this.delegationRegex)) {
+            return this.addItemListener(name, fn, scope || this, options, order);
+        } else if (name.match(this.domEvents)) {
+            return this.element.doAddListener.apply(this.element, arguments);
+        } else {
+            return this.callSuper(arguments);
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-doRemoveListener'>    doRemoveListener: function (name, fn, scope, options, order) {
+</span>        if (name.match(this.delegationRegex)) {
+            return this.remoteItemListener(name, fn, scope || this, options, order);
+        } else if (name.match(this.domEvents)) {
+            return this.element.doRemoveListener.apply(this.element, arguments);
+        } else {
+            return this.callSuper(arguments);
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-onItemRemove'>    onItemRemove: function (item) {
+</span>        this.callSuper(arguments);
+        if (this.surfaceMap) {
+            Ext.Array.remove(this.surfaceMap[item.type], item);
+            if (this.surfaceMap[item.type].length === 0) {
+                delete this.surfaceMap[item.type];
+            }
+        }
+    },
+
+<span id='Ext-chart-AbstractChart-method-destroy'>    // @private remove gently.
+</span>    destroy: function () {
+        var me = this,
+            emptyArray = [];
+        me.surfaceMap = null;
+        me.setHighlightItem(null);
+        me.setSeries(emptyArray);
+        me.setAxes(emptyArray);
+        me.setInteractions(emptyArray);
+        me.setStore(null);
+        Ext.Viewport.un('orientationchange', me.redraw, me);
+        this.callSuper(arguments);
+    },
+
+    /* ---------------------------------
+     Methods needed for ComponentQuery
+     ----------------------------------*/
+
+<span id='Ext-chart-AbstractChart-method-getRefItems'>    /**
+</span>     * @private
+     * @param deep
+     * @return {Array}
+     */
+    getRefItems: function (deep) {
+        var me = this,
+            series = me.getSeries(),
+            axes = me.getAxes(),
+            interaction = me.getInteractions(),
+            ans = [], i, ln;
+
+        for (i = 0, ln = series.length; i &lt; ln; i++) {
+            ans.push(series[i]);
+            if (series[i].getRefItems) {
+                ans.push.apply(ans, series[i].getRefItems(deep));
+            }
+        }
+
+        for (i = 0, ln = axes.length; i &lt; ln; i++) {
+            ans.push(axes[i]);
+            if (axes[i].getRefItems) {
+                ans.push.apply(ans, axes[i].getRefItems(deep));
+            }
+        }
+
+        for (i = 0, ln = interaction.length; i &lt; ln; i++) {
+            ans.push(interaction[i]);
+            if (interaction[i].getRefItems) {
+                ans.push.apply(ans, interaction[i].getRefItems(deep));
+            }
+        }
+
+        return ans;
+    }
+});</pre>
+</body>
+</html>

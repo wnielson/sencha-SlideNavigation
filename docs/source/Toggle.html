@@ -82,6 +82,40 @@ Ext.define('Ext.field.Toggle', {
         cls: 'x-toggle-field'
     },
 
+<span id='Ext-field-Toggle-event-change'>    /**
+</span>     * @event change
+     * Fires when an option selection has changed.
+     *
+     *     Ext.Viewport.add({
+     *         xtype: 'togglefield',
+     *         label: 'Event Example',
+     *         listeners: {
+     *             change: function(field, newValue) {
+     *                 console.log('Value of this toggle has changed:', (newValue) ? 'ON' : 'OFF');
+     *             }
+     *         }
+     *     });
+     * 
+     * @param {Ext.field.Toggle} me
+     * @param {Number} newValue the new value of this thumb
+     * @param {Number} oldValue the old value of this thumb
+     */
+
+<span id='Ext-field-Toggle-event-dragstart'>    /**
+</span>    * @event dragstart
+    * @hide
+    */
+
+<span id='Ext-field-Toggle-event-drag'>    /**
+</span>    * @event drag
+    * @hide
+    */
+
+<span id='Ext-field-Toggle-event-dragend'>    /**
+</span>    * @event dragend
+    * @hide
+    */
+
     proxyConfig: {
 <span id='Ext-field-Toggle-cfg-minValueCls'>        /**
 </span>         * @cfg {String} minValueCls See {@link Ext.slider.Toggle#minValueCls}
@@ -96,38 +130,45 @@ Ext.define('Ext.field.Toggle', {
         maxValueCls: 'x-toggle-on'
     },
 
-    // @private
-    applyComponent: function(config) {
+<span id='Ext-field-Toggle-method-applyComponent'>    // @private
+</span>    applyComponent: function(config) {
         return Ext.factory(config, Ext.slider.Toggle);
     },
 
 <span id='Ext-field-Toggle-method-setValue'>    /**
 </span>     * Sets the value of the toggle.
      * @param {Number} value **1** for toggled, **0** for untoggled.
+     * @return {Object} this
      */
     setValue: function(newValue) {
         if (newValue === true) {
             newValue = 1;
         }
 
-        this.getComponent().setValue(newValue);
+        var oldValue = this.getValue();
+        if (oldValue != newValue) {
+            this.getComponent().setValue(newValue);
+
+            this.fireEvent('change', this, newValue, oldValue);
+        }
 
         return this;
+    },
+
+<span id='Ext-field-Toggle-method-getValue'>    getValue: function() {
+</span>        return (this.getComponent().getValue() == 1) ? 1 : 0;
     },
 
 <span id='Ext-field-Toggle-method-toggle'>    /**
 </span>     * Toggles the value of this toggle field.
-     * @return this
+     * @return {Object} this
      */
     toggle: function() {
+        // We call setValue directly so the change event can be fired
         var value = this.getValue();
         this.setValue((value == 1) ? 0 : 1);
 
         return this;
-    },
-
-    getValue: function() {
-        return this.callParent()[0];
     }
 });
 </pre>

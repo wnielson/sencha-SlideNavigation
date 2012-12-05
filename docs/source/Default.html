@@ -31,7 +31,7 @@
  *             // Do something with the base64-encoded `dataUri` string
  *         },
  *         function(errorMessage) {
- *    
+ *
  *         },
  *         callbackScope,
  *         {
@@ -40,60 +40,64 @@
  *             height: 500
  *         }
  *     );
- * 
+ *
  * Internally, `Ext.device.Communicator.send()` will then be invoked with the following argument:
- * 
+ *
  *     Ext.device.Communicator.send({
  *         command: 'Camera#capture',
  *         callbacks: {
- *             onSuccess: function() { ... },
- *             onError: function() { ... },
+ *             onSuccess: function() {
+ *                 // ...
+ *             },
+ *             onError: function() {
+ *                 // ...
+ *             }
  *         },
  *         scope: callbackScope,
  *         quality: 75,
  *         width: 500,
  *         height: 500
  *     });
- * 
+ *
  * Which will then be transformed into a HTTP GET request, sent to native shell's local
  * HTTP server with the following parameters:
- * 
+ *
  *     ?quality=75&amp;width=500&amp;height=500&amp;command=Camera%23capture&amp;onSuccess=3&amp;onError=5
- * 
+ *
  * Notice that `onSuccess` and `onError` have been converted into string ids (`3` and `5`
  * respectively) and maintained by `Ext.device.Communicator`.
- * 
+ *
  * Whenever the requested operation finishes, `Ext.device.Communicator.invoke()` simply needs
  * to be executed from the native shell with the corresponding ids given before. For example:
- * 
+ *
  *     Ext.device.Communicator.invoke('3', ['DATA_URI_OF_THE_CAPTURED_IMAGE_HERE']);
- * 
+ *
  * will invoke the original `onSuccess` callback under the given scope. (`callbackScope`), with
  * the first argument of 'DATA_URI_OF_THE_CAPTURED_IMAGE_HERE'
- * 
+ *
  * Note that `Ext.device.Communicator` maintains the uniqueness of each function callback and
  * its scope object. If subsequent calls to `Ext.device.Communicator.send()` have the same
  * callback references, the same old ids will simply be reused, which guarantee the best possible
- * performance for a large amount of repeative calls.
+ * performance for a large amount of repetitive calls.
  */
 Ext.define('Ext.device.communicator.Default', {
 
-    SERVER_URL: 'http://localhost:3000', // Change this to the correct server URL
-
+<span id='Ext-device-communicator-Default-property-callbackDataMap'><span id='Ext-device-communicator-Default-property-SERVER_URL'>    SERVER_URL: 'http://localhost:3000', // Change this to the correct server URL
+</span></span>
     callbackDataMap: {},
 
-    callbackIdMap: {},
-
-    idSeed: 0,
-
-    globalScopeId: '0',
-
-    generateId: function() {
-        return String(++this.idSeed);
+<span id='Ext-device-communicator-Default-property-callbackIdMap'>    callbackIdMap: {},
+</span>
+<span id='Ext-device-communicator-Default-property-idSeed'>    idSeed: 0,
+</span>
+<span id='Ext-device-communicator-Default-property-globalScopeId'>    globalScopeId: '0',
+</span>
+<span id='Ext-device-communicator-Default-method-generateId'>    generateId: function() {
+</span>        return String(++this.idSeed);
     },
 
-    getId: function(object) {
-        var id = object.$callbackId;
+<span id='Ext-device-communicator-Default-method-getId'>    getId: function(object) {
+</span>        var id = object.$callbackId;
 
         if (!id) {
             object.$callbackId = id = this.generateId();
@@ -102,8 +106,8 @@ Ext.define('Ext.device.communicator.Default', {
         return id;
     },
 
-    getCallbackId: function(callback, scope) {
-        var idMap = this.callbackIdMap,
+<span id='Ext-device-communicator-Default-method-getCallbackId'>    getCallbackId: function(callback, scope) {
+</span>        var idMap = this.callbackIdMap,
             dataMap = this.callbackDataMap,
             id, scopeId, callbackId, data;
 
@@ -137,18 +141,18 @@ Ext.define('Ext.device.communicator.Default', {
         return idMap[scopeId][callbackId];
     },
 
-    getCallbackData: function(id) {
-        return this.callbackDataMap[id];
+<span id='Ext-device-communicator-Default-method-getCallbackData'>    getCallbackData: function(id) {
+</span>        return this.callbackDataMap[id];
     },
 
-    invoke: function(id, args) {
-        var data = this.getCallbackData(id);
+<span id='Ext-device-communicator-Default-method-invoke'>    invoke: function(id, args) {
+</span>        var data = this.getCallbackData(id);
 
         data.callback.apply(data.scope, args);
     },
 
-    send: function(args) {
-        var callbacks, scope, name, callback;
+<span id='Ext-device-communicator-Default-method-send'>    send: function(args) {
+</span>        var callbacks, scope, name, callback;
 
         if (!args) {
             args = {};
@@ -174,11 +178,22 @@ Ext.define('Ext.device.communicator.Default', {
         this.doSend(args);
     },
 
-    doSend: function(args) {
-        var xhr = new XMLHttpRequest();
+<span id='Ext-device-communicator-Default-method-doSend'>    doSend: function(args) {
+</span>        var xhr = new XMLHttpRequest();
 
-        xhr.open('GET', this.SERVER_URL + '?' + Ext.Object.toQueryString(args), false);
-        xhr.send(null);
+        xhr.open('GET', this.SERVER_URL + '?' + Ext.Object.toQueryString(args) + '&amp;_dc=' + new Date().getTime(), false);
+
+        // wrap the request in a try/catch block so we can check if any errors are thrown and attempt to call any
+        // failure/callback functions if defined
+        try {
+            xhr.send(null);
+        } catch(e) {
+            if (args.failure) {
+                this.invoke(args.failure);
+            } else if (args.callback) {
+                this.invoke(args.callback);
+            }
+        }
     }
 });
 

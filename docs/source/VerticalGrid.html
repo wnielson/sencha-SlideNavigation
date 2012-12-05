@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-chart-grid-VerticalGrid'>/**
+</span> * @class Ext.chart.grid.VerticalGrid
+ * @extends Ext.draw.sprite.Sprite
+ * 
+ * Vertical Grid sprite. Used in Cartesian Charts.
+ */
+Ext.define(&quot;Ext.chart.grid.VerticalGrid&quot;, {
+    extend: 'Ext.draw.sprite.Sprite',
+    alias: 'grid.vertical',
+
+    inheritableStatics: {
+<span id='Ext-chart-grid-VerticalGrid-property-def'>        def: {
+</span>            processors: {
+                x: 'number',
+                y: 'number',
+                width: 'number',
+                height: 'number'
+            },
+
+            defaults: {
+                x: 0,
+                y: 0,
+                width: 1,
+                height: 1,
+                strokeStyle: '#DDD'
+            }
+        }
+    },
+
+<span id='Ext-chart-grid-VerticalGrid-method-render'>    render: function (surface, ctx, clipRegion) {
+</span>        var attr = this.attr,
+            x = surface.roundPixel(attr.x),
+            halfLineWidth = ctx.lineWidth * 0.5;
+        ctx.beginPath();
+        ctx.rect(x - halfLineWidth, clipRegion[1] - surface.matrix.getDY(), attr.width, clipRegion[3]);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(x - halfLineWidth, clipRegion[1] - surface.matrix.getDY());
+        ctx.lineTo(x - halfLineWidth, clipRegion[1] + clipRegion[3] - surface.matrix.getDY());
+        ctx.stroke();
+    }
+});</pre>
+</body>
+</html>

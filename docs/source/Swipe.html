@@ -17,15 +17,15 @@
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js"><span id='Ext-event-recognizer-Swipe'>/**
 </span> * A base class used for both {@link Ext.event.recognizer.VerticalSwipe} and {@link Ext.event.recognizer.HorizontalSwipe}
- * event recognisers.
+ * event recognizers.
  *
  * @private
  */
 Ext.define('Ext.event.recognizer.Swipe', {
     extend: 'Ext.event.recognizer.SingleTouch',
 
-    handledEvents: ['swipe'],
-
+<span id='Ext-event-recognizer-Swipe-property-handledEvents'>    handledEvents: ['swipe'],
+</span>
 <span id='Ext-dom-Element-event-swipe'>    /**
 </span>     * @member Ext.dom.Element
      * @event swipe
@@ -40,12 +40,12 @@ Ext.define('Ext.event.recognizer.Swipe', {
 </span>     * @property {Number} direction
      * The direction of the swipe. Available options are:
      *
-     * * up
-     * * down
-     * * left
-     * * right
+     * - up
+     * - down
+     * - left
+     * - right
      *
-     * Note: In order to recognise swiping up and down, you must enable the vertical swipe recogniser.
+     * __Note:__ In order to recognize swiping up and down, you must enable the vertical swipe recognizer.
      *
      * **This is only available when the event type is `swipe`**
      * @member Ext.event.Event
@@ -60,19 +60,19 @@ Ext.define('Ext.event.recognizer.Swipe', {
      */
 
     inheritableStatics: {
-        MAX_OFFSET_EXCEEDED: 0x10,
-        MAX_DURATION_EXCEEDED: 0x11,
-        DISTANCE_NOT_ENOUGH: 0x12
-    },
+<span id='Ext-event-recognizer-Swipe-property-MAX_OFFSET_EXCEEDED'>        MAX_OFFSET_EXCEEDED: 0x10,
+</span><span id='Ext-event-recognizer-Swipe-property-MAX_DURATION_EXCEEDED'>        MAX_DURATION_EXCEEDED: 0x11,
+</span><span id='Ext-event-recognizer-Swipe-property-DISTANCE_NOT_ENOUGH'>        DISTANCE_NOT_ENOUGH: 0x12
+</span>    },
 
     config: {
-        minDistance: 80,
-        maxOffset: 35,
-        maxDuration: 1000
-    },
+<span id='Ext-event-recognizer-Swipe-cfg-minDistance'>        minDistance: 80,
+</span><span id='Ext-event-recognizer-Swipe-cfg-maxOffset'>        maxOffset: 35,
+</span><span id='Ext-event-recognizer-Swipe-cfg-maxDuration'>        maxDuration: 1000
+</span>    },
 
-    onTouchStart: function(e) {
-        if (this.callParent(arguments) === false) {
+<span id='Ext-event-recognizer-Swipe-method-onTouchStart'>    onTouchStart: function(e) {
+</span>        if (this.callParent(arguments) === false) {
             return false;
         }
 
@@ -87,8 +87,8 @@ Ext.define('Ext.event.recognizer.Swipe', {
         this.startY = touch.pageY;
     },
 
-    onTouchMove: function(e) {
-        var touch = e.changedTouches[0],
+<span id='Ext-event-recognizer-Swipe-method-onTouchMove'>    onTouchMove: function(e) {
+</span>        var touch = e.changedTouches[0],
             x = touch.pageX,
             y = touch.pageY,
             absDeltaX = Math.abs(x - this.startX),
@@ -112,8 +112,8 @@ Ext.define('Ext.event.recognizer.Swipe', {
         }
     },
 
-    onTouchEnd: function(e) {
-        if (this.onTouchMove(e) === false) {
+<span id='Ext-event-recognizer-Swipe-method-onTouchEnd'>    onTouchEnd: function(e) {
+</span>        if (this.onTouchMove(e) === false) {
             return false;
         }
 

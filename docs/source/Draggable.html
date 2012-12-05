@@ -26,21 +26,8 @@ Ext.define('Ext.behavior.Draggable', {
         'Ext.util.Draggable'
     ],
 
-    constructor: function() {
-        this.listeners = {
-            painted: 'onComponentPainted',
-            scope: this
-        };
-
-        this.callParent(arguments);
-    },
-
-    onComponentPainted: function() {
-        this.draggable.refresh();
-    },
-
-    setConfig: function(config) {
-        var draggable = this.draggable,
+<span id='Ext-behavior-Draggable-method-setConfig'>    setConfig: function(config) {
+</span>        var draggable = this.draggable,
             component = this.component;
 
         if (config) {
@@ -50,10 +37,6 @@ Ext.define('Ext.behavior.Draggable', {
                 draggable.setTranslatable(component.getTranslatable());
                 draggable.setElement(component.renderElement);
                 draggable.on('destroy', 'onDraggableDestroy', this);
-
-                if (component.isPainted()) {
-                    this.onComponentPainted(component);
-                }
 
                 component.on(this.listeners);
             }
@@ -68,19 +51,16 @@ Ext.define('Ext.behavior.Draggable', {
         return this;
     },
 
-    getDraggable: function() {
-        return this.draggable;
+<span id='Ext-behavior-Draggable-method-getDraggable'>    getDraggable: function() {
+</span>        return this.draggable;
     },
 
-    onDraggableDestroy: function() {
-        var component = this.component;
-
-        delete this.draggable;
-        component.un(this.listeners);
+<span id='Ext-behavior-Draggable-method-onDraggableDestroy'>    onDraggableDestroy: function() {
+</span>        delete this.draggable;
     },
 
-    onComponentDestroy: function() {
-        var draggable = this.draggable;
+<span id='Ext-behavior-Draggable-method-onComponentDestroy'>    onComponentDestroy: function() {
+</span>        var draggable = this.draggable;
 
         if (draggable) {
             draggable.destroy();

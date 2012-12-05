@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-bb-CrossCut'>/**
+</span> * A class to replicate the behavior of the Contextual menu in BlackBerry 10.
+ * 
+ * More information: http://docs.blackberry.com/en/developers/deliverables/41577/contextual_menus.jsp
+ *
+ *     var menu = Ext.create('Ext.bb.CrossCut', {
+ *         items: [
+ *             {
+ *                 text: 'New',
+ *                 iconMask: true,
+ *                 iconCls: 'compose'
+ *             },
+ *             {
+ *                 text: 'Reply',
+ *                 iconMask: true,
+ *                 iconCls: 'reply'
+ *             },
+ *             {
+ *                 text: 'Settings',
+ *                 iconMask: true,
+ *                 iconCls: 'settings'
+ *             }
+ *         ]
+ *     });
+ */
+Ext.define('Ext.bb.CrossCut', {
+    extend: 'Ext.Sheet',
+    xtype: 'crosscut',
+
+    requires: [
+        'Ext.Button'
+    ],
+
+    config: {
+<span id='Ext-bb-CrossCut-cfg-top'>        /**
+</span>         * @hide
+         */
+        top: 0,
+
+<span id='Ext-bb-CrossCut-cfg-right'>        /**
+</span>         * @hide
+         */
+        right: 0,
+
+<span id='Ext-bb-CrossCut-cfg-bottom'>        /**
+</span>         * @hide
+         */
+        bottom: 0,
+
+<span id='Ext-bb-CrossCut-cfg-left'>        /**
+</span>         * @hide
+         */
+        left: null,
+
+<span id='Ext-bb-CrossCut-cfg-enter'>        /**
+</span>         * @hide
+         */
+        enter: 'right',
+
+<span id='Ext-bb-CrossCut-cfg-exit'>        /**
+</span>         * @hide
+         */
+        exit: 'right',
+
+<span id='Ext-bb-CrossCut-cfg-hideOnMaskTap'>        /**
+</span>         * @hide
+         */
+        hideOnMaskTap: true,
+
+<span id='Ext-bb-CrossCut-cfg-baseCls'>        /**
+</span>         * @hide
+         */
+        baseCls: 'bb-crosscut',
+
+<span id='Ext-bb-CrossCut-cfg-layout'>        /**
+</span>         * @hide
+         */
+        layout: {
+            type: 'vbox',
+            pack: 'middle'
+        },
+
+<span id='Ext-bb-CrossCut-cfg-defaultType'>        /**
+</span>         * @hide
+         */
+        defaultType: 'button',
+
+<span id='Ext-bb-CrossCut-cfg-showAnimation'>        /**
+</span>         * @hide
+         */
+        showAnimation: {
+            preserveEndState: true,
+            to: {
+                width: 275
+            }
+        },
+
+<span id='Ext-bb-CrossCut-cfg-hideAnimation'>        /**
+</span>         * @hide
+         */
+        hideAnimation: {
+            preserveEndState: true,
+            to: {
+                width: 68
+            }
+        },
+
+<span id='Ext-bb-CrossCut-cfg-defaults'>        defaults: {
+</span>            baseCls: 'bb-crosscut-item'
+        }
+    }
+});
+</pre>
+</body>
+</html>

@@ -222,7 +222,7 @@
  *
  * ## Advanced Usage
  *
- * See &lt;a href=&quot;#!/guide/controllers&quot;&gt;the Controllers guide&lt;/a&gt; for advanced Controller usage including before filters
+ * See [the Controllers guide](#!/guide/controllers) for advanced Controller usage including before filters
  * and customizing for different devices.
  */
 Ext.define('Ext.app.Controller', {
@@ -346,11 +346,11 @@ Ext.define('Ext.app.Controller', {
         application: {},
 
 <span id='Ext-app-Controller-cfg-stores'>        /**
-</span>         * @cfg {Array} stores The set of stores to load for this Application. Each store is expected to
+</span>         * @cfg {String[]} stores The set of stores to load for this Application. Each store is expected to
          * exist inside the *app/store* directory and define a class following the convention
          * AppName.store.StoreName. For example, in the code below, the *AppName.store.Users* class will be loaded.
          * Note that we are able to specify either the full class name (as with *AppName.store.Groups*) or just the
-         * final part of the class name and leave Application to automatically prepend *AppName.store.’* to each:
+         * final part of the class name and leave Application to automatically prepend *AppName.store.'* to each:
          *
          *     stores: [
          *         'Users',
@@ -362,7 +362,7 @@ Ext.define('Ext.app.Controller', {
         stores: [],
 
 <span id='Ext-app-Controller-cfg-models'>        /**
-</span>         * @cfg {Array} models The set of models to load for this Application. Each model is expected to exist inside the
+</span>         * @cfg {String[]} models The set of models to load for this Application. Each model is expected to exist inside the
          * *app/model* directory and define a class following the convention AppName.model.ModelName. For example, in the
          * code below, the classes *AppName.model.User*, *AppName.model.Group* and *AppName.model.Product* will be loaded.
          * Note that we are able to specify either the full class name (as with *AppName.model.Product*) or just the
@@ -423,7 +423,8 @@ Ext.define('Ext.app.Controller', {
     launch: Ext.emptyFn,
 
 <span id='Ext-app-Controller-method-redirectTo'>    /**
-</span>     * Convenient way to redirect to a new url. See {@link Ext.app.Application#redirectTo} for full usage information
+</span>     * Convenient way to redirect to a new url. See {@link Ext.app.Application#redirectTo} for full usage information.
+     * @return {Object}
      */
     redirectTo: function(place) {
         return this.getApplication().redirectTo(place);
@@ -575,7 +576,8 @@ Ext.define('Ext.app.Controller', {
      * 1.x-inspired ref implementation
      */
     ref: function(refs) {
-        var refName, getterName, selector, info;
+        var me = this,
+            refName, getterName, selector, info;
 
         for (refName in refs) {
             selector = refs[refName];
@@ -591,7 +593,12 @@ Ext.define('Ext.app.Controller', {
                     info = refs[refName];
                 }
 
-                this[getterName] = Ext.Function.pass(this.getRef, [refName, info], this);
+                this[getterName] = function(refName, info) {
+                    var args = [refName, info];
+                    return function() {
+                        return me.getRef.apply(me, args.concat.apply(args, arguments));
+                    };
+                }(refName, info);
             }
 
             this.references = this.references || [];
@@ -636,10 +643,10 @@ Ext.define('Ext.app.Controller', {
      */
     hasRef: function(ref) {
         return this.references &amp;&amp; this.references.indexOf(ref.toLowerCase()) !== -1;
-    },
+    }
 
-    // &lt;deprecated product=touch since=2.0&gt;
-    onClassExtended: function(cls, members) {
+<span id='Ext-app-Controller-method-onClassExtended'>    // &lt;deprecated product=touch since=2.0&gt;
+</span>    ,onClassExtended: function(cls, members) {
         var prototype = this.prototype,
             defaultConfig = prototype.config,
             config = members.config || {},
@@ -676,12 +683,6 @@ Ext.define('Ext.app.Controller', {
         if (stores) {
             length = stores.length;
             config.stores = stores;
-
-            // &lt;debug warn&gt;
-            Ext.Logger.deprecate('\'stores\' is deprecated as a property directly on the ' + this.$className + ' prototype. Please move it ' +
-                'to Ext.application({ stores: ... }) instead');
-            // &lt;/debug&gt;
-
             for (i = 0; i &lt; length; i++) {
                 functionName = format(&quot;get{0}Store&quot;, Ext.String.capitalize(stores[i]));
 
@@ -696,12 +697,6 @@ Ext.define('Ext.app.Controller', {
         if (views) {
             length = views.length;
             config.views = views;
-
-            // &lt;debug warn&gt;
-            Ext.Logger.deprecate('\'views\' is deprecated as a property directly on the ' + this.$className + ' prototype. Please move it ' +
-                'to Ext.application({ views: ... }) instead');
-            // &lt;/debug&gt;
-
             for (i = 0; i &lt; length; i++) {
                 functionName = format(&quot;get{0}View&quot;, views[i]);
 
@@ -718,8 +713,10 @@ Ext.define('Ext.app.Controller', {
 
 <span id='Ext-app-Controller-method-getModel'>    /**
 </span>     * Returns a reference to a Model.
+     * @param modelName
+     * @return {Object}
      * @deprecated 2.0.0 Considered bad practice - please just use the Model name instead
-     * (e.g. MyApp.model.User vs this.getModel('User')).
+     * (e.g. `MyApp.model.User` vs `this.getModel('User')`).
      */
     getModel: function(modelName) {
         //&lt;debug warn&gt;
@@ -735,6 +732,9 @@ Ext.define('Ext.app.Controller', {
 
 <span id='Ext-app-Controller-method-getController'>    /**
 </span>     * Returns a reference to another Controller.
+     * @param controllerName
+     * @param profile
+     * @return {Object}
      * @deprecated 2.0.0 Considered bad practice - if you need to do this
      * please use this.getApplication().getController() instead
      */

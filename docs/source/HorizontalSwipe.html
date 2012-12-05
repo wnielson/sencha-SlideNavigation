@@ -16,17 +16,17 @@
 </head>
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js"><span id='Ext-event-recognizer-HorizontalSwipe'>/**
-</span> * A event recogniser created to recognise horitzontal swipe movements.
- * 
+</span> * A event recognizer created to recognize horizontal swipe movements.
+ *
  * @private
  */
 Ext.define('Ext.event.recognizer.HorizontalSwipe', {
     extend: 'Ext.event.recognizer.Swipe',
 
-    handledEvents: ['swipe'],
-
-    onTouchStart: function(e) {
-        if (this.callParent(arguments) === false) {
+<span id='Ext-event-recognizer-HorizontalSwipe-property-handledEvents'>    handledEvents: ['swipe'],
+</span>
+<span id='Ext-event-recognizer-HorizontalSwipe-method-onTouchStart'>    onTouchStart: function(e) {
+</span>        if (this.callParent(arguments) === false) {
             return false;
         }
 
@@ -38,8 +38,8 @@ Ext.define('Ext.event.recognizer.HorizontalSwipe', {
         this.startY = touch.pageY;
     },
 
-    onTouchMove: function(e) {
-        var touch = e.changedTouches[0],
+<span id='Ext-event-recognizer-HorizontalSwipe-method-onTouchMove'>    onTouchMove: function(e) {
+</span>        var touch = e.changedTouches[0],
             y = touch.pageY,
             absDeltaY = Math.abs(y - this.startY),
             time = e.time,
@@ -55,8 +55,8 @@ Ext.define('Ext.event.recognizer.HorizontalSwipe', {
         }
     },
 
-    onTouchEnd: function(e) {
-        if (this.onTouchMove(e) !== false) {
+<span id='Ext-event-recognizer-HorizontalSwipe-method-onTouchEnd'>    onTouchEnd: function(e) {
+</span>        if (this.onTouchMove(e) !== false) {
             var touch = e.changedTouches[0],
                 x = touch.pageX,
                 deltaX = x - this.startX,

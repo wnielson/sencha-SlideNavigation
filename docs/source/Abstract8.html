@@ -15,43 +15,34 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-fx-easing-Abstract'>/**
+  <pre class="prettyprint lang-js"><span id='Ext-device-orientation-Abstract'>/**
 </span> * @private
  */
-Ext.define('Ext.fx.easing.Abstract', {
+Ext.define('Ext.device.orientation.Abstract', {
+    extend: 'Ext.EventedBase',
 
-    config: {
-        startTime: 0,
-        startValue: 0
-    },
+<span id='Ext-device-orientation-Abstract-event-orientationchange'>    /**
+</span>     * @event orientationchange
+     * Fires when the orientation has been changed on this device.
+     *
+     *     Ext.device.Orientation.on({
+     *         scope: this,
+     *         orientationchange: function(e) {
+     *             console.log('Alpha: ', e.alpha);
+     *             console.log('Beta: ', e.beta);
+     *             console.log('Gamma: ', e.gamma);
+     *         }
+     *     });
+     *
+     * @param {Object} event The event object
+     * @param {Object} event.alpha The alpha value of the orientation event
+     * @param {Object} event.beta The beta value of the orientation event
+     * @param {Object} event.gamma The gamma value of the orientation event
+     */
 
-    isEasing: true,
-
-    isEnded: false,
-
-    constructor: function(config) {
-        this.initConfig(config);
-
-        return this;
-    },
-
-    applyStartTime: function(startTime) {
-        if (!startTime) {
-            startTime = Ext.Date.now();
-        }
-
-        return startTime;
-    },
-
-    updateStartTime: function(startTime) {
-        this.reset();
-    },
-
-    reset: function() {
-        this.isEnded = false;
-    },
-
-    getValue: Ext.emptyFn
+    onDeviceOrientation: function(e) {
+        this.doFireEvent('orientationchange', [e]);
+    }
 });
 </pre>
 </body>

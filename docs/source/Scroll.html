@@ -28,17 +28,17 @@ Ext.define('Ext.fx.layout.card.Scroll', {
     alias: 'fx.layout.card.scroll',
 
     config: {
-        duration: 150
-    },
+<span id='Ext-fx-layout-card-Scroll-cfg-duration'>        duration: 150
+</span>    },
 
-    constructor: function(config) {
-        this.initConfig(config);
+<span id='Ext-fx-layout-card-Scroll-method-constructor'>    constructor: function(config) {
+</span>        this.initConfig(config);
 
         this.doAnimationFrame = Ext.Function.bind(this.doAnimationFrame, this);
     },
 
-    getEasing: function() {
-        var easing = this.easing;
+<span id='Ext-fx-layout-card-Scroll-method-getEasing'>    getEasing: function() {
+</span>        var easing = this.easing;
 
         if (!easing) {
             this.easing = easing = new Ext.fx.easing.Linear();
@@ -47,12 +47,12 @@ Ext.define('Ext.fx.layout.card.Scroll', {
         return easing;
     },
 
-    updateDuration: function(duration) {
-        this.getEasing().setDuration(duration);
+<span id='Ext-fx-layout-card-Scroll-method-updateDuration'>    updateDuration: function(duration) {
+</span>        this.getEasing().setDuration(duration);
     },
 
-    onActiveItemChange: function(cardLayout, newItem, oldItem, options, controller) {
-        var direction = this.getDirection(),
+<span id='Ext-fx-layout-card-Scroll-method-onActiveItemChange'>    onActiveItemChange: function(cardLayout, newItem, oldItem, options, controller) {
+</span>        var direction = this.getDirection(),
             easing = this.getEasing(),
             containerElement, inElement, outElement, containerWidth, containerHeight, reverse;
 
@@ -60,6 +60,9 @@ Ext.define('Ext.fx.layout.card.Scroll', {
             if (this.isAnimating) {
                 this.stopAnimation();
             }
+
+            newItem.setWidth('100%');
+            newItem.setHeight('100%');
 
             containerElement = this.getLayout().container.innerElement;
             containerWidth = containerElement.getWidth();
@@ -130,15 +133,15 @@ Ext.define('Ext.fx.layout.card.Scroll', {
         }
     },
 
-    startAnimation: function() {
-        this.isAnimating = true;
+<span id='Ext-fx-layout-card-Scroll-method-startAnimation'>    startAnimation: function() {
+</span>        this.isAnimating = true;
         this.getEasing().setStartTime(Date.now());
         this.timer = setInterval(this.doAnimationFrame, 20);
         this.doAnimationFrame();
     },
 
-    doAnimationFrame: function() {
-        var easing = this.getEasing(),
+<span id='Ext-fx-layout-card-Scroll-method-doAnimationFrame'>    doAnimationFrame: function() {
+</span>        var easing = this.getEasing(),
             direction = this.getDirection(),
             scroll = 'scrollTop',
             value;
@@ -156,26 +159,29 @@ Ext.define('Ext.fx.layout.card.Scroll', {
         }
     },
 
-    stopAnimation: function() {
-        var direction = this.getDirection(),
-            scroll = 'setTop';
+<span id='Ext-fx-layout-card-Scroll-method-stopAnimation'>    stopAnimation: function() {
+</span>        var me = this,
+            direction = me.getDirection(),
+            scroll = 'setTop',
+            oldItem = me.oldItem,
+            newItem = me.newItem;
 
         if (direction == 'left' || direction == 'right') {
             scroll = 'setLeft';
         }
 
-        this.currentEventController.resume();
+        me.currentEventController.resume();
 
-        if (this.isReverse) {
-            this.oldItem.renderElement[scroll](null);
+        if (me.isReverse &amp;&amp; oldItem &amp;&amp; oldItem.renderElement &amp;&amp; oldItem.renderElement.dom) {
+            oldItem.renderElement[scroll](null);
         }
-        else {
-            this.newItem.renderElement[scroll](null);
+        else if (newItem &amp;&amp; newItem.renderElement &amp;&amp; newItem.renderElement.dom) {
+            newItem.renderElement[scroll](null);
         }
 
-        clearInterval(this.timer);
-        this.isAnimating = false;
-        this.fireEvent('animationend', this);
+        clearInterval(me.timer);
+        me.isAnimating = false;
+        me.fireEvent('animationend', me);
     }
 });
 </pre>

@@ -16,7 +16,7 @@
 </head>
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js"><span id='Ext-event-recognizer-DoubleTap'>/**
-</span> * A simple event recogniser which knows when you double tap.
+</span> * A simple event recognizer which knows when you double tap.
  *
  * @private
  */
@@ -24,12 +24,16 @@ Ext.define('Ext.event.recognizer.DoubleTap', {
 
     extend: 'Ext.event.recognizer.SingleTouch',
 
+    inheritableStatics: {
+<span id='Ext-event-recognizer-DoubleTap-property-DIFFERENT_TARGET'>        DIFFERENT_TARGET: 0x03
+</span>    },
+
     config: {
-        maxDuration: 300
-    },
+<span id='Ext-event-recognizer-DoubleTap-cfg-maxDuration'>        maxDuration: 300
+</span>    },
 
-    handledEvents: ['singletap', 'doubletap'],
-
+<span id='Ext-event-recognizer-DoubleTap-property-handledEvents'>    handledEvents: ['singletap', 'doubletap'],
+</span>
 <span id='Ext-dom-Element-event-singletap'>    /**
 </span>     * @member Ext.dom.Element
      * @event singletap
@@ -50,33 +54,46 @@ Ext.define('Ext.event.recognizer.DoubleTap', {
 
     singleTapTimer: null,
 
-    onTouchStart: function(e) {
-        if (this.callParent(arguments) === false) {
+<span id='Ext-event-recognizer-DoubleTap-property-startTime'>    startTime: 0,
+</span>
+<span id='Ext-event-recognizer-DoubleTap-property-lastTapTime'>    lastTapTime: 0,
+</span>
+<span id='Ext-event-recognizer-DoubleTap-method-onTouchStart'>    onTouchStart: function(e) {
+</span>        if (this.callParent(arguments) === false) {
             return false;
         }
 
         this.startTime = e.time;
+
         clearTimeout(this.singleTapTimer);
     },
 
-    onTouchMove: function() {
-        return this.fail(this.self.TOUCH_MOVED);
+<span id='Ext-event-recognizer-DoubleTap-method-onTouchMove'>    onTouchMove: function() {
+</span>        return this.fail(this.self.TOUCH_MOVED);
     },
 
-    onEnd: function(e) {
-        var me = this,
+<span id='Ext-event-recognizer-DoubleTap-method-onEnd'>    onEnd: function(e) {
+</span>        var me = this,
             maxDuration = this.getMaxDuration(),
             touch = e.changedTouches[0],
             time = e.time,
+            target = e.target,
             lastTapTime = this.lastTapTime,
+            lastTarget = this.lastTarget,
             duration;
 
         this.lastTapTime = time;
+        this.lastTarget = target;
 
         if (lastTapTime) {
             duration = time - lastTapTime;
 
             if (duration &lt;= maxDuration) {
+                if (target !== lastTarget) {
+                    return this.fail(this.self.DIFFERENT_TARGET);
+                }
+
+                this.lastTarget = null;
                 this.lastTapTime = 0;
 
                 this.fire('doubletap', e, [touch], {
@@ -98,8 +115,8 @@ Ext.define('Ext.event.recognizer.DoubleTap', {
         }
     },
 
-    fireSingleTap: function(e, touch) {
-        this.fire('singletap', e, [touch], {
+<span id='Ext-event-recognizer-DoubleTap-method-fireSingleTap'>    fireSingleTap: function(e, touch) {
+</span>        this.fire('singletap', e, [touch], {
             touch: touch
         });
     }

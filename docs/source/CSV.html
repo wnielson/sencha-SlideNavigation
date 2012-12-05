@@ -36,21 +36,21 @@ Ext.data.CSV = Ext.extend(Ext.data.Config, {
 		}
 		this.writeAndCallback(changed,callback,scope);
 	},
-	
+
 	add: function(x,callback,scope) {
 		var changed= this.do_add(x);
 		this.writeAndCallback(changed,callback,scope);
 		return this; // JCM should force use of callback?
 	},
-	
+
 	get: function(cs) {
 		return this.v[cs.r];
 	},
-	
+
 	setReplicaNumber: function(replica_number,callback,scope) {
 		this.addReplicaNumbers([replica_number],callback,scope);
 	},
-	
+
 	addReplicaNumbers: function(x,callback,scope) {
 		var t= [];
 		if (x instanceof Array) {
@@ -99,10 +99,10 @@ Ext.data.CSV = Ext.extend(Ext.data.Config, {
 		},this);
 	},
 
-	isEmpty: function() { 
+	isEmpty: function() {
 		return this.v.length&lt;1;
 	},
-		
+
 	maxChangeStamp: function() {
 		if (!this.isEmpty()) {
 			var r= new Ext.data.CS();
@@ -121,15 +121,16 @@ Ext.data.CSV = Ext.extend(Ext.data.Config, {
 	equals: function(x) {
 		return Ext.data.array.all(this.compare(x),function(i){ return i===0; });
 	},
-	
+
 	compare: function(x) {
+        var i, cs, r;
 		if (x instanceof Ext.data.CS) {
-			var cs= this.get(x);
+			cs= this.get(x);
 			return [cs ? cs.compare(x) : -1];
-		} else if (x instanceof Ext.data.CSV) {		
-			var r= [];
+		} else if (x instanceof Ext.data.CSV) {
+			r= [];
 			for(i in this.v) {
-				var cs= this.v[i];
+				cs= this.v[i];
 				if (cs instanceof Ext.data.CS) {
 					var cs2= x.get(cs);
 					r.push(cs2 ? cs.compare(cs2) : 1);
@@ -141,23 +142,23 @@ Ext.data.CSV = Ext.extend(Ext.data.Config, {
 		}
 		return [-1];
 	},
-	
+
 	forEach: function(fn,scope) {
 		this.v.forEach(fn,scope||this);
 	},
-	
+
 	encode: function() { // for the wire
 		return Ext.data.array.collect(this.v,function(){
 			// JCM can we safely ignore replicas with CS of 0... except for the highest known replica number...
 			return this.to_s();
 		});
 	},
-	
+
 	decode: function(x) { // from the wire
 		this.do_add(x);
 		return this;
 	},
-	
+
 	to_s: function(indent) {
 		var r= &quot;CSV: &quot;;
 		this.v.forEach(function(cs){
@@ -173,7 +174,7 @@ Ext.data.CSV = Ext.extend(Ext.data.Config, {
 		data[Ext.data.SyncModel.MODEL]= 'Ext.data.CSV';
 		return Ext.data.CSV.superclass.as_data.call(this, data);
 	}
-		
+
 });</pre>
 </body>
 </html>

@@ -15,122 +15,210 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-scroll-indicator-Abstract'>/**
+  <pre class="prettyprint lang-js"><span id='Ext-fx-animation-Abstract'>/**
 </span> * @private
  */
-Ext.define('Ext.scroll.indicator.Abstract', {
-    extend: 'Ext.Component',
+Ext.define('Ext.fx.animation.Abstract', {
+
+    extend: 'Ext.Evented',
+
+<span id='Ext-fx-animation-Abstract-property-isAnimation'>    isAnimation: true,
+</span>
+    requires: [
+        'Ext.fx.State'
+    ],
 
     config: {
-        baseCls: 'x-scroll-indicator',
+<span id='Ext-fx-animation-Abstract-cfg-name'>        name: '',
+</span>
+<span id='Ext-fx-animation-Abstract-cfg-element'>        element: null,
+</span>
+<span id='Ext-fx-animation-Abstract-cfg-before'>        /**
+</span>         * @cfg
+         * Before configuration.
+         */
+        before: null,
 
-        axis: 'x',
+<span id='Ext-fx-animation-Abstract-cfg-from'>        from: {},
+</span>
+<span id='Ext-fx-animation-Abstract-cfg-to'>        to: {},
+</span>
+<span id='Ext-fx-animation-Abstract-cfg-after'>        after: null,
+</span>
+<span id='Ext-fx-animation-Abstract-cfg-states'>        states: {},
+</span>
+<span id='Ext-fx-animation-Abstract-cfg-duration'>        duration:  300,
+</span>
+<span id='Ext-fx-animation-Abstract-cfg-easing'>        /**
+</span>         * @cfg
+         * Easing type.
+         */
+        easing: 'linear',
 
-        value: 0,
+<span id='Ext-fx-animation-Abstract-cfg-iteration'>        iteration: 1,
+</span>
+<span id='Ext-fx-animation-Abstract-cfg-direction'>        direction: 'normal',
+</span>
+<span id='Ext-fx-animation-Abstract-cfg-delay'>        delay: 0,
+</span>
+<span id='Ext-fx-animation-Abstract-cfg-onBeforeStart'>        onBeforeStart: null,
+</span>
+<span id='Ext-fx-animation-Abstract-cfg-onEnd'>        onEnd: null,
+</span>
+<span id='Ext-fx-animation-Abstract-cfg-onBeforeEnd'>        onBeforeEnd: null,
+</span>
+<span id='Ext-fx-animation-Abstract-cfg-scope'>        scope: null,
+</span>
+<span id='Ext-fx-animation-Abstract-cfg-reverse'>        reverse: null,
+</span>
+<span id='Ext-fx-animation-Abstract-cfg-preserveEndState'>        preserveEndState: false,
+</span>
+<span id='Ext-fx-animation-Abstract-cfg-replacePrevious'>        replacePrevious: true
+</span>    },
 
-        length: null,
+<span id='Ext-fx-animation-Abstract-property-STATE_FROM'>    STATE_FROM: '0%',
+</span>
+<span id='Ext-fx-animation-Abstract-property-STATE_TO'>    STATE_TO: '100%',
+</span>
+<span id='Ext-fx-animation-Abstract-property-DIRECTION_UP'>    DIRECTION_UP: 'up',
+</span>
+<span id='Ext-fx-animation-Abstract-property-DIRECTION_DOWN'>    DIRECTION_DOWN: 'down',
+</span>
+<span id='Ext-fx-animation-Abstract-property-DIRECTION_LEFT'>    DIRECTION_LEFT: 'left',
+</span>
+<span id='Ext-fx-animation-Abstract-property-DIRECTION_RIGHT'>    DIRECTION_RIGHT: 'right',
+</span>
+<span id='Ext-fx-animation-Abstract-property-stateNameRegex'>    stateNameRegex: /^(?:[\d\.]+)%$/,
+</span>
+<span id='Ext-fx-animation-Abstract-method-constructor'>    constructor: function() {
+</span>        this.states = {};
 
-        hidden: true,
+        this.callParent(arguments);
 
-        ui: 'dark'
+        return this;
     },
 
-    cachedConfig: {
-        ratio: 1,
-
-        barCls: 'x-scroll-bar',
-
-        active: true
+<span id='Ext-fx-animation-Abstract-method-applyElement'>    applyElement: function(element) {
+</span>        return Ext.get(element);
     },
 
-    barElement: null,
+<span id='Ext-fx-animation-Abstract-method-applyBefore'>    applyBefore: function(before, current) {
+</span>        if (before) {
+            return Ext.factory(before, Ext.fx.State, current);
+        }
+    },
 
-    barLength: 0,
+<span id='Ext-fx-animation-Abstract-method-applyAfter'>    applyAfter: function(after, current) {
+</span>        if (after) {
+            return Ext.factory(after, Ext.fx.State, current);
+        }
+    },
 
-    gapLength: 0,
+<span id='Ext-fx-animation-Abstract-method-setFrom'>    setFrom: function(from) {
+</span>        return this.setState(this.STATE_FROM, from);
+    },
 
-    getElementConfig: function() {
+<span id='Ext-fx-animation-Abstract-method-setTo'>    setTo: function(to) {
+</span>        return this.setState(this.STATE_TO, to);
+    },
+
+<span id='Ext-fx-animation-Abstract-method-getFrom'>    getFrom: function() {
+</span>        return this.getState(this.STATE_FROM);
+    },
+
+<span id='Ext-fx-animation-Abstract-method-getTo'>    getTo: function() {
+</span>        return this.getState(this.STATE_TO);
+    },
+
+<span id='Ext-fx-animation-Abstract-method-setStates'>    setStates: function(states) {
+</span>        var validNameRegex = this.stateNameRegex,
+            name;
+
+        for (name in states) {
+            if (validNameRegex.test(name)) {
+                this.setState(name, states[name]);
+            }
+        }
+
+        return this;
+    },
+
+<span id='Ext-fx-animation-Abstract-method-getStates'>    getStates: function() {
+</span>        return this.states;
+    },
+
+<span id='Ext-fx-animation-Abstract-method-stop'>    stop: function() {
+</span>        this.fireEvent('stop', this);
+    },
+
+<span id='Ext-fx-animation-Abstract-method-destroy'>    destroy: function() {
+</span>        this.stop();
+        this.callParent();
+    },
+
+<span id='Ext-fx-animation-Abstract-method-setState'>    setState: function(name, state) {
+</span>        var states = this.getStates(),
+            stateInstance;
+
+        stateInstance = Ext.factory(state, Ext.fx.State, states[name]);
+
+        if (stateInstance) {
+            states[name] = stateInstance;
+        }
+        //&lt;debug error&gt;
+        else if (name === this.STATE_TO) {
+            Ext.Logger.error(&quot;Setting and invalid '100%' / 'to' state of: &quot; + state);
+        }
+        //&lt;/debug&gt;
+
+        return this;
+    },
+
+<span id='Ext-fx-animation-Abstract-method-getState'>    getState: function(name) {
+</span>        return this.getStates()[name];
+    },
+
+<span id='Ext-fx-animation-Abstract-method-getData'>    getData: function() {
+</span>        var states = this.getStates(),
+            statesData = {},
+            before = this.getBefore(),
+            after = this.getAfter(),
+            from = states[this.STATE_FROM],
+            to = states[this.STATE_TO],
+            fromData = from.getData(),
+            toData = to.getData(),
+            data, name, state;
+
+        for (name in states) {
+            if (states.hasOwnProperty(name)) {
+                state = states[name];
+                data = state.getData();
+                statesData[name] = data;
+            }
+        }
+
+        if (Ext.os.is.Android2) {
+            statesData['0.0001%'] = fromData;
+        }
+
         return {
-            reference: 'barElement',
-            children: [this.callParent()]
+            before: before ? before.getData() : {},
+            after: after ? after.getData() : {},
+            states: statesData,
+            from: fromData,
+            to: toData,
+            duration: this.getDuration(),
+            iteration: this.getIteration(),
+            direction: this.getDirection(),
+            easing: this.getEasing(),
+            delay: this.getDelay(),
+            onEnd: this.getOnEnd(),
+            onBeforeEnd: this.getOnBeforeEnd(),
+            onBeforeStart: this.getOnBeforeStart(),
+            scope: this.getScope(),
+            preserveEndState: this.getPreserveEndState(),
+            replacePrevious: this.getReplacePrevious()
         };
-    },
-
-    applyRatio: function(ratio) {
-        if (isNaN(ratio)) {
-            ratio = 1;
-        }
-
-        return ratio;
-    },
-
-    refresh: function() {
-        var bar = this.barElement,
-            barDom = bar.dom,
-            ratio = this.getRatio(),
-            axis = this.getAxis(),
-            barLength = (axis === 'x') ? barDom.offsetWidth : barDom.offsetHeight,
-            length = barLength * ratio;
-
-        this.barLength = barLength;
-
-        this.gapLength = barLength - length;
-
-        this.setLength(length);
-
-        this.updateValue(this.getValue());
-    },
-
-    updateBarCls: function(barCls) {
-        this.barElement.addCls(barCls);
-    },
-
-    updateAxis: function(axis) {
-        this.element.addCls(this.getBaseCls(), null, axis);
-        this.barElement.addCls(this.getBarCls(), null, axis);
-    },
-
-    updateValue: function(value) {
-        this.setOffset(this.gapLength * value);
-    },
-
-    updateActive: function(active) {
-        this.barElement[active ? 'addCls' : 'removeCls']('active');
-    },
-
-    doSetHidden: function(hidden) {
-        var elementDomStyle = this.element.dom.style;
-
-        if (hidden) {
-            elementDomStyle.opacity = '0';
-        }
-        else {
-            elementDomStyle.opacity = '';
-        }
-    },
-
-    updateLength: function(length) {
-        var axis = this.getAxis(),
-            element = this.element;
-
-        if (axis === 'x') {
-            element.setWidth(length);
-        }
-        else {
-            element.setHeight(length);
-        }
-    },
-
-    setOffset: function(offset) {
-        var axis = this.getAxis(),
-            element = this.element;
-
-        if (axis === 'x') {
-            element.setLeft(offset);
-        }
-        else {
-            element.setTop(offset);
-        }
     }
 });
 </pre>

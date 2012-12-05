@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-draw-sprite-Ellipse'>/**
+</span> * @class Ext.draw.sprite.Ellipse
+ * @extends Ext.draw.sprite.Path
+ * 
+ * A sprite that represents an ellipse.
+ *
+ *     @example preview miniphone
+ *     var component = new Ext.draw.Component({
+ *       items: [{
+ *         type: 'ellipse',
+ *         cx: 100,
+ *         cy: 100,
+ *         rx: 40,
+ *         ry: 25,
+ *         fillStyle: 'blue'
+ *       }]
+ *     });
+ *     Ext.Viewport.setLayout('fit');
+ *     Ext.Viewport.add(component);
+ */
+Ext.define(&quot;Ext.draw.sprite.Ellipse&quot;, {
+    extend: &quot;Ext.draw.sprite.Path&quot;,
+    alias: 'sprite.ellipse',
+<span id='Ext-draw-sprite-Ellipse-property-type'>    type: 'circle',
+</span>    inheritableStatics: {
+<span id='Ext-draw-sprite-Ellipse-property-def'>        def: {
+</span>            processors: {
+<span id='Ext-draw-sprite-Ellipse-cfg-cx'>                /**
+</span>                 * @cfg {Number} [cx=0] The center coordinate of the sprite on the x-axis.
+                 */
+                cx: &quot;number&quot;,
+                
+<span id='Ext-draw-sprite-Ellipse-cfg-cy'>                /**
+</span>                 * @cfg {Number} [cy=0] The center coordinate of the sprite on the y-axis.
+                 */
+                cy: &quot;number&quot;,
+                
+<span id='Ext-draw-sprite-Ellipse-cfg-rx'>                /**
+</span>                 * @cfg {Number} [rx=1] The radius of the sprite on the x-axis.
+                 */
+                rx: &quot;number&quot;,
+
+<span id='Ext-draw-sprite-Ellipse-cfg-ry'>                /**
+</span>                 * @cfg {Number} [ry=1] The radius of the sprite on the y-axis.
+                 */
+                ry: &quot;number&quot;,
+
+<span id='Ext-draw-sprite-Ellipse-cfg-axisRotation'>                /**
+</span>                 * @cfg {Number} [axisRotation=0] The rotation of the sprite about its axis.
+                 */
+                axisRotation: &quot;number&quot;
+            },
+            aliases: {
+                radius: &quot;r&quot;,
+                x: &quot;cx&quot;,
+                y: &quot;cy&quot;,
+                centerX: &quot;cx&quot;,
+                centerY: &quot;cy&quot;,
+                radiusX: &quot;rx&quot;,
+                radiusY: &quot;ry&quot;
+            },
+            defaults: {
+                cx: 0,
+                cy: 0,
+                rx: 1,
+                ry: 1,
+                axisRotation: 0
+            },
+            dirtyTriggers: {
+                cx: 'path',
+                cy: 'path',
+                rx: 'path',
+                ry: 'path',
+                axisRotation: 'path'
+            }
+        }
+    },
+
+<span id='Ext-draw-sprite-Ellipse-method-updatePlainBBox'>    updatePlainBBox: function (plain) {
+</span>        var attr = this.attr,
+            cx = attr.cx,
+            cy = attr.cy,
+            rx = attr.rx,
+            ry = attr.ry;
+        plain.x = cx - rx;
+        plain.y = cy - ry;
+        plain.width = rx + rx;
+        plain.height = ry + ry;
+    },
+
+<span id='Ext-draw-sprite-Ellipse-method-updateTransformedBBox'>    updateTransformedBBox: function (transform) {
+</span>        var attr = this.attr,
+            cx = attr.cx,
+            cy = attr.cy,
+            rx = attr.rx,
+            ry = attr.ry,
+            rxy = ry / rx,
+            matrix = attr.matrix.clone(),
+            xx, xy, yx, yy, dx, dy, w, h;
+        matrix.append(1, 0, 0, rxy, 0, cy * (1 - rxy));
+        xx = matrix.getXX();
+        yx = matrix.getYX();
+        dx = matrix.getDX();
+        xy = matrix.getXY();
+        yy = matrix.getYY();
+        dy = matrix.getDY();
+        w = Math.sqrt(xx * xx + yx * yx) * rx;
+        h = Math.sqrt(xy * xy + yy * yy) * rx;
+        transform.x = cx * xx + cy * yx + dx - w;
+        transform.y = cx * xy + cy * yy + dy - h;
+        transform.width = w + w;
+        transform.height = h + h;
+    },
+
+<span id='Ext-draw-sprite-Ellipse-method-updatePath'>    updatePath: function (path, attr) {
+</span>        path.ellipse(attr.cx, attr.cy, attr.rx, attr.ry, attr.axisRotation, 0, Math.PI * 2, false);
+    }
+});</pre>
+</body>
+</html>

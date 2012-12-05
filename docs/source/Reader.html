@@ -23,16 +23,34 @@
  * a Reader instance directly, since a Reader is almost always used together with a {@link Ext.data.proxy.Proxy Proxy},
  * and is configured using the Proxy's {@link Ext.data.proxy.Proxy#cfg-reader reader} configuration property:
  *
- *     Ext.create('Ext.data.Store', {
- *         model: 'User',
+ *     Ext.define(&quot;User&quot;, {
+ *         extend: &quot;Ext.data.Model&quot;,
+ *         config: {
+ *             fields: [
+ *                 &quot;id&quot;,
+ *                 &quot;name&quot;
+ *             ]
+ *         }
+ *     });
+ *
+ *     Ext.create(&quot;Ext.data.Store&quot;, {
+ *         model: &quot;User&quot;,
+ *         autoLoad: true,
+ *         storeId: &quot;usersStore&quot;,
  *         proxy: {
- *             type: 'ajax',
- *             url : 'users.json',
+ *             type: &quot;ajax&quot;,
+ *             url : &quot;users.json&quot;,
  *             reader: {
- *                 type: 'json',
- *                 rootPorperty: 'users'
+ *                 type: &quot;json&quot;,
+ *                 rootProperty: &quot;users&quot;
  *             }
- *         },
+ *         }
+ *     });
+ *
+ *     Ext.create(&quot;Ext.List&quot;, {
+ *         fullscreen: true,
+ *         itemTpl: &quot;{name} (id: '{id}')&quot;,
+ *         store: &quot;usersStore&quot;
  *     });
  *
  * The above reader is configured to consume a JSON string that looks something like this:
@@ -53,59 +71,104 @@
  * fictional CRM system which manages a User, their Orders, OrderItems and Products. First we'll define the models:
  *
  *     Ext.define(&quot;User&quot;, {
- *         extend: 'Ext.data.Model',
+ *         extend: &quot;Ext.data.Model&quot;,
  *         config: {
  *             fields: [
- *                 'id', 'name'
+ *                 &quot;id&quot;,
+ *                 &quot;name&quot;
  *             ],
- *
- *             hasMany: {model: 'Order', name: 'orders'},
- *
+ *             hasMany: {
+ *                 model: &quot;Order&quot;,
+ *                 name: &quot;orders&quot;
+ *             },
  *             proxy: {
- *                 type: 'rest',
- *                 url : 'users.json',
+ *                 type: &quot;rest&quot;,
+ *                 url : &quot;users.json&quot;,
  *                 reader: {
- *                     type: 'json',
- *                     root: 'users'
+ *                     type: &quot;json&quot;,
+ *                     rootProperty: &quot;users&quot;
  *                 }
  *             }
  *         }
  *     });
  *
  *     Ext.define(&quot;Order&quot;, {
- *         extend: 'Ext.data.Model',
+ *         extend: &quot;Ext.data.Model&quot;,
  *         config: {
  *             fields: [
- *                 'id', 'total'
+ *                 &quot;id&quot;, &quot;total&quot;
  *             ],
- *
- *             hasMany  : {model: 'OrderItem', name: 'orderItems', associationKey: 'order_items'},
- *             belongsTo: 'User'
+ *             hasMany: {
+ *                 model: &quot;OrderItem&quot;,
+ *                 name: &quot;orderItems&quot;,
+ *                 associationKey: &quot;order_items&quot;
+ *             },
+ *             belongsTo: &quot;User&quot;
  *         }
  *     });
  *
  *     Ext.define(&quot;OrderItem&quot;, {
- *         extend: 'Ext.data.Model',
+ *         extend: &quot;Ext.data.Model&quot;,
  *         config: {
  *             fields: [
- *                 'id', 'price', 'quantity', 'order_id', 'product_id'
+ *                 &quot;id&quot;,
+ *                 &quot;price&quot;,
+ *                 &quot;quantity&quot;,
+ *                 &quot;order_id&quot;,
+ *                 &quot;product_id&quot;
  *             ],
- *
- *             belongsTo: ['Order', {model: 'Product', associationKey: 'product'}]
+ *             belongsTo: [
+ *                 &quot;Order&quot;, {
+ *                     model: &quot;Product&quot;,
+ *                     associationKey: &quot;product&quot;
+ *                 }
+ *             ]
  *         }
  *     });
  *
  *     Ext.define(&quot;Product&quot;, {
- *         extend: 'Ext.data.Model',
- *         fields: [
- *             'id', 'name'
- *         ],
+ *         extend: &quot;Ext.data.Model&quot;,
+ *         config: {
+ *             fields: [
+ *                 &quot;id&quot;,
+ *                 &quot;name&quot;
+ *             ]
+ *         },
+ *         hasMany: &quot;OrderItem&quot;
+ *     });
  *
- *         hasMany: 'OrderItem'
+ *     var store = Ext.create('Ext.data.Store', {
+ *         model: &quot;User&quot;
+ *     });
+ *
+ *     store.load({
+ *         callback: function() {
+ *             var output = [];
+ *
+ *             // the user that was loaded
+ *             var user = store.first();
+ *
+ *             output.push(&quot;Orders for &quot; + user.get('name') + &quot;:&quot;);
+ *
+ *             // iterate over the Orders for each User
+ *             user.orders().each(function(order) {
+ *                 output.push(&quot;Order ID: &quot; + order.get('id') + &quot;, which contains items:&quot;);
+ *
+ *                 // iterate over the OrderItems for each Order
+ *                 order.orderItems().each(function(orderItem) {
+ *                     // We know that the Product data is already loaded, so we can use the
+ *                     // synchronous getProduct() method. Usually, we would use the 
+ *                     // asynchronous version (see Ext.data.association.BelongsTo).
+ *                     var product = orderItem.getProduct();
+ *                     output.push(orderItem.get(&quot;quantity&quot;) + &quot; orders of &quot; + product.get(&quot;name&quot;));
+ *                 });
+ *             });
+ *             Ext.Msg.alert('Output:', output.join(&quot;&lt;br/&gt;&quot;));
+ *         }
  *     });
  *
  * This may be a lot to take in - basically a User has many Orders, each of which is composed of several OrderItems.
- * Finally, each OrderItem has a single Product. This allows us to consume data like this:
+ * Finally, each OrderItem has a single Product. This allows us to consume data like this (_users.json_):
  *
  *     {
  *         &quot;users&quot;: [
@@ -144,34 +207,7 @@
  *
  * The JSON response is deeply nested - it returns all Users (in this case just 1 for simplicity's sake), all of the
  * Orders for each User (again just 1 in this case), all of the OrderItems for each Order (2 order items in this case),
- * and finally the Product associated with each OrderItem. Now we can read the data and use it as follows:
- *
- *     var store = Ext.create('Ext.data.Store', {
- *         model: &quot;User&quot;
- *     });
- *
- *     store.load({
- *         callback: function() {
- *             //the user that was loaded
- *             var user = store.first();
- *
- *             console.log(&quot;Orders for &quot; + user.get('name') + &quot;:&quot;)
- *
- *             //iterate over the Orders for each User
- *             user.orders().each(function(order) {
- *                 console.log(&quot;Order ID: &quot; + order.getId() + &quot;, which contains items:&quot;);
- *
- *                 //iterate over the OrderItems for each Order
- *                 order.orderItems().each(function(orderItem) {
- *                     //we know that the Product data is already loaded, so we can use the synchronous getProduct
- *                     //usually, we would use the asynchronous version (see {@link Ext.data.association.BelongsTo})
- *                     var product = orderItem.getProduct();
- *
- *                     console.log(orderItem.get('quantity') + ' orders of ' + product.get('name'));
- *                 });
- *             });
- *         }
- *     });
+ * and finally the Product associated with each OrderItem.
  *
  * Running the code above results in the following:
  *
@@ -188,14 +224,14 @@ Ext.define('Ext.data.reader.Reader', {
 
     mixins: ['Ext.mixin.Observable'],
 
-    // private
-    isReader: true,
+<span id='Ext-data-reader-Reader-property-isReader'>    // @private
+</span>    isReader: true,
 
     config: {
 <span id='Ext-data-reader-Reader-cfg-idProperty'>        /**
 </span>         * @cfg {String} idProperty
-         * Name of the property within a row object that contains a record identifier value. Defaults to The id of the
-         * model. If an idProperty is explicitly specified it will override that of the one specified on the model
+         * Name of the property within a raw object that contains a record identifier value. Defaults to The id of the
+         * model. If an `idProperty` is explicitly specified it will override that of the one specified on the model
          */
         idProperty: undefined,
 
@@ -208,19 +244,19 @@ Ext.define('Ext.data.reader.Reader', {
 <span id='Ext-data-reader-Reader-cfg-totalProperty'>        /**
 </span>         * @cfg {String} totalProperty
          * Name of the property from which to retrieve the total number of records in the dataset. This is only needed if
-         * the whole dataset is not passed in one go, but is being paged from the remote server. Defaults to total.
+         * the whole dataset is not passed in one go, but is being paged from the remote server.
          */
         totalProperty: 'total',
 
 <span id='Ext-data-reader-Reader-cfg-successProperty'>        /**
 </span>         * @cfg {String} successProperty
-         * Name of the property from which to retrieve the success attribute. Defaults to success. See
+         * Name of the property from which to retrieve the success attribute. See
          * {@link Ext.data.proxy.Server}.{@link Ext.data.proxy.Server#exception exception} for additional information.
          */
         successProperty: 'success',
 
 <span id='Ext-data-reader-Reader-cfg-messageProperty'>        /**
-</span>         * @cfg {String} messageProperty
+</span>         * @cfg {String} messageProperty (optional)
          * The name of the property which contains a response message. This property is optional.
          */
         messageProperty: null,
@@ -230,7 +266,7 @@ Ext.define('Ext.data.reader.Reader', {
          * The name of the property which contains the Array of row objects.  For JSON reader it's dot-separated list
          * of property names.  For XML reader it's a CSS selector.  For array reader it's not applicable.
          *
-         * By default the natural root of the data will be used.  The root Json array, the root XML element, or the array.
+         * By default the natural root of the data will be used.  The root JSON array, the root XML element, or the array.
          *
          * The data packet value for this property should be an empty array to clear the data or show no data.
          */
@@ -238,16 +274,16 @@ Ext.define('Ext.data.reader.Reader', {
 
 <span id='Ext-data-reader-Reader-cfg-implicitIncludes'>        /**
 </span>         * @cfg {Boolean} implicitIncludes
-         * True to automatically parse models nested within other models in a response object. See the
-         * Ext.data.reader.Reader intro docs for full explanation. Defaults to true.
+         * `true` to automatically parse models nested within other models in a response object. See the
+         * {@link Ext.data.reader.Reader} intro docs for full explanation.
          */
         implicitIncludes: true,
 
-        model: undefined
-    },
+<span id='Ext-data-reader-Reader-cfg-model'>        model: undefined
+</span>    },
 
-    constructor: function(config) {
-        this.initConfig(config);
+<span id='Ext-data-reader-Reader-method-constructor'>    constructor: function(config) {
+</span>        this.initConfig(config);
     },
 
 <span id='Ext-data-reader-Reader-property-metaData'>    /**
@@ -259,17 +295,18 @@ Ext.define('Ext.data.reader.Reader', {
      * by application code. For example, it is common when reconfiguring the data model of a grid to
      * also pass a corresponding column model config to be applied to the grid. Any such data will
      * not get applied to the Reader directly (it just gets passed through and is ignored by Ext).
-     * This metaData property gives you access to all meta data that was passed, including any such
+     * This `metaData` property gives you access to all meta data that was passed, including any such
      * custom data ignored by the reader.
      *
      * This is a read-only property, and it will get replaced each time a new meta data object is
      * passed to the reader.
+     * @readonly
      */
 
     fieldCount: 0,
 
-    applyModel: function(model) {
-        if (typeof model == 'string') {
+<span id='Ext-data-reader-Reader-method-applyModel'>    applyModel: function(model) {
+</span>        if (typeof model == 'string') {
             model = Ext.data.ModelManager.getModel(model);
 
             if (!model) {
@@ -284,15 +321,15 @@ Ext.define('Ext.data.reader.Reader', {
         return model;
     },
 
-    applyIdProperty: function(idProperty) {
-        if (!idProperty &amp;&amp; this.getModel()) {
+<span id='Ext-data-reader-Reader-method-applyIdProperty'>    applyIdProperty: function(idProperty) {
+</span>        if (!idProperty &amp;&amp; this.getModel()) {
             idProperty = this.getModel().getIdProperty();
         }
         return idProperty;
     },
 
-    updateModel: function(model) {
-        if (model) {
+<span id='Ext-data-reader-Reader-method-updateModel'>    updateModel: function(model) {
+</span>        if (model) {
             if (!this.getIdProperty()) {
                 this.setIdProperty(model.getIdProperty());
             }
@@ -300,9 +337,10 @@ Ext.define('Ext.data.reader.Reader', {
         }
     },
 
-    createAccessor: Ext.emptyFn,
-    createFieldAccessExpression: function() {
-        return 'undefined';
+<span id='Ext-data-reader-Reader-method-createAccessor'>    createAccessor: Ext.emptyFn,
+</span>
+<span id='Ext-data-reader-Reader-method-createFieldAccessExpression'>    createFieldAccessExpression: function() {
+</span>        return 'undefined';
     },
 
 <span id='Ext-data-reader-Reader-method-buildExtractors'>    /**
@@ -315,8 +353,8 @@ Ext.define('Ext.data.reader.Reader', {
             return;
         }
 
-        var me          = this,
-            totalProp   = me.getTotalProperty(),
+        var me = this,
+            totalProp = me.getTotalProperty(),
             successProp = me.getSuccessProperty(),
             messageProp = me.getMessageProperty();
 
@@ -343,10 +381,9 @@ Ext.define('Ext.data.reader.Reader', {
      *
      * The returned function must be passed the following parameters:
      *
-     * - dest A record's empty data object into which the new field value properties are injected.
-     * - source A raw row data object of whatever type this Reader consumes
-     * - record The record which is being populated.
-     *
+     * - `dest` - A record's empty data object into which the new field value properties are injected.
+     * - `source` - A raw row data object of whatever type this Reader consumes
+     * - `record - The record which is being populated.
      */
     buildRecordDataExtractor: function() {
         var me = this,
@@ -419,8 +456,8 @@ Ext.define('Ext.data.reader.Reader', {
         return Ext.functionFactory(code.join('')).call(me);
     },
 
-    getFields: function() {
-        return this.getModel().getFields().items;
+<span id='Ext-data-reader-Reader-method-getFields'>    getFields: function() {
+</span>        return this.getModel().getFields().items;
     },
 
 <span id='Ext-data-reader-Reader-method-getData'>    /**
@@ -447,7 +484,7 @@ Ext.define('Ext.data.reader.Reader', {
 <span id='Ext-data-reader-Reader-method-getRoot'>    /**
 </span>     * @private
      * This will usually need to be implemented in a subclass. Given a generic data object (the type depends on the type
-     * of data we are reading), this function should return the object as configured by the Reader's 'root' meta data config.
+     * of data we are reading), this function should return the object as configured by the Reader's 'rootProperty' meta data config.
      * See XmlReader's getRoot implementation for an example. By default the same data object will simply be returned.
      * @param {Object} data The data object
      * @return {Object} The same data object
@@ -484,8 +521,8 @@ Ext.define('Ext.data.reader.Reader', {
         }
     },
 
-    process: function(response) {
-        var data = response;
+<span id='Ext-data-reader-Reader-method-process'>    process: function(response) {
+</span>        var data = response;
 
         if (response) {
             data = this.getResponseData(response);
@@ -526,28 +563,35 @@ Ext.define('Ext.data.reader.Reader', {
         }
         // &lt;/debug&gt;
 
-        // If we pass an array as the data, we dont use getRoot on the data.
+        // If we pass an array as the data, we don't use getRoot on the data.
         // Instead the root equals to the data.
-        var root    = Ext.isArray(data) ? data : me.getRoot(data),
+        var isArray = Ext.isArray(data),
+            root = isArray ? data : me.getRoot(data),
             success = true,
             recordCount = 0,
             total, value, records, message;
 
-        if (me.getTotalProperty()) {
+        if (isArray &amp;&amp; !data.length) {
+            return me.nullResultSet;
+        }
+
+        // buildExtractors should have put getTotal, getSuccess, or getMessage methods on the instance.
+        // So we can check them directly
+        if (me.getTotal) {
             value = parseInt(me.getTotal(data), 10);
             if (!isNaN(value)) {
                 total = value;
             }
         }
 
-        if (me.getSuccessProperty()) {
+        if (me.getSuccess) {
             value = me.getSuccess(data);
             if (value === false || value === 'false') {
                 success = false;
             }
         }
 
-        if (me.getMessageProperty()) {
+        if (me.getMessage) {
             message = me.getMessage(data);
         }
 
@@ -639,25 +683,24 @@ Ext.define('Ext.data.reader.Reader', {
 
 <span id='Ext-data-reader-Reader-method-readAssociated'>    /**
 </span>     * @private
-     * Loads a record's associations from the data object. This prepopulates hasMany and belongsTo associations
+     * Loads a record's associations from the data object. This pre-populates `hasMany` and `belongsTo` associations
      * on the record provided.
      * @param {Ext.data.Model} record The record to load associations for
      * @param {Object} data The data object
-     * @return {String} Return value description
      */
-    readAssociated: function(data, node) {
+    readAssociated: function(record, data) {
         var associations = this.getModel().associations.items,
-            i            = 0,
-            length       = associations.length,
+            length = associations.length,
+            i = 0,
             association, associationData, associationKey;
 
         for (; i &lt; length; i++) {
-            association     = associations[i];
-            associationKey  = association.getAssociationKey();
-            associationData = this.getAssociatedDataRoot(node, associationKey);
+            association = associations[i];
+            associationKey = association.getAssociationKey();
+            associationData = this.getAssociatedDataRoot(data, associationKey);
 
             if (associationData) {
-                data[associationKey] = associationData;
+                record[associationKey] = associationData;
             }
         }
     },
@@ -665,13 +708,20 @@ Ext.define('Ext.data.reader.Reader', {
 <span id='Ext-data-reader-Reader-method-getAssociatedDataRoot'>    /**
 </span>     * @private
      * Used internally by `readAssociated`. Given a data object (which could be json, xml etc) for a specific
-     * record, this should return the relevant part of that data for the given association name. This is only really
-     * needed to support the XML Reader, which has to do a query to get the associated data object
+     * record, this should return the relevant part of that data for the given association name. If a complex
+     * mapping, this will traverse arrays and objects to resolve the data.
      * @param {Object} data The raw data object
      * @param {String} associationName The name of the association to get data for (uses associationKey if present)
      * @return {Object} The root
      */
     getAssociatedDataRoot: function(data, associationName) {
+        var re = /[\[\.]/,
+            i  = String(associationName).search(re);
+
+        if (i &gt;= 0) {
+            return Ext.functionFactory('obj', 'return obj' + (i &gt; 0 ? '.' : '') + associationName)(data);
+        }
+
         return data[associationName];
     },
 
@@ -735,8 +785,8 @@ Ext.define('Ext.data.reader.Reader', {
     }
 
 
-    // Convert old properties in data into a config object
-    // &lt;deprecated product=touch since=2.0&gt;
+<span id='Ext-data-reader-Reader-method-onClassExtended'>    // Convert old properties in data into a config object
+</span>    // &lt;deprecated product=touch since=2.0&gt;
     ,onClassExtended: function(cls, data, hooks) {
         var Component = this,
             defaultConfig = Component.prototype.config,
@@ -760,7 +810,8 @@ Ext.define('Ext.data.reader.Reader', {
     // &lt;/deprecated&gt;
 }, function() {
     Ext.apply(this.prototype, {
-        // Private. Empty ResultSet to return when response is falsy (null|undefined|empty string)
+        // @private
+        // Empty ResultSet to return when response is falsy (null|undefined|empty string)
         nullResultSet: new Ext.data.ResultSet({
             total  : 0,
             count  : 0,

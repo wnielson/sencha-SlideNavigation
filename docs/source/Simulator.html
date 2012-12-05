@@ -22,23 +22,23 @@ Ext.define('Ext.device.camera.Simulator', {
     extend: 'Ext.device.camera.Abstract',
 
     config: {
-        samples: [
-            {
+<span id='Ext-device-camera-Simulator-cfg-samples'>        samples: [
+</span>            {
                 success: 'http://www.sencha.com/img/sencha-large.png'
             }
         ]
     },
 
-    constructor: function(config) {
-        this.initConfig(config);
+<span id='Ext-device-camera-Simulator-method-constructor'>    constructor: function(config) {
+</span>        this.initConfig(config);
     },
 
-    updateSamples: function(samples) {
-        this.sampleIndex = 0;
+<span id='Ext-device-camera-Simulator-method-updateSamples'>    updateSamples: function(samples) {
+</span>        this.sampleIndex = 0;
     },
 
-    capture: function(options) {
-        var index = this.sampleIndex,
+<span id='Ext-device-camera-Simulator-method-capture'>    capture: function(options) {
+</span>        var index = this.sampleIndex,
             samples = this.getSamples(),
             samplesCount = samples.length,
             sample = samples[index],

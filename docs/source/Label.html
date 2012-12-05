@@ -15,26 +15,96 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-Label'>/**
-</span> * A simple label component which allows you to insert content using {@link #html} configuration.
- *
- *     @example miniphone
- *     Ext.Viewport.add({
- *         xtype: 'label',
- *         html: 'My label!'
- *     });
+  <pre class="prettyprint lang-js"><span id='Ext-chart-label-Label'>/**
+</span> * @class Ext.chart.label.Label
+ * @extends Ext.draw.sprite.Text
+ * 
+ * Sprite used to represent labels in series.
  */
-Ext.define('Ext.Label', {
-    extend: 'Ext.Component',
-    xtype: 'label',
+Ext.define(&quot;Ext.chart.label.Label&quot;, {
+    extend: &quot;Ext.draw.sprite.Text&quot;,
+    requires: ['Ext.chart.label.Callout'],
+
+    inheritableStatics: {
+<span id='Ext-chart-label-Label-property-def'>        def: {
+</span>            processors: {
+                callout: 'limited01',
+                calloutPlaceX: 'number',
+                calloutPlaceY: 'number',
+                calloutStartX: 'number',
+                calloutStartY: 'number',
+                calloutEndX: 'number',
+                calloutEndY: 'number',
+                calloutColor: 'color',
+                calloutVertical: 'bool',
+                labelOverflowPadding: 'number'
+            },
+            defaults: {
+                callout: 0,
+                calloutPlaceX: 0,
+                calloutPlaceY: 0,
+                calloutStartX: 0,
+                calloutStartY: 0,
+                calloutEndX: 0,
+                calloutEndY: 0,
+                calloutVertical: false,
+                calloutColor: 'black',
+                labelOverflowPadding: 5
+            },
+
+            dirtyTriggers: {
+                callout: 'transform',
+                calloutPlaceX: 'transform',
+                calloutPlaceY: 'transform',
+                labelOverflowPadding: 'transform',
+                calloutRotation: 'transform'
+            }
+        }
+    },
 
     config: {
-<span id='Ext-Label-cfg-html'>        /**
-</span>         * @cfg {String} html
-         * The label of this component.
+<span id='Ext-chart-label-Label-cfg-fx'>        /**
+</span>         * @cfg {Object} fx Animation configuration.
          */
+        fx: {
+            customDuration: {
+                callout: 200
+            }
+        }
+    },
+
+<span id='Ext-chart-label-Label-method-prepareModifiers'>    prepareModifiers: function () {
+</span>        this.callSuper(arguments);
+        this.calloutModifier = new Ext.chart.label.Callout({sprite: this});
+        this.fx.setNext(this.calloutModifier);
+        this.calloutModifier.setNext(this.topModifier);
+    },
+
+<span id='Ext-chart-label-Label-method-render'>    render: function (surface, ctx, clipRegion) {
+</span>        var me = this,
+            attr = me.attr;
+        ctx.save();
+        ctx.globalAlpha *= Math.max(0, attr.callout - 0.5) * 2;
+        if (ctx.globalAlpha &gt; 0) {
+            ctx.strokeStyle = attr.calloutColor;
+            ctx.fillStyle = attr.calloutColor;
+            ctx.beginPath();
+            ctx.moveTo(me.attr.calloutStartX, me.attr.calloutStartY);
+            ctx.lineTo(me.attr.calloutEndX, me.attr.calloutEndY);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(me.attr.calloutStartX, me.attr.calloutStartY, 1, 0, 2 * Math.PI, true);
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(me.attr.calloutEndX, me.attr.calloutEndY, 1, 0, 2 * Math.PI, true);
+            ctx.fill();
+        }
+        ctx.restore();
+
+        Ext.draw.sprite.Text.prototype.render.apply(this, arguments);
     }
-});
-</pre>
+});</pre>
 </body>
 </html>

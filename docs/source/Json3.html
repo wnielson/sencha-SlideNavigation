@@ -26,8 +26,8 @@ Ext.define('Ext.data.writer.Json', {
     alias: 'writer.json',
 
     config: {
-<span id='Ext-data-writer-Json-cfg-root'>        /**
-</span>         * @cfg {String} root
+<span id='Ext-data-writer-Json-cfg-rootProperty'>        /**
+</span>         * @cfg {String} rootProperty
          * The key under which the records in this Writer will be placed. If you specify {@link #encode} to be true,
          * we default this to 'records'.
          *
@@ -36,7 +36,7 @@ Ext.define('Ext.data.writer.Json', {
          *     {'records': [{name: 'my record'}, {name: 'another record'}]}
          *
          */
-        root: undefined,
+        rootProperty: undefined,
 
 <span id='Ext-data-writer-Json-cfg-encode'>        /**
 </span>         * @cfg {Boolean} encode
@@ -67,19 +67,19 @@ Ext.define('Ext.data.writer.Json', {
          */
         allowSingle: true,
 
-        encodeRequest: false
-    },
+<span id='Ext-data-writer-Json-cfg-encodeRequest'>        encodeRequest: false
+</span>    },
 
-    applyRoot: function(root) {
-        if (!root &amp;&amp; (this.getEncode() || this.getEncodeRequest())) {
+<span id='Ext-data-writer-Json-method-applyRootProperty'>    applyRootProperty: function(root) {
+</span>        if (!root &amp;&amp; (this.getEncode() || this.getEncodeRequest())) {
             root = 'data';
         }
         return root;
     },
 
-    //inherit docs
-    writeRecords: function(request, data) {
-        var root = this.getRoot(),
+<span id='Ext-data-writer-Json-method-writeRecords'>    //inherit docs
+</span>    writeRecords: function(request, data) {
+        var root = this.getRootProperty(),
             params = request.getParams(),
             allowSingle = this.getAllowSingle(),
             jsonData;
@@ -125,6 +125,37 @@ Ext.define('Ext.data.writer.Json', {
         }
         return request;
     }
+
+    //&lt;deprecated product=touch since=2.0.1&gt;
+}, function() {
+<span id='Ext-data-writer-Json-cfg-root'>    /**
+</span>     * @cfg {String} root
+     * The key under which the records in this Writer will be placed. If you specify {@link #encode} to be true,
+     * we default this to 'records'.
+     *
+     * Example generated request, using root: 'records':
+     *
+     *     {'records': [{name: 'my record'}, {name: 'another record'}]}
+     *
+     * @deprecated 2.0.1 Please use the {@link #rootProperty} configuration instead.
+     */
+    this.override({
+        constructor: function(config) {
+            config = config || {};
+
+            if (config.root) {
+                // &lt;debug&gt;
+                Ext.Logger.deprecate('root has been deprecated as a configuration on Writer. Please use rootProperty instead.');
+                // &lt;/debug&gt;
+
+                config.rootProperty = config.root;
+                delete config.root;
+            }
+
+            this.callOverridden([config]);
+        }
+    });
+    //&lt;/deprecated&gt;
 });
 
 

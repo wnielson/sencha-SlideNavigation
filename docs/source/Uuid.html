@@ -63,15 +63,17 @@
  * higher quality random data. Version 1 UUID's should not be used unless this information
  * can be provided by a server and care should be taken to avoid caching of this data.
  *
- * See http://www.ietf.org/rfc/rfc4122.txt for details.
+ * See [http://www.ietf.org/rfc/rfc4122.txt](http://www.ietf.org/rfc/rfc4122.txt) for details.
  */
 Ext.define('Ext.data.identifier.Uuid', {
     extend: 'Ext.data.identifier.Simple',
 
     alias: 'data.identifier.uuid',
 
+<span id='Ext-data-identifier-Uuid-property-isUnique'>    isUnique: true,
+</span>
     config: {
-<span id='Ext-data-identifier-Uuid-property-id'>        /**
+<span id='Ext-data-identifier-Uuid-cfg-id'>        /**
 </span>         * The id for this generator instance. By default all model instances share the same
          * UUID generator instance. By specifying an id other then 'uuid', a unique generator instance
          * will be created for the Model.
@@ -104,15 +106,15 @@ Ext.define('Ext.data.identifier.Uuid', {
         version: 4
     },
 
-    applyId: function(id) {
-        if (id === undefined) {
+<span id='Ext-data-identifier-Uuid-method-applyId'>    applyId: function(id) {
+</span>        if (id === undefined) {
             return Ext.data.identifier.Uuid.Global;
         }
         return id;
     },
 
-    constructor: function() {
-        var me = this;
+<span id='Ext-data-identifier-Uuid-method-constructor'>    constructor: function() {
+</span>        var me = this;
         me.callParent(arguments);
         me.parts = [];
         me.init();
@@ -126,8 +128,8 @@ Ext.define('Ext.data.identifier.Uuid', {
         this.init();
     },
 
-    generate: function () {
-        var me = this,
+<span id='Ext-data-identifier-Uuid-method-generate'>    generate: function () {
+</span>        var me = this,
             parts = me.parts,
             version = me.getVersion(),
             salt = me.getSalt(),
@@ -224,10 +226,10 @@ Ext.define('Ext.data.identifier.Uuid', {
      * @private
      */
     twoPow14: Math.pow(2, 14),
-    twoPow16: Math.pow(2, 16),
-    twoPow28: Math.pow(2, 28),
-    twoPow32: Math.pow(2, 32),
-
+<span id='Ext-data-identifier-Uuid-property-twoPow16'>    twoPow16: Math.pow(2, 16),
+</span><span id='Ext-data-identifier-Uuid-property-twoPow28'>    twoPow28: Math.pow(2, 28),
+</span><span id='Ext-data-identifier-Uuid-property-twoPow32'>    twoPow32: Math.pow(2, 32),
+</span>
 <span id='Ext-data-identifier-Uuid-method-toHex'>    /**
 </span>     * Converts a value into a hexadecimal value. Also allows for a maximum length
      * of the returned value.

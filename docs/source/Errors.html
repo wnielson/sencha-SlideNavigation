@@ -20,22 +20,20 @@
  * @class Ext.data.Errors
  * @extends Ext.util.Collection
  *
- * &lt;p&gt;Wraps a collection of validation error responses and provides convenient functions for
- * accessing and errors for specific fields.&lt;/p&gt;
+ * Wraps a collection of validation error responses and provides convenient functions for
+ * accessing and errors for specific fields.
  *
- * &lt;p&gt;Usually this class does not need to be instantiated directly - instances are instead created
- * automatically when {@link Ext.data.Model#validate validate} on a model instance:&lt;/p&gt;
+ * Usually this class does not need to be instantiated directly - instances are instead created
+ * automatically when {@link Ext.data.Model#validate validate} on a model instance:
  *
-&lt;pre&gt;&lt;code&gt;
-//validate some existing model instance - in this case it returned 2 failures messages
-var errors = myModel.validate();
-
-errors.isValid(); //false
-
-errors.length; //2
-errors.getByField('name');  // [{field: 'name',  message: 'must be present'}]
-errors.getByField('title'); // [{field: 'title', message: 'is too short'}]
-&lt;/code&gt;&lt;/pre&gt;
+ *     //validate some existing model instance - in this case it returned two failures messages
+ *     var errors = myModel.validate();
+ *
+ *     errors.isValid(); // false
+ *
+ *     errors.length; // 2
+ *     errors.getByField('name');  // [{field: 'name',  message: 'must be present'}]
+ *     errors.getByField('title'); // [{field: 'title', message: 'is too short'}]
  */
 Ext.define('Ext.data.Errors', {
     extend: 'Ext.util.Collection',
@@ -43,7 +41,7 @@ Ext.define('Ext.data.Errors', {
     requires: 'Ext.data.Error',
 
 <span id='Ext-data-Errors-method-isValid'>    /**
-</span>     * Returns true if there are no errors in the collection
+</span>     * Returns `true` if there are no errors in the collection.
      * @return {Boolean}
      */
     isValid: function() {
@@ -51,9 +49,9 @@ Ext.define('Ext.data.Errors', {
     },
 
 <span id='Ext-data-Errors-method-getByField'>    /**
-</span>     * Returns all of the errors for the given field
-     * @param {String} fieldName The field to get errors for
-     * @return {Object[]} All errors for the given field
+</span>     * Returns all of the errors for the given field.
+     * @param {String} fieldName The field to get errors for.
+     * @return {Object[]} All errors for the given field.
      */
     getByField: function(fieldName) {
         var errors = [],
@@ -70,8 +68,8 @@ Ext.define('Ext.data.Errors', {
         return errors;
     },
     
-    add: function() {
-        var obj = arguments.length == 1 ? arguments[0] : arguments[1];
+<span id='Ext-data-Errors-method-add'>    add: function() {
+</span>        var obj = arguments.length == 1 ? arguments[0] : arguments[1];
         
         if (!(obj instanceof Ext.data.Error)) {
             obj = Ext.create('Ext.data.Error', {

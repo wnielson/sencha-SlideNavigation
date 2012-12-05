@@ -31,8 +31,8 @@ Ext.define('Ext.carousel.Indicator', {
          */
         baseCls: Ext.baseCSSPrefix + 'carousel-indicator',
 
-        direction: 'horizontal'
-    },
+<span id='Ext-carousel-Indicator-cfg-direction'>        direction: 'horizontal'
+</span>    },
 
 <span id='Ext-carousel-Indicator-event-previous'>    /**
 </span>     * @event previous
@@ -57,8 +57,8 @@ Ext.define('Ext.carousel.Indicator', {
         });
     },
 
-    updateDirection: function(newDirection, oldDirection) {
-        var baseCls = this.getBaseCls();
+<span id='Ext-carousel-Indicator-method-updateDirection'>    updateDirection: function(newDirection, oldDirection) {
+</span>        var baseCls = this.getBaseCls();
 
         this.element.replaceCls(oldDirection, newDirection, baseCls);
 
@@ -72,22 +72,22 @@ Ext.define('Ext.carousel.Indicator', {
         }
     },
 
-    addIndicator: function() {
-        this.indicators.push(this.element.createChild({
+<span id='Ext-carousel-Indicator-method-addIndicator'>    addIndicator: function() {
+</span>        this.indicators.push(this.element.createChild({
             tag: 'span'
         }));
     },
 
-    removeIndicator: function() {
-        var indicators = this.indicators;
+<span id='Ext-carousel-Indicator-method-removeIndicator'>    removeIndicator: function() {
+</span>        var indicators = this.indicators;
 
         if (indicators.length &gt; 0) {
             indicators.pop().destroy();
         }
     },
 
-    setActiveIndex: function(index) {
-        var indicators = this.indicators,
+<span id='Ext-carousel-Indicator-method-setActiveIndex'>    setActiveIndex: function(index) {
+</span>        var indicators = this.indicators,
             currentActiveIndex = this.activeIndex,
             currentActiveItem = indicators[currentActiveIndex],
             activeItem = indicators[index],
@@ -106,8 +106,8 @@ Ext.define('Ext.carousel.Indicator', {
         return this;
     },
 
-    // @private
-    onTap: function(e) {
+<span id='Ext-carousel-Indicator-method-onTap'>    // @private
+</span>    onTap: function(e) {
         var touch = e.touch,
             box = this.element.getPageBox(),
             centerX = box.left + (box.width / 2),
@@ -122,8 +122,8 @@ Ext.define('Ext.carousel.Indicator', {
         }
     },
 
-    destroy: function() {
-        var indicators = this.indicators,
+<span id='Ext-carousel-Indicator-method-destroy'>    destroy: function() {
+</span>        var indicators = this.indicators,
             i, ln, indicator;
 
         for (i = 0,ln = indicators.length; i &lt; ln; i++) {

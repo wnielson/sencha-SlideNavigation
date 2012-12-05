@@ -15,17 +15,19 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-event-Controller'>/**
+  <pre class="prettyprint lang-js">//@require @core
+
+<span id='Ext-event-Controller'>/**
 </span> * @private
  */
 Ext.define('Ext.event.Controller', {
 
-    isFiring: false,
-
-    listenerStack: null,
-
-    constructor: function(info) {
-        this.firingListeners = [];
+<span id='Ext-event-Controller-property-isFiring'>    isFiring: false,
+</span>
+<span id='Ext-event-Controller-property-listenerStack'>    listenerStack: null,
+</span>
+<span id='Ext-event-Controller-method-constructor'>    constructor: function(info) {
+</span>        this.firingListeners = [];
         this.firingArguments = [];
 
         this.setInfo(info);
@@ -33,20 +35,20 @@ Ext.define('Ext.event.Controller', {
         return this;
     },
 
-    setInfo: function(info) {
-        this.info = info;
+<span id='Ext-event-Controller-method-setInfo'>    setInfo: function(info) {
+</span>        this.info = info;
     },
 
-    getInfo: function() {
-        return this.info;
+<span id='Ext-event-Controller-method-getInfo'>    getInfo: function() {
+</span>        return this.info;
     },
 
-    setListenerStacks: function(listenerStacks) {
-        this.listenerStacks = listenerStacks;
+<span id='Ext-event-Controller-method-setListenerStacks'>    setListenerStacks: function(listenerStacks) {
+</span>        this.listenerStacks = listenerStacks;
     },
 
-    fire: function(args, action) {
-        var listenerStacks = this.listenerStacks,
+<span id='Ext-event-Controller-method-fire'>    fire: function(args, action) {
+</span>        var listenerStacks = this.listenerStacks,
             firingListeners = this.firingListeners,
             firingArguments = this.firingArguments,
             push = firingListeners.push,
@@ -143,8 +145,8 @@ Ext.define('Ext.event.Controller', {
         return this;
     },
 
-    doFire: function() {
-        var firingListeners = this.firingListeners,
+<span id='Ext-event-Controller-method-doFire'>    doFire: function() {
+</span>        var firingListeners = this.firingListeners,
             firingArguments = this.firingArguments,
             optionsArgumentIndex = firingArguments.length - 2,
             i, ln, listener, options, fn, firingFn,
@@ -235,12 +237,12 @@ Ext.define('Ext.event.Controller', {
         this.connectingController = null;
     },
 
-    connect: function(controller) {
-        this.connectingController = controller;
+<span id='Ext-event-Controller-method-connect'>    connect: function(controller) {
+</span>        this.connectingController = controller;
     },
 
-    resume: function() {
-        var connectingController = this.connectingController;
+<span id='Ext-event-Controller-method-resume'>    resume: function() {
+</span>        var connectingController = this.connectingController;
 
         this.isPausing = false;
 
@@ -256,12 +258,12 @@ Ext.define('Ext.event.Controller', {
         return this;
     },
 
-    isInterrupted: function() {
-        return this.isStopped || this.isPaused;
+<span id='Ext-event-Controller-method-isInterrupted'>    isInterrupted: function() {
+</span>        return this.isStopped || this.isPaused;
     },
 
-    stop: function() {
-        var connectingController = this.connectingController;
+<span id='Ext-event-Controller-method-stop'>    stop: function() {
+</span>        var connectingController = this.connectingController;
 
         this.isStopped = true;
 
@@ -277,8 +279,8 @@ Ext.define('Ext.event.Controller', {
         return this;
     },
 
-    pause: function() {
-        var connectingController = this.connectingController;
+<span id='Ext-event-Controller-method-pause'>    pause: function() {
+</span>        var connectingController = this.connectingController;
 
         this.isPausing = true;
 

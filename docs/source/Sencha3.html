@@ -15,16 +15,93 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-device-device-Sencha'>/**
+  <pre class="prettyprint lang-js"><span id='Ext-device-contacts-Sencha'>/**
 </span> * @private
  */
-Ext.define('Ext.device.device.Sencha', {
-    extend: 'Ext.device.device.Abstract',
+Ext.define('Ext.device.contacts.Sencha', {
+    extend: 'Ext.device.contacts.Abstract',
 
-    constructor: function() {
-        this.name = device.name;
-        this.uuid = device.uuid;
-        this.platform = device.platformName || Ext.os.name;
+<span id='Ext-device-contacts-Sencha-method-getContacts'>    getContacts: function(config) {
+</span>        var includeImages = this.getIncludeImages();
+        if (typeof config.includeImages != &quot;undefined&quot;) {
+            includeImages = config.includeImages;
+        }
+
+        if (!config) {
+            Ext.Logger.warn('Ext.device.Contacts#getContacts: You must specify a `config` object.');
+            return false;
+        }
+
+        if (!config.success) {
+            Ext.Logger.warn('Ext.device.Contacts#getContacts: You must specify a `success` method.');
+            return false;
+        }
+
+        Ext.device.Communicator.send({
+            command: 'Contacts#all',
+            callbacks: {
+                success: function(contacts) {
+                    config.success.call(config.scope || this, contacts);
+                },
+                failure: function() {
+                    if (config.failure) {
+                        config.failure.call(config.scope || this);
+                    }
+                }
+            },
+            includeImages: includeImages,
+            scope: this
+        });
+    },
+
+<span id='Ext-device-contacts-Sencha-method-getThumbnail'>    getThumbnail: function(config) {
+</span>        if (!config || typeof config.id == &quot;undefined&quot;) {
+            Ext.Logger.warn('Ext.device.Contacts#getThumbnail: You must specify an `id` of the contact.');
+            return false;
+        }
+
+        if (!config || !config.callback) {
+            Ext.Logger.warn('Ext.device.Contacts#getThumbnail: You must specify a `callback`.');
+            return false;
+        }
+
+        Ext.device.Communicator.send({
+            command: 'Contacts#getThumbnail',
+            callbacks: {
+                success: function(src) {
+                    this.set('thumbnail', src);
+
+                    if (config.callback) {
+                        config.callback.call(config.scope || this, this);
+                    }
+                }
+            },
+            id: id,
+            scope: this
+        });
+    },
+
+<span id='Ext-device-contacts-Sencha-method-getLocalizedLabel'>    getLocalizedLabel: function(config) {
+</span>        if (!config || typeof config.label == &quot;undefined&quot;) {
+            Ext.Logger.warn('Ext.device.Contacts#getLocalizedLabel: You must specify an `label` to be localized.');
+            return false;
+        }
+
+        if (!config || !config.callback) {
+            Ext.Logger.warn('Ext.device.Contacts#getLocalizedLabel: You must specify a `callback`.');
+            return false;
+        }
+
+        Ext.device.Communicator.send({
+            command: 'Contacts#getLocalizedLabel',
+            callbacks: {
+                callback: function(label) {
+                    config.callback.call(config.scope || this, label, config.label);
+                }
+            },
+            label: config.label,
+            scope: this
+        });
     }
 });
 </pre>

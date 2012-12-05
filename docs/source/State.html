@@ -20,8 +20,8 @@
  */
 Ext.define('Ext.fx.State', {
 
-    isAnimatable: {
-        'background-color'   : true,
+<span id='Ext-fx-State-property-isAnimatable'>    isAnimatable: {
+</span>        'background-color'   : true,
         'background-image'   : true,
         'background-position': true,
         'border-bottom-color': true,
@@ -73,30 +73,30 @@ Ext.define('Ext.fx.State', {
         'transform'          : true
     },
 
-    constructor: function(data) {
-        this.data = {};
+<span id='Ext-fx-State-method-constructor'>    constructor: function(data) {
+</span>        this.data = {};
 
         this.set(data);
     },
 
-    setConfig: function(data) {
-        this.set(data);
+<span id='Ext-fx-State-method-setConfig'>    setConfig: function(data) {
+</span>        this.set(data);
 
         return this;
     },
 
-    setRaw: function(data) {
-        this.data = data;
+<span id='Ext-fx-State-method-setRaw'>    setRaw: function(data) {
+</span>        this.data = data;
 
         return this;
     },
 
-    clear: function() {
-        return this.setRaw({});
+<span id='Ext-fx-State-method-clear'>    clear: function() {
+</span>        return this.setRaw({});
     },
 
-    setTransform: function(name, value) {
-        var data = this.data,
+<span id='Ext-fx-State-method-setTransform'>    setTransform: function(name, value) {
+</span>        var data = this.data,
             isArray = Ext.isArray(value),
             transform = data.transform,
             ln, key;
@@ -217,8 +217,8 @@ Ext.define('Ext.fx.State', {
         }
     },
 
-    set: function(name, value) {
-        var data = this.data,
+<span id='Ext-fx-State-method-set'>    set: function(name, value) {
+</span>        var data = this.data,
             key;
 
         if (typeof name != 'string') {
@@ -245,8 +245,8 @@ Ext.define('Ext.fx.State', {
         return this;
     },
 
-    unset: function(name) {
-        var data = this.data;
+<span id='Ext-fx-State-method-unset'>    unset: function(name) {
+</span>        var data = this.data;
 
         if (data.hasOwnProperty(name)) {
             delete data[name];
@@ -255,8 +255,8 @@ Ext.define('Ext.fx.State', {
         return this;
     },
 
-    getData: function() {
-        return this.data;
+<span id='Ext-fx-State-method-getData'>    getData: function() {
+</span>        return this.data;
     }
 });
 

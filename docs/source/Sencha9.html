@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-device-push-Sencha'>/**
+</span> * @private
+ */
+Ext.define('Ext.device.push.Sencha', {
+    extend: 'Ext.device.push.Abstract',
+
+<span id='Ext-device-push-Sencha-method-register'>    register: function() {
+</span>        var config = this.callParent(arguments);
+
+        Ext.apply(config, {
+            command: 'PushNotification#Register',
+            callbacks: {
+                success: config.success,
+                failure: config.failure,
+                received: config.received
+            },
+            type: config.type
+        });
+
+        Ext.device.Communicator.send(config);
+    }
+});
+</pre>
+</body>
+</html>

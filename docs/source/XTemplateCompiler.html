@@ -24,23 +24,27 @@
  *          // values, parent, xindex and xcount have their historical meaning
  *      }
  *
- * @markdown
  * @private
  */
 Ext.define('Ext.XTemplateCompiler', {
     extend: 'Ext.XTemplateParser',
 
-    // Chrome really likes &quot;new Function&quot; to realize the code block (as in it is
-    // 2x-3x faster to call it than using eval), but Firefox chokes on it badly.
+<span id='Ext-XTemplateCompiler-property-useEval'>    // Chrome really likes &quot;new Function&quot; to realize the code block (as in it is
+</span>    // 2x-3x faster to call it than using eval), but Firefox chokes on it badly.
     // IE and Opera are also fine with the &quot;new Function&quot; technique.
     useEval: Ext.isGecko,
 
-    useFormat: true,
+<span id='Ext-XTemplateCompiler-property-useIndex'>    // See [http://jsperf.com/nige-array-append](http://jsperf.com/nige-array-append) for quickest way to append to an array of unknown length
+</span>    // (Due to arbitrary code execution inside a template, we cannot easily track the length in var)
+    // On IE6 and 7 `myArray[myArray.length]='foo'` is better. On other browsers `myArray.push('foo')` is better.
+    useIndex: Ext.isIE6 || Ext.isIE7,
 
-    propNameRe: /^[\w\d\$]*$/,
-
-    compile: function (tpl) {
-        var me = this,
+<span id='Ext-XTemplateCompiler-property-useFormat'>    useFormat: true,
+</span>
+<span id='Ext-XTemplateCompiler-property-propNameRe'>    propNameRe: /^[\w\d\$]*$/,
+</span>
+<span id='Ext-XTemplateCompiler-method-compile'>    compile: function (tpl) {
+</span>        var me = this,
             code = me.generate(tpl);
 
         // When using &quot;new Function&quot;, we have to pass our &quot;Ext&quot; variable to it in order to
@@ -50,26 +54,44 @@ Ext.define('Ext.XTemplateCompiler', {
         return me.useEval ? me.evalTpl(code) : (new Function('Ext', code))(Ext);
     },
 
-    generate: function (tpl) {
-        var me = this;
+<span id='Ext-XTemplateCompiler-method-generate'>    generate: function (tpl) {
+</span>        var me = this,
+            // note: Ext here is properly sandboxed
+            definitions = 'var fm=Ext.util.Format,ts=Object.prototype.toString;',
+            code;
+
+        // Track how many levels we use, so that we only &quot;var&quot; each level's variables once
+        me.maxLevel = 0;
 
         me.body = [
-            'var c0=values, p0=parent, n0=xcount, i0=xindex;\n'
+            'var c0=values, a0=' + me.createArrayTest(0) + ', p0=parent, n0=xcount, i0=xindex, v;\n'
         ];
-        me.funcs = [
-            'var fm=Ext.util.Format;' // note: Ext here is properly sandboxed
-        ];
+        if (me.definitions) {
+            if (typeof me.definitions === 'string') {
+                me.definitions = [me.definitions, definitions ];
+            } else {
+                me.definitions.push(definitions);
+            }
+        } else {
+            me.definitions = [ definitions ];
+        }
         me.switches = [];
 
         me.parse(tpl);
 
-        me.funcs.push(
+        me.definitions.push(
             (me.useEval ? '$=' : 'return') + ' function (' + me.fnArgs + ') {',
                 me.body.join(''),
             '}'
         );
 
-        var code = me.funcs.join('\n');
+        code = me.definitions.join('\n');
+
+        // Free up the arrays.
+        me.definitions.length = me.body.length = me.switches.length = 0;
+        delete me.definitions;
+        delete me.body;
+        delete me.switches;
 
         return code;
     },
@@ -77,33 +99,51 @@ Ext.define('Ext.XTemplateCompiler', {
     //-----------------------------------
     // XTemplateParser callouts
 
-    doText: function (text) {
-        text = text.replace(this.aposRe, &quot;\\'&quot;);
-        text = text.replace(this.newLineRe, '\\n');
-        this.body.push('out.push(\'', text, '\')\n');
+<span id='Ext-XTemplateCompiler-method-doText'>    //
+</span>    doText: function (text) {
+        var me = this,
+            out = me.body;
+
+        text = text.replace(me.aposRe, &quot;\\'&quot;).replace(me.newLineRe, '\\n');
+        if (me.useIndex) {
+            out.push('out[out.length]=\'', text, '\'\n');
+        } else {
+            out.push('out.push(\'', text, '\')\n');
+        }
     },
 
-    doExpr: function (expr) {
-        this.body.push('out.push(String(', expr, '))\n');
+<span id='Ext-XTemplateCompiler-method-doExpr'>    doExpr: function (expr) {
+</span>        var out = this.body;
+        out.push('if ((v=' + expr + ')!==undefined &amp;&amp; (v=' + expr + ')!==null) out');
+
+        // Coerce value to string using concatenation of an empty string literal.
+        // See http://jsperf.com/tostringvscoercion/5
+        if (this.useIndex) {
+             out.push('[out.length]=v+\'\'\n');
+        } else {
+             out.push('.push(v+\'\')\n');
+        }
     },
 
-    doTag: function (tag) {
-        this.doExpr(this.parseTag(tag));
+<span id='Ext-XTemplateCompiler-method-doTag'>    doTag: function (tag) {
+</span>        this.doExpr(this.parseTag(tag));
     },
 
-    doElse: function () {
-        this.body.push('} else {\n');
+<span id='Ext-XTemplateCompiler-method-doElse'>    doElse: function () {
+</span>        this.body.push('} else {\n');
     },
 
-    doEval: function (text) {
-        this.body.push(text, '\n');
+<span id='Ext-XTemplateCompiler-method-doEval'>    doEval: function (text) {
+</span>        this.body.push(text, '\n');
     },
 
-    doIf: function (action, actions) {
-        var me = this;
+<span id='Ext-XTemplateCompiler-method-doIf'>    doIf: function (action, actions) {
+</span>        var me = this;
 
         // If it's just a propName, use it directly in the if
-        if (me.propNameRe.test(action)) {
+        if (action === '.') {
+            me.body.push('if (values) {\n');
+        } else if (me.propNameRe.test(action)) {
             me.body.push('if (', me.parseTag(action), ') {\n');
         }
         // Otherwise, it must be an expression, and needs to be returned from an fn which uses with(values)
@@ -115,11 +155,13 @@ Ext.define('Ext.XTemplateCompiler', {
         }
     },
 
-    doElseIf: function (action, actions) {
-        var me = this;
+<span id='Ext-XTemplateCompiler-method-doElseIf'>    doElseIf: function (action, actions) {
+</span>        var me = this;
 
         // If it's just a propName, use it directly in the else if
-        if (me.propNameRe.test(action)) {
+        if (action === '.') {
+            me.body.push('else if (values) {\n');
+        } else if (me.propNameRe.test(action)) {
             me.body.push('} else if (', me.parseTag(action), ') {\n');
         }
         // Otherwise, it must be an expression, and needs to be returned from an fn which uses with(values)
@@ -131,11 +173,13 @@ Ext.define('Ext.XTemplateCompiler', {
         }
     },
 
-    doSwitch: function (action) {
-        var me = this;
+<span id='Ext-XTemplateCompiler-method-doSwitch'>    doSwitch: function (action) {
+</span>        var me = this;
 
         // If it's just a propName, use it directly in the switch
-        if (me.propNameRe.test(action)) {
+        if (action === '.') {
+            me.body.push('switch (values) {\n');
+        } else if (me.propNameRe.test(action)) {
             me.body.push('switch (', me.parseTag(action), ') {\n');
         }
         // Otherwise, it must be an expression, and needs to be returned from an fn which uses with(values)
@@ -145,8 +189,8 @@ Ext.define('Ext.XTemplateCompiler', {
         me.switches.push(0);
     },
 
-    doCase: function (action) {
-        var me = this,
+<span id='Ext-XTemplateCompiler-method-doCase'>    doCase: function (action) {
+</span>        var me = this,
             cases = Ext.isArray(action) ? action : [action],
             n = me.switches.length - 1,
             match, i;
@@ -165,8 +209,8 @@ Ext.define('Ext.XTemplateCompiler', {
         me.body.push('case ', cases.join(': case '), ':\n');
     },
 
-    doDefault: function () {
-        var me = this,
+<span id='Ext-XTemplateCompiler-method-doDefault'>    doDefault: function () {
+</span>        var me = this,
             n = me.switches.length - 1;
 
         if (me.switches[n]) {
@@ -178,8 +222,8 @@ Ext.define('Ext.XTemplateCompiler', {
         me.body.push('default:\n');
     },
 
-    doEnd: function (type, actions) {
-        var me = this,
+<span id='Ext-XTemplateCompiler-method-doEnd'>    doEnd: function (type, actions) {
+</span>        var me = this,
             L = me.level-1;
 
         if (type == 'for') {
@@ -208,48 +252,109 @@ Ext.define('Ext.XTemplateCompiler', {
         }
     },
 
-    doFor: function (action, actions) {
-        var me = this,
-            s = me.addFn(action),
+<span id='Ext-XTemplateCompiler-method-doFor'>    doFor: function (action, actions) {
+</span>        var me = this,
+            s,
             L = me.level,
-            up = L-1;
+            up = L-1,
+            pL = 'p' + L,
+            parentAssignment;
+
+        // If it's just a propName, use it directly in the switch
+        if (action === '.') {
+            s = 'values';
+        } else if (me.propNameRe.test(action)) {
+            s = me.parseTag(action);
+        }
+        // Otherwise, it must be an expression, and needs to be returned from an fn which uses with(values)
+        else {
+            s = me.addFn(action) + me.callFn;
+        }
 
         /*
         We are trying to produce a block of code that looks like below. We use the nesting
         level to uniquely name the control variables.
 
-            var c2 = f5.call(this, out, values, parent, xindex, xcount),
+            // Omit &quot;var &quot; if we have already been through level 2
+            var i2 = 0,
+                n2 = 0,
+                c2 = values['propName'],
                     // c2 is the context object for the for loop
-                a2 = Ext.isArray(c2),
-                    // a2 is the isArray result for the context
-                p2 = (parent=c1),
+                a2 = Array.isArray(c2);
+                p2 = c1,
                     // p2 is the parent context (of the outer for loop)
                 r2 = values
                     // r2 is the values object to
 
+            // If iterating over the current data, the parent is always set to c2
+            parent = c2;
+            // If iterating over a property in an object, set the parent to the object
+            parent = a1 ? c1[i1] : p2 // set parent
+            if (c2) {
+                if (a2) {
+                    n2 = c2.length;
+                } else if (c2.isMixedCollection) {
+                    c2 = c2.items;
+                    n2 = c2.length;
+                } else if (c2.isStore) {
+                    c2 = c2.data.items;
+                    n2 = c2.length;
+                } else {
+                    c2 = [ c2 ];
+                    n2 = 1;
+                }
+            }
             // i2 is the loop index and n2 is the number (xcount) of this for loop
-            for (var i2 = 0, n2 = a2 ? c2.length : (c2 ? 1 : 0), xcount = n2; i2 &lt; n2; ++i2) {
-                values=a2?c2[i2]:c2   // adjust special vars to inner scope
-                xindex=i2+1           // xindex is 1-based
+            for (xcount = n2; i2 &lt; n2; ++i2) {
+                values = c2[i2]           // adjust special vars to inner scope
+                xindex = i2 + 1           // xindex is 1-based
 
         The body of the loop is whatever comes between the tpl and /tpl statements (which
         is handled by doEnd).
         */
 
-        me.body.push('var c',L,'=',s,me.callFn,', a',L,'=Ext.isArray(c',L,'),p',L,'=(parent=c',up,'),r',L,'=values\n',
-            'for (var i',L,'=0,n',L,'=a',L,'?c',L,'.length:(c',L,'?1:0), xcount=n',L,';i',L,'&lt;n'+L+';++i',L,'){\n',
-            'values=a',L,'?c',L,'[i',L,']:c',L,'\n',
+        // Declare the vars for a particular level only if we have not already declared them.
+        if (me.maxLevel &lt; L) {
+            me.maxLevel = L;
+            me.body.push('var ');
+        }
+
+        if (action == '.') {
+            parentAssignment = 'c' + L;
+        } else {
+            parentAssignment = 'a' + up + '?c' + up + '[i' + up + ']:p' + L;
+        }
+
+        me.body.push('i',L,'=0,n', L, '=0,c',L,'=',s,',a',L,'=', me.createArrayTest(L), ',p',L,'=c',up,',r',L,'=values;\n',
+            'parent=',parentAssignment,'\n',
+            'if (c',L,'){if(a',L,'){n', L,'=c', L, '.length;}else if (c', L, '.isMixedCollection){c',L,'=c',L,'.items;n',L,'=c',L,'.length;}else if(c',L,'.isStore){c',L,'=c',L,'.data.items;n',L,'=c',L,'.length;}else{c',L,'=[c',L,'];n',L,'=1;}}\n',
+            'for (xcount=n',L,';i',L,'&lt;n'+L+';++i',L,'){\n',
+            'values=c',L,'[i',L,']');
+        if (actions.propName) {
+            me.body.push('.', actions.propName);
+        }
+        me.body.push('\n',
             'xindex=i',L,'+1\n');
     },
 
-    doExec: function (action, actions) {
-        var me = this,
-            name = 'f' + me.funcs.length;
+<span id='Ext-XTemplateCompiler-property-createArrayTest'>    createArrayTest: ('isArray' in Array) ? function(L) {
+</span>        return 'Array.isArray(c' + L + ')';
+    } : function(L) {
+        return 'ts.call(c' + L + ')===&quot;[object Array]&quot;';
+    },
 
-        me.funcs.push('function ' + name + '(' + me.fnArgs + ') {',
+<span id='Ext-XTemplateCompiler-method-doExec'>    doExec: function (action, actions) {
+</span>        var me = this,
+            name = 'f' + me.definitions.length;
+
+        me.definitions.push('function ' + name + '(' + me.fnArgs + ') {',
                             ' try { with(values) {',
                             '  ' + action,
-                            ' }} catch(e) {}',
+                            ' }} catch(e) {',
+                            //&lt;debug&gt;
+                            'Ext.Logger.log(&quot;XTemplate Error: &quot; + e.message);',
+                             //&lt;/debug&gt;
+                            '}',
                       '}');
 
         me.body.push(name + me.callFn + '\n');
@@ -258,31 +363,37 @@ Ext.define('Ext.XTemplateCompiler', {
     //-----------------------------------
     // Internal
 
-    addFn: function (body) {
+<span id='Ext-XTemplateCompiler-method-addFn'>    //
+</span>    addFn: function (body) {
         var me = this,
-            name = 'f' + me.funcs.length;
+            name = 'f' + me.definitions.length;
 
         if (body === '.') {
-            me.funcs.push('function ' + name + '(' + me.fnArgs + ') {',
+            me.definitions.push('function ' + name + '(' + me.fnArgs + ') {',
                             ' return values',
                        '}');
         } else if (body === '..') {
-            me.funcs.push('function ' + name + '(' + me.fnArgs + ') {',
+            me.definitions.push('function ' + name + '(' + me.fnArgs + ') {',
                             ' return parent',
                        '}');
         } else {
-            me.funcs.push('function ' + name + '(' + me.fnArgs + ') {',
+            me.definitions.push('function ' + name + '(' + me.fnArgs + ') {',
                             ' try { with(values) {',
                             '  return(' + body + ')',
-                            ' }} catch(e) {}',
+                            ' }} catch(e) {',
+                            //&lt;debug&gt;
+                            'Ext.Logger.log(&quot;XTemplate Error: &quot; + e.message);',
+                             //&lt;/debug&gt;
+                            '}',
                        '}');
         }
 
         return name;
     },
 
-    parseTag: function (tag) {
-        var m = this.tagRe.exec(tag),
+<span id='Ext-XTemplateCompiler-method-parseTag'>    parseTag: function (tag) {
+</span>        var me = this,
+            m = me.tagRe.exec(tag),
             name = m[1],
             format = m[2],
             args = m[3],
@@ -292,7 +403,11 @@ Ext.define('Ext.XTemplateCompiler', {
         // name = &quot;.&quot; - Just use the values object.
         if (name == '.') {
             // filter to not include arrays/objects/nulls
-            v = 'Ext.Array.indexOf([&quot;string&quot;, &quot;number&quot;, &quot;boolean&quot;], typeof values) &gt; -1 || Ext.isDate(values) ? values : &quot;&quot;';
+            if (!me.validTypes) {
+                me.definitions.push('var validTypes={string:1,number:1,boolean:1};');
+                me.validTypes = true;
+            }
+            v = 'validTypes[typeof values] || ts.call(values) === &quot;[object Date]&quot; ? values : &quot;&quot;';
         }
         // name = &quot;#&quot; - Use the xindex
         else if (name == '#') {
@@ -301,12 +416,12 @@ Ext.define('Ext.XTemplateCompiler', {
         else if (name.substr(0, 7) == &quot;parent.&quot;) {
             v = name;
         }
-        // name has a . in it - Use object literal notation, starting from values
-        else if ((name.indexOf('.') !== -1) &amp;&amp; (name.indexOf('-') === -1)) {
-
+        // compound JavaScript property name (e.g., &quot;foo.bar&quot;)
+        else if (isNaN(name) &amp;&amp; name.indexOf('-') == -1 &amp;&amp; name.indexOf('.') != -1) {
             v = &quot;values.&quot; + name;
         }
-        // name is a property of values
+        // number or a '-' in it or a single word (maybe a keyword): use array notation
+        // (http://jsperf.com/string-property-access/4)
         else {
             v = &quot;values['&quot; + name + &quot;']&quot;;
         }
@@ -315,7 +430,7 @@ Ext.define('Ext.XTemplateCompiler', {
             v = '(' + v + math + ')';
         }
 
-        if (format &amp;&amp; this.useFormat) {
+        if (format &amp;&amp; me.useFormat) {
             args = args ? ',' + args : &quot;&quot;;
             if (format.substr(0, 5) != &quot;this.&quot;) {
                 format = &quot;fm.&quot; + format + '(';
@@ -323,15 +438,14 @@ Ext.define('Ext.XTemplateCompiler', {
                 format += '(';
             }
         } else {
-            args = '';
-            format = &quot;(&quot; + v + &quot; === undefined ? '' : &quot;;
+            return v;
         }
 
         return format + v + args + ')';
     },
 
-    // @private
-    evalTpl: function ($) {
+<span id='Ext-XTemplateCompiler-method-evalTpl'>    // @private
+</span>    evalTpl: function ($) {
 
         // We have to use eval to realize the code block and capture the inner func we also
         // don't want a deep scope chain. We only do this in Firefox and it is also unhappy
@@ -341,16 +455,16 @@ Ext.define('Ext.XTemplateCompiler', {
         return $;
     },
 
-    newLineRe: /\r\n|\r|\n/g,
-    aposRe: /[']/g,
-    intRe:  /^\s*(\d+)\s*$/,
-    tagRe:  /([\w-\.\#]+)(?:\:([\w\.]*)(?:\((.*?)?\))?)?(\s?[\+\-\*\/]\s?[\d\.\+\-\*\/\(\)]+)?/
-
-}, function () {
+<span id='Ext-XTemplateCompiler-property-newLineRe'>    newLineRe: /\r\n|\r|\n/g,
+</span><span id='Ext-XTemplateCompiler-property-aposRe'>    aposRe: /[']/g,
+</span><span id='Ext-XTemplateCompiler-property-intRe'>    intRe:  /^\s*(\d+)\s*$/,
+</span><span id='Ext-XTemplateCompiler-property-tagRe'>    tagRe:  /([\w-\.\#\$]+)(?:\:([\w\.]*)(?:\((.*?)?\))?)?(\s?[\+\-\*\/]\s?[\d\.\+\-\*\/\(\)]+)?/
+</span>}, function () {
     var proto = this.prototype;
 
     proto.fnArgs = 'out,values,parent,xindex,xcount';
     proto.callFn = '.call(this,' + proto.fnArgs + ')';
-});</pre>
+});
+</pre>
 </body>
 </html>

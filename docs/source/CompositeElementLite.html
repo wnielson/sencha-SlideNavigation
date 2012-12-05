@@ -15,7 +15,10 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-dom-CompositeElementLite'>/**
+  <pre class="prettyprint lang-js">//@tag dom,core
+//@require Ext.Element-all
+
+<span id='Ext-dom-CompositeElementLite'>/**
 </span> * This class encapsulates a *collection* of DOM elements, providing methods to filter members, or to perform collective
  * actions upon the whole set.
  *
@@ -33,12 +36,28 @@
  *     els.hide(true); // all elements fade out and hide
  *     // or
  *     els.setWidth(100).hide(true);
+ *
+ * @mixins Ext.dom.Element
  */
 Ext.define('Ext.dom.CompositeElementLite', {
     alternateClassName: ['Ext.CompositeElementLite', 'Ext.CompositeElement'],
 
     requires: ['Ext.dom.Element'],
-
+    
+    // We use the @mixins tag above to document that CompositeElement has
+    // all the same methods as Element, but the @mixins tag also pulls in
+    // configs and properties which we don't want, so hide them explicitly:
+<span id='Ext-dom-CompositeElementLite-cfg-bubbleEvents'>    /** @cfg bubbleEvents @hide */
+</span><span id='Ext-dom-CompositeElementLite-cfg-listeners'>    /** @cfg listeners @hide */
+</span><span id='Ext-dom-CompositeElementLite-property-DISPLAY'>    /** @property DISPLAY @hide */
+</span><span id='Ext-dom-CompositeElementLite-property-OFFSETS'>    /** @property OFFSETS @hide */
+</span><span id='Ext-dom-CompositeElementLite-property-VISIBILITY'>    /** @property VISIBILITY @hide */
+</span><span id='Ext-dom-CompositeElementLite-property-defaultUnit'>    /** @property defaultUnit @hide */
+</span><span id='Ext-dom-CompositeElementLite-property-dom'>    /** @property dom @hide */
+</span><span id='Ext-dom-CompositeElementLite-property-id'>    /** @property id @hide */
+</span>    // Also hide the static #get method that also gets inherited
+<span id='Ext-dom-CompositeElementLite-static-method-get'>    /** @method get @static @hide */
+</span>
     statics: {
 <span id='Ext-dom-CompositeElementLite-static-method-importElementMethods'>        /**
 </span>         * @private
@@ -50,10 +69,11 @@ Ext.define('Ext.dom.CompositeElementLite', {
         }
     },
 
-    constructor: function(elements, root) {
-<span id='Ext-dom-CompositeElementLite-property-elements'>        /**
+<span id='Ext-dom-CompositeElementLite-method-constructor'>    constructor: function(elements, root) {
+</span><span id='Ext-dom-CompositeElementLite-property-elements'>        /**
 </span>         * @property {HTMLElement[]} elements
-         * The Array of DOM elements which this CompositeElement encapsulates. Read-only.
+         * @readonly
+         * The Array of DOM elements which this CompositeElement encapsulates.
          *
          * This will not *usually* be accessed in developers' code, but developers wishing to augment the capabilities
          * of the CompositeElementLite class may use it when adding methods to the class.
@@ -77,23 +97,22 @@ Ext.define('Ext.dom.CompositeElementLite', {
          *             return this.add(r);
          *         }
          *     });
-         *
          */
         this.elements = [];
         this.add(elements, root);
         this.el = new Ext.dom.Element.Fly();
     },
 
-    isComposite: true,
-
-    // private
-    getElement: function(el) {
+<span id='Ext-dom-CompositeElementLite-property-isComposite'>    isComposite: true,
+</span>
+<span id='Ext-dom-CompositeElementLite-method-getElement'>    // @private
+</span>    getElement: function(el) {
         // Set the shared flyweight dom property to the current element
         return this.el.attach(el).synchronize();
     },
 
-    // private
-    transformElement: function(el) {
+<span id='Ext-dom-CompositeElementLite-method-transformElement'>    // @private
+</span>    transformElement: function(el) {
         return Ext.getDom(el);
     },
 
@@ -109,6 +128,7 @@ Ext.define('Ext.dom.CompositeElementLite', {
 </span>     * Adds elements to this Composite object.
      * @param {HTMLElement[]/Ext.dom.CompositeElementLite} els Either an Array of DOM elements to add, or another Composite
      * object who's elements should be added.
+     * @param {HTMLElement/String} [root] The root element of the query or id of the root.
      * @return {Ext.dom.CompositeElementLite} This Composite object.
      */
     add: function(els, root) {
@@ -136,8 +156,8 @@ Ext.define('Ext.dom.CompositeElementLite', {
         return this;
     },
 
-    invoke: function(fn, args) {
-        var elements = this.elements,
+<span id='Ext-dom-CompositeElementLite-method-invoke'>    invoke: function(fn, args) {
+</span>        var elements = this.elements,
             ln = elements.length,
             element,
             i;
@@ -153,7 +173,7 @@ Ext.define('Ext.dom.CompositeElementLite', {
     },
 
 <span id='Ext-dom-CompositeElementLite-method-item'>    /**
-</span>     * Returns a flyweight Element of the dom element object at the specified index
+</span>     * Returns a flyweight Element of the dom element object at the specified index.
      * @param {Number} index
      * @return {Ext.dom.Element}
      */
@@ -168,8 +188,8 @@ Ext.define('Ext.dom.CompositeElementLite', {
         return out;
     },
 
-    // fixes scope with flyweight
-    addListener: function(eventName, handler, scope, opt) {
+<span id='Ext-dom-CompositeElementLite-method-addListener'>    // fixes scope with flyweight.
+</span>    addListener: function(eventName, handler, scope, opt) {
         var els = this.elements,
                 len = els.length,
                 i, e;
@@ -177,7 +197,7 @@ Ext.define('Ext.dom.CompositeElementLite', {
         for (i = 0; i &lt; len; i++) {
             e = els[i];
             if (e) {
-                Ext.EventManager.on(e, eventName, handler, scope || e, opt);
+                e.on(eventName, handler, scope || e, opt);
             }
         }
         return this;
@@ -265,7 +285,7 @@ Ext.define('Ext.dom.CompositeElementLite', {
      * @param {String/HTMLElement/Ext.Element/Number} el The id of an element, the Element itself, the index of the
      * element in this composite to replace.
      * @param {String/Ext.Element} replacement The id of an element or the Element itself.
-     * @param {Boolean} [domReplace] True to remove and replace the element in the document too.
+     * @param {Boolean} [domReplace] `true` to remove and replace the element in the document too.
      * @return {Ext.dom.CompositeElementLite} this
      */
     replaceElement: function(el, replacement, domReplace) {
@@ -290,8 +310,8 @@ Ext.define('Ext.dom.CompositeElementLite', {
         this.elements = [];
     },
 
-    addElements: function(els, root) {
-        if (!els) {
+<span id='Ext-dom-CompositeElementLite-method-addElements'>    addElements: function(els, root) {
+</span>        if (!els) {
             return this;
         }
 
@@ -325,7 +345,7 @@ Ext.define('Ext.dom.CompositeElementLite', {
     },
 
 <span id='Ext-dom-CompositeElementLite-method-contains'>    /**
-</span>     * Returns true if this composite contains the passed element
+</span>     * Returns `true` if this composite contains the passed element
      * @param {String/HTMLElement/Ext.Element/Number} el The id of an element, or an Ext.Element, or an HtmlElement to
      * find within the composite collection.
      * @return {Boolean}
@@ -338,7 +358,7 @@ Ext.define('Ext.dom.CompositeElementLite', {
 </span>     * Removes the specified element(s).
      * @param {String/HTMLElement/Ext.Element/Number} el The id of an element, the Element itself, the index of the
      * element in this composite or an array of any of those.
-     * @param {Boolean} [removeDom] True to also remove the element from the document
+     * @param {Boolean} [removeDom] `true` to also remove the element from the document
      * @return {Ext.dom.CompositeElementLite} this
      */
     removeElement: function(keys, removeDom) {

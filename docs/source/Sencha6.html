@@ -15,37 +15,31 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-device-orientation-Sencha'>/**
+  <pre class="prettyprint lang-js"><span id='Ext-device-notification-Sencha'>/**
 </span> * @private
  */
-Ext.define('Ext.device.orientation.Sencha', {
-    extend: 'Ext.device.orientation.Abstract',
+Ext.define('Ext.device.notification.Sencha', {
+    extend: 'Ext.device.notification.Abstract',
+    requires: ['Ext.device.Communicator'],
 
-    requires: [
-        'Ext.device.Communicator'
-    ],
+<span id='Ext-device-notification-Sencha-method-show'>    show: function() {
+</span>        var config = this.callParent(arguments);
 
-<span id='Ext-device-orientation-Sencha-method-initialize'>    /**
-</span>     * From the native shell, the callback needs to be invoked infinitely using a timer, ideally 50 times per second.
-     * The callback expects one event object argument, the format of which should looks like this:
-     *
-     *     {
-     *          alpha: 0,
-     *          beta: 0,
-     *          gamma: 0
-     *     }
-     *
-     * Refer to [Safari DeviceOrientationEvent Class Reference][1] for more details.
-     * 
-     * [1]: http://developer.apple.com/library/safari/#documentation/SafariDOMAdditions/Reference/DeviceOrientationEventClassRef/DeviceOrientationEvent/DeviceOrientationEvent.html
-     */
-    initialize: function() {
         Ext.device.Communicator.send({
-            command: 'Orientation#watch',
+            command: 'Notification#show',
             callbacks: {
-                callback: this.onDeviceOrientation
+                callback: config.callback
             },
-            scope: this
+            scope  : config.scope,
+            title  : config.title,
+            message: config.message,
+            buttons: config.buttons.join(',') //@todo fix this
+        });
+    },
+
+<span id='Ext-device-notification-Sencha-method-vibrate'>    vibrate: function() {
+</span>        Ext.device.Communicator.send({
+            command: 'Notification#vibrate'
         });
     }
 });

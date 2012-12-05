@@ -17,7 +17,7 @@
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js"><span id='Ext-Decorator'>/**
 </span> * @class Ext.Decorator
- * @extend Ext.Component
+ * @extends Ext.Component
  *
  * In a few words, a Decorator is a Component that wraps around another Component. A typical example of a Decorator is a
  * {@link Ext.field.Field Field}. A form field is nothing more than a decorator around another component, and gives the
@@ -58,8 +58,8 @@
 Ext.define('Ext.Decorator', {
     extend: 'Ext.Component',
 
-    isDecorator: true,
-
+<span id='Ext-Decorator-property-isDecorator'>    isDecorator: true,
+</span>
     config: {
 <span id='Ext-Decorator-cfg-component'>        /**
 </span>         * @cfg {Object} component The config object to factory the Component that this Decorator wraps around
@@ -68,24 +68,24 @@ Ext.define('Ext.Decorator', {
     },
 
     statics: {
-        generateProxySetter: function(name) {
-            return function(value) {
+<span id='Ext-Decorator-method-generateProxySetter'>        generateProxySetter: function(name) {
+</span>            return function(value) {
                 var component = this.getComponent();
                 component[name].call(component, value);
 
                 return this;
             }
         },
-        generateProxyGetter: function(name) {
-            return function() {
+<span id='Ext-Decorator-method-generateProxyGetter'>        generateProxyGetter: function(name) {
+</span>            return function() {
                 var component = this.getComponent();
                 return component[name].call(component);
             }
         }
     },
 
-    onClassExtended: function(Class, members) {
-        if (!members.hasOwnProperty('proxyConfig')) {
+<span id='Ext-Decorator-method-onClassExtended'>    onClassExtended: function(Class, members) {
+</span>        if (!members.hasOwnProperty('proxyConfig')) {
             return;
         }
 
@@ -109,13 +109,13 @@ Ext.define('Ext.Decorator', {
         }
     },
 
-    // @private
-    applyComponent: function(config) {
+<span id='Ext-Decorator-method-applyComponent'>    // @private
+</span>    applyComponent: function(config) {
         return Ext.factory(config, Ext.Component);
     },
 
-    // @private
-    updateComponent: function(newComponent, oldComponent) {
+<span id='Ext-Decorator-method-updateComponent'>    // @private
+</span>    updateComponent: function(newComponent, oldComponent) {
         if (oldComponent) {
             if (this.isRendered() &amp;&amp; oldComponent.setRendered(false)) {
                 oldComponent.fireAction('renderedchange', [this, oldComponent, false],
@@ -137,22 +137,24 @@ Ext.define('Ext.Decorator', {
         }
     },
 
-    // @private
-    doUnsetComponent: function(component) {
+<span id='Ext-Decorator-method-doUnsetComponent'>    // @private
+</span>    doUnsetComponent: function(component) {
         if (component.renderElement.dom) {
+            component.setLayoutSizeFlags(0);
             this.innerElement.dom.removeChild(component.renderElement.dom);
         }
     },
 
-    // @private
-    doSetComponent: function(component) {
+<span id='Ext-Decorator-method-doSetComponent'>    // @private
+</span>    doSetComponent: function(component) {
         if (component.renderElement.dom) {
+            component.setLayoutSizeFlags(this.getSizeFlags());
             this.innerElement.dom.appendChild(component.renderElement.dom);
         }
     },
 
-    // @private
-    setRendered: function(rendered) {
+<span id='Ext-Decorator-method-setRendered'>    // @private
+</span>    setRendered: function(rendered) {
         var component;
 
         if (this.callParent(arguments)) {
@@ -168,14 +170,14 @@ Ext.define('Ext.Decorator', {
         return false;
     },
 
-    // @private
-    setDisabled: function(disabled) {
+<span id='Ext-Decorator-method-setDisabled'>    // @private
+</span>    setDisabled: function(disabled) {
         this.callParent(arguments);
         this.getComponent().setDisabled(disabled);
     },
 
-    destroy: function() {
-        Ext.destroy(this.getComponent());
+<span id='Ext-Decorator-method-destroy'>    destroy: function() {
+</span>        Ext.destroy(this.getComponent());
         this.callParent();
     }
 });

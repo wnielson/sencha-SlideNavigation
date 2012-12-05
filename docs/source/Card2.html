@@ -17,6 +17,7 @@
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js"><span id='Ext-layout-Card'>/**
 </span> * @aside guide layouts
+ * @aside video layouts
  *
  * Sometimes you want to show several screens worth of information but you've only got a small screen to work with.
  * TabPanels and Carousels both enable you to see one screen of many at a time, and underneath they both use a Card
@@ -60,12 +61,15 @@
  * For a more detailed overview of what layouts are and the types of layouts shipped with Sencha Touch 2, check out the
  * [Layout Guide](#!/guide/layouts).
  */
+
+
 Ext.define('Ext.layout.Card', {
-    extend: 'Ext.layout.Fit',
-    alternateClassName: 'Ext.layout.CardLayout',
+    extend: 'Ext.layout.Default',
 
-    isCard: true,
+    alias: 'layout.card',
 
+<span id='Ext-layout-Card-property-isCard'>    isCard: true,
+</span>
 <span id='Ext-layout-Card-event-activeitemchange'>    /**
 </span>     * @event activeitemchange
      * @preventable doActiveItemChange
@@ -74,21 +78,14 @@ Ext.define('Ext.layout.Card', {
      * @param {Mixed} newActiveItem The new active item
      * @param {Mixed} oldActiveItem The old active item
      */
+        
+    layoutClass: 'x-layout-card',
 
+<span id='Ext-layout-Card-property-itemClass'>    itemClass: 'x-layout-card-item',
+</span>
     requires: [
         'Ext.fx.layout.Card'
     ],
-
-    alias: 'layout.card',
-
-    cls: Ext.baseCSSPrefix + 'layout-card',
-
-    itemCls: Ext.baseCSSPrefix + 'layout-card-item',
-
-    constructor: function() {
-        this.callParent(arguments);
-        this.container.onInitialized(this.onContainerInitialized, this);
-    },
 
 <span id='Ext-layout-Card-method-applyAnimation'>    /**
 </span>     * @private
@@ -110,30 +107,16 @@ Ext.define('Ext.layout.Card', {
         }
     },
 
-<span id='Ext-layout-Card-method-doItemAdd'>    /**
-</span>     * @private
-     */
-    doItemAdd: function(item, index) {
-        if (item.isInnerItem()) {
-            item.hide();
-        }
+<span id='Ext-layout-Card-method-setContainer'>    setContainer: function(container) {
+</span>        this.callSuper(arguments);
 
-        this.callParent(arguments);
+        container.innerElement.addCls(this.layoutClass);
+        container.onInitialized('onContainerInitialized', this);
     },
 
-<span id='Ext-layout-Card-method-doItemRemove'>    /**
-</span>     * @private
-     */
-    doItemRemove: function(item, index, destroy) {
-        this.callParent(arguments);
-
-        if (!destroy &amp;&amp; item.isInnerItem()) {
-            item.show();
-        }
-    },
-
-    onContainerInitialized: function(container) {
-        var activeItem = container.getActiveItem();
+<span id='Ext-layout-Card-method-onContainerInitialized'>    onContainerInitialized: function() {
+</span>        var container = this.container,
+            activeItem = container.getActiveItem();
 
         if (activeItem) {
             activeItem.show();
@@ -149,6 +132,26 @@ Ext.define('Ext.layout.Card', {
         this.relayEvent(arguments, 'doActiveItemChange');
     },
 
+<span id='Ext-layout-Card-method-onItemInnerStateChange'>    onItemInnerStateChange: function(item, isInner, destroying) {
+</span>        this.callSuper(arguments);
+        var container = this.container,
+            activeItem = container.getActiveItem();
+
+        item.toggleCls(this.itemClass, isInner);
+        item.setLayoutSizeFlags(isInner ? container.LAYOUT_BOTH : 0);
+
+        if (isInner) {
+            if (activeItem !== container.innerIndexOf(item) &amp;&amp; activeItem !== item &amp;&amp; item !== container.pendingActiveItem) {
+                item.hide();
+            }
+        }
+        else {
+            if (!destroying &amp;&amp; !item.isDestroyed &amp;&amp; item.isDestroying !== true) {
+                item.show();
+            }
+        }
+    },
+
 <span id='Ext-layout-Card-method-doActiveItemChange'>    /**
 </span>     * @private
      */
@@ -162,17 +165,9 @@ Ext.define('Ext.layout.Card', {
         }
     },
 
-    doItemDockedChange: function(item, docked) {
-        var element = item.element;
-        // See https://sencha.jira.com/browse/TOUCH-1508
-        if (docked) {
-            element.removeCls(this.itemCls);
-        }
-        else {
-            element.addCls(this.itemCls);
-        }
-
-        this.callParent(arguments);
+<span id='Ext-layout-Card-method-destroy'>    destroy:  function () {
+</span>        this.callParent(arguments);
+        Ext.destroy(this.getAnimation());
     }
 });
 </pre>

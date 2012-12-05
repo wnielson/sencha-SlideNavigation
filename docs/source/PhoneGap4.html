@@ -22,25 +22,38 @@ Ext.define('Ext.device.notification.PhoneGap', {
     extend: 'Ext.device.notification.Abstract',
     requires: ['Ext.device.Communicator'],
 
-    show: function() {
-        var config = this.callParent(arguments),
+<span id='Ext-device-notification-PhoneGap-method-show'>    show: function() {
+</span>        var config = this.callParent(arguments),
             buttons = (config.buttons) ? config.buttons.join(',') : null,
             onShowCallback = function(index) {
                 if (config.callback) {
-                    config.callback.apply(config.scope, (config.buttons) ? [config.buttons[index - 1]] : []);
+                    config.callback.apply(config.scope, (config.buttons) ? [config.buttons[index - 1]].toLowerCase() : []);
                 }
             };
 
+        // change Ext.MessageBox buttons into normal arrays
+        var ln = butons.length;
+        if (ln &amp;&amp; typeof buttons[0] != &quot;string&quot;) {
+            var newButtons = [],
+                i;
+
+            for (i = 0; i &lt; ln; i++) {
+                newButtons.push(buttons[i].text);
+            }
+
+            buttons = newButtons;
+        }
+
         navigator.notification.confirm(
-            config.message,
-            onShowCallback,
-            config.title,
-            buttons
+            config.message, // message
+            onShowCallback, // callback
+            config.title, // title
+            buttons // array of button names
         );
     },
 
-    vibrate: function() {
-        navigator.notification.vibrate(2000);
+<span id='Ext-device-notification-PhoneGap-method-vibrate'>    vibrate: function() {
+</span>        navigator.notification.vibrate(2000);
     }
 });
 </pre>

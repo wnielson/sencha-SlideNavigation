@@ -35,8 +35,8 @@ Ext.define('Ext.data.writer.Writer', {
 
     config: {
 <span id='Ext-data-writer-Writer-cfg-writeAllFields'>        /**
-</span>         * @cfg {Boolean} writeAllFields True to write all fields from the record to the server. If set to false it
-         * will only send the fields that were modified. Defaults to &lt;tt&gt;true&lt;/tt&gt;. Note that any fields that have
+</span>         * @cfg {Boolean} writeAllFields `true` to write all fields from the record to the server. If set to `false` it
+         * will only send the fields that were modified. Note that any fields that have
          * {@link Ext.data.Field#persist} set to false will still be ignored.
          */
         writeAllFields: true,
@@ -44,33 +44,34 @@ Ext.define('Ext.data.writer.Writer', {
 <span id='Ext-data-writer-Writer-cfg-nameProperty'>        /**
 </span>         * @cfg {String} nameProperty This property is used to read the key for each value that will be sent to the server.
          * For example:
-         * &lt;pre&gt;&lt;code&gt;
-    Ext.define('Person', {
-        extend: 'Ext.data.Model',
-        fields: [{
-            name: 'first',
-            mapping: 'firstName'
-        }, {
-            name: 'last',
-            mapping: 'lastName'
-        }, {
-            name: 'age'
-        }]
-    });
-    new Ext.data.writer.Writer({
-        writeAllFields: true,
-        nameProperty: 'mapping'
-    });
-
-    // This will be sent to the server
-    {
-        firstName: 'first name value',
-        lastName: 'last name value',
-        age: 1
-    }
-
-         * &lt;/code&gt;&lt;/pre&gt;
-         * Defaults to &lt;tt&gt;name&lt;/tt&gt;. If the value is not present, the field name will always be used.
+         *
+         *     Ext.define('Person', {
+         *         extend: 'Ext.data.Model',
+         *         fields: [{
+         *             name: 'first',
+         *             mapping: 'firstName'
+         *         }, {
+         *             name: 'last',
+         *             mapping: 'lastName'
+         *         }, {
+         *             name: 'age'
+         *         }]
+         *     });
+         *
+         *     new Ext.data.writer.Writer({
+         *         writeAllFields: true,
+         *         nameProperty: 'mapping'
+         *     });
+         *
+         * The following data will be sent to the server:
+         * 
+         *     {
+         *         firstName: 'first name value',
+         *         lastName: 'last name value',
+         *         age: 1
+         *     }
+         *
+         * If the value is not present, the field name will always be used.
          */
         nameProperty: 'name'
     },
@@ -84,9 +85,9 @@ Ext.define('Ext.data.writer.Writer', {
     },
 
 <span id='Ext-data-writer-Writer-method-write'>    /**
-</span>     * Prepares a Proxy's Ext.data.Request object
-     * @param {Ext.data.Request} request The request object
-     * @return {Ext.data.Request} The modified request object
+</span>     * Prepares a Proxy's Ext.data.Request object.
+     * @param {Ext.data.Request} request The request object.
+     * @return {Ext.data.Request} The modified request object.
      */
     write: function(request) {
         var operation = request.getOperation(),
@@ -101,8 +102,8 @@ Ext.define('Ext.data.writer.Writer', {
         return this.writeRecords(request, data);
     },
 
-    writeDate: function(field, date) {
-        var dateFormat = field.dateFormat || 'timestamp';
+<span id='Ext-data-writer-Writer-method-writeDate'>    writeDate: function(field, date) {
+</span>        var dateFormat = field.getDateFormat() || 'timestamp';
         switch (dateFormat) {
             case 'timestamp':
                 return date.getTime()/1000;
@@ -126,16 +127,15 @@ Ext.define('Ext.data.writer.Writer', {
             nameProperty = this.getNameProperty(),
             fields = record.getFields(),
             data = {},
-            changes, name, field, key, value, fieldConfig;
+            changes, name, field, key, value;
 
         if (writeAll) {
             fields.each(function(field) {
-                fieldConfig = field.config;
-                if (fieldConfig.persist) {
-                    name = fieldConfig[nameProperty] || fieldConfig.name;
-                    value = record.get(fieldConfig.name);
-                    if (fieldConfig.type.type == 'date') {
-                        value = this.writeDate(fieldConfig, value);
+                if (field.getPersist()) {
+                    name = field.config[nameProperty] || field.getName();
+                    value = record.get(field.getName());
+                    if (field.getType().type == 'date') {
+                        value = this.writeDate(field, value);
                     }
                     data[name] = value;
                 }
@@ -146,12 +146,11 @@ Ext.define('Ext.data.writer.Writer', {
             for (key in changes) {
                 if (changes.hasOwnProperty(key)) {
                     field = fields.get(key);
-                    fieldConfig = field.config;
-                    if (fieldConfig.persist) {
-                        name = fieldConfig[nameProperty] || field.name;
+                    if (field.getPersist()) {
+                        name = field.config[nameProperty] || field.getName();
                         value = changes[key];
-                        if (fieldConfig.type.type == 'date') {
-                            value = this.writeDate(fieldConfig, value);
+                        if (field.getType().type == 'date') {
+                            value = this.writeDate(field, value);
                         }
                         data[name] = value;
                     }
@@ -165,8 +164,8 @@ Ext.define('Ext.data.writer.Writer', {
         return data;
     }
 
-    // Convert old properties in data into a config object
-    // &lt;deprecated product=touch since=2.0&gt;
+<span id='Ext-data-writer-Writer-method-onClassExtended'>    // Convert old properties in data into a config object
+</span>    // &lt;deprecated product=touch since=2.0&gt;
     ,onClassExtended: function(cls, data, hooks) {
         var Component = this,
             defaultConfig = Component.prototype.config,

@@ -23,46 +23,46 @@ Ext.define('Ext.direct.Transaction', {
     alternateClassName: 'Ext.Direct.Transaction',
 
     statics: {
-        TRANSACTION_ID: 0
-    },
+<span id='Ext-direct-Transaction-property-TRANSACTION_ID'>        TRANSACTION_ID: 0
+</span>    },
 
     config: {
-        id: undefined,
-        provider: null,
-        retryCount: 0,
-        args: null,
-        action: null,
-        method: null,
-        data: null,
-        callback: null,
-        form: null
+<span id='Ext-direct-Transaction-cfg-id'>        id: undefined,
+</span><span id='Ext-direct-Transaction-cfg-provider'>        provider: null,
+</span><span id='Ext-direct-Transaction-cfg-retryCount'>        retryCount: 0,
+</span><span id='Ext-direct-Transaction-cfg-args'>        args: null,
+</span><span id='Ext-direct-Transaction-cfg-action'>        action: null,
+</span><span id='Ext-direct-Transaction-cfg-method'>        method: null,
+</span><span id='Ext-direct-Transaction-cfg-data'>        data: null,
+</span><span id='Ext-direct-Transaction-cfg-callback'>        callback: null,
+</span><span id='Ext-direct-Transaction-cfg-form'>        form: null
+</span>    },
+
+<span id='Ext-direct-Transaction-method-constructor'>    constructor: function(config) {
+</span>        this.initConfig(config);
     },
 
-    constructor: function(config) {
-        this.initConfig(config);
-    },
-
-    applyId: function(id) {
-        if (id === undefined) {
+<span id='Ext-direct-Transaction-method-applyId'>    applyId: function(id) {
+</span>        if (id === undefined) {
             id = ++this.self.TRANSACTION_ID;
         }
         return id;
     },
 
-    updateId: function(id) {
-        this.id = this.tid = id;
+<span id='Ext-direct-Transaction-method-updateId'>    updateId: function(id) {
+</span>        this.id = this.tid = id;
     },
 
-    getTid: function() {
-        return this.tid;
+<span id='Ext-direct-Transaction-method-getTid'>    getTid: function() {
+</span>        return this.tid;
     },
 
-    send: function(){
-         this.getProvider().queueTransaction(this);
+<span id='Ext-direct-Transaction-method-send'>    send: function(){
+</span>         this.getProvider().queueTransaction(this);
     },
 
-    retry: function(){
-        this.setRetryCount(this.getRetryCount() + 1);
+<span id='Ext-direct-Transaction-method-retry'>    retry: function(){
+</span>        this.setRetryCount(this.getRetryCount() + 1);
         this.send();
     }
 });</pre>

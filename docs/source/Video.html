@@ -16,7 +16,8 @@
 </head>
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js"><span id='Ext-Video'>/**
-</span> * Provides a simple Container for HTML5 Video.
+</span> * @aside example video
+ * Provides a simple Container for HTML5 Video.
  *
  * ## Notes
  *
@@ -31,13 +32,13 @@
  *
  * ## Useful Methods
  *
- * - {@link #pause}
+ * - {@link #method-pause}
  * - {@link #method-play}
  * - {@link #toggle}
  *
  * ## Example
  *
- *     var panel = new Ext.Panel({
+ *     var panel = Ext.create('Ext.Panel', {
  *         fullscreen: true,
  *         items: [
  *             {
@@ -51,7 +52,6 @@
  *             }
  *         ]
  *     });
- *
  */
 Ext.define('Ext.Video', {
     extend: 'Ext.Media',
@@ -78,8 +78,8 @@ Ext.define('Ext.Video', {
         cls: Ext.baseCSSPrefix + 'video'
     },
 
-    template: [{
-<span id='Ext-Video-property-ghost'>        /**
+<span id='Ext-Video-property-template'>    template: [{
+</span><span id='Ext-Video-property-ghost'>        /**
 </span>         * @property {Ext.dom.Element} ghost
          * @private
          */
@@ -91,8 +91,8 @@ Ext.define('Ext.Video', {
         classList: [Ext.baseCSSPrefix + 'media']
     }],
 
-    initialize: function() {
-        var me = this;
+<span id='Ext-Video-method-initialize'>    initialize: function() {
+</span>        var me = this;
 
         me.callParent();
 
@@ -118,12 +118,12 @@ Ext.define('Ext.Video', {
         }
     },
 
-    applyUrl: function(url) {
-        return [].concat(url);
+<span id='Ext-Video-method-applyUrl'>    applyUrl: function(url) {
+</span>        return [].concat(url);
     },
 
-    updateUrl: function(newUrl) {
-        var me = this,
+<span id='Ext-Video-method-updateUrl'>    updateUrl: function(newUrl) {
+</span>        var me = this,
             media = me.media,
             newLn = newUrl.length,
             existingSources = media.query('source'),
@@ -142,13 +142,13 @@ Ext.define('Ext.Video', {
             }));
         }
 
-        if (me.getPlaying()) {
+        if (me.isPlaying()) {
             me.play();
         }
     },
 
-    onErased: function() {
-        this.pause();
+<span id='Ext-Video-method-onErased'>    onErased: function() {
+</span>        this.pause();
         this.media.setTop(-2000);
         this.ghost.show();
     },
@@ -175,13 +175,13 @@ Ext.define('Ext.Video', {
             // we can control the Viewport
             ghost.hide();
             me.play();
-            setTimeout(function() {
-                me.play();
-            }, 10);
         }
     },
 
-    // native video tag display only only, move the media down so we can control the Viewport
+<span id='Ext-Video-method-onPause'>    /**
+</span>     * @private
+     * native video tag display only, move the media down so we can control the Viewport
+     */
     onPause: function() {
         this.callParent(arguments);
         if (!this.isInlineVideo) {
@@ -190,7 +190,10 @@ Ext.define('Ext.Video', {
         }
     },
 
-    // native video tag display only only, move the media down so we can control the Viewport
+<span id='Ext-Video-method-onPlay'>    /**
+</span>     * @private
+     * native video tag display only, move the media down so we can control the Viewport
+     */
     onPlay: function() {
         this.callParent(arguments);
         this.media.setTop(0);

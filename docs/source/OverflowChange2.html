@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-util-sizemonitor-OverflowChange'>/**
+</span> * @private
+ */
+Ext.define('Ext.util.sizemonitor.OverflowChange', {
+
+    extend: 'Ext.util.sizemonitor.Abstract',
+
+<span id='Ext-util-sizemonitor-OverflowChange-method-constructor'>    constructor: function(config) {
+</span>        this.onExpand = Ext.Function.bind(this.onExpand, this);
+        this.onShrink = Ext.Function.bind(this.onShrink, this);
+
+        this.callSuper(arguments);
+    },
+
+<span id='Ext-util-sizemonitor-OverflowChange-method-getElementConfig'>    getElementConfig: function() {
+</span>        return {
+            reference: 'detectorsContainer',
+            classList: ['x-size-monitors', 'overflowchanged'],
+            children: [
+                {
+                    reference: 'expandMonitor',
+                    className: 'expand',
+                    children: [{
+                        reference: 'expandHelper'
+                    }]
+                },
+                {
+                    reference: 'shrinkMonitor',
+                    className: 'shrink',
+                    children: [{
+                        reference: 'shrinkHelper'
+                    }]
+                }
+            ]
+        }
+    },
+
+<span id='Ext-util-sizemonitor-OverflowChange-method-bindListeners'>    bindListeners: function(bind) {
+</span>        var method = bind ? 'addEventListener' : 'removeEventListener';
+
+        this.expandMonitor[method]('overflowchanged', this.onExpand, true);
+        this.shrinkMonitor[method]('overflowchanged', this.onShrink, true);
+    },
+
+<span id='Ext-util-sizemonitor-OverflowChange-method-onExpand'>    onExpand: function(e) {
+</span>        if (e.horizontalOverflow &amp;&amp; e.verticalOverflow) {
+            return;
+        }
+
+        Ext.TaskQueue.requestRead('refresh', this);
+    },
+
+<span id='Ext-util-sizemonitor-OverflowChange-method-onShrink'>    onShrink: function(e) {
+</span>        if (!e.horizontalOverflow &amp;&amp; !e.verticalOverflow) {
+            return;
+        }
+
+        Ext.TaskQueue.requestRead('refresh', this);
+    },
+
+<span id='Ext-util-sizemonitor-OverflowChange-method-refreshMonitors'>    refreshMonitors: function() {
+</span>        var expandHelper = this.expandHelper,
+            shrinkHelper = this.shrinkHelper,
+            width = this.contentWidth,
+            height = this.contentHeight;
+
+        if (expandHelper &amp;&amp; !expandHelper.isDestroyed) {
+            expandHelper.style.width = (width + 1) + 'px';
+            expandHelper.style.height = (height + 1) + 'px';
+        }
+        if (shrinkHelper &amp;&amp; !shrinkHelper.isDestroyed) {
+            shrinkHelper.style.width = width + 'px';
+            shrinkHelper.style.height = height + 'px';
+        }
+
+        Ext.TaskQueue.requestRead('refresh', this);
+    }
+});
+</pre>
+</body>
+</html>

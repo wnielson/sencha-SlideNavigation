@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-util-paintmonitor-Abstract'>/**
+</span> * @private
+ */
+Ext.define('Ext.util.paintmonitor.Abstract', {
+
+    config: {
+<span id='Ext-util-paintmonitor-Abstract-cfg-element'>        element: null,
+</span>
+<span id='Ext-util-paintmonitor-Abstract-cfg-callback'>        callback: Ext.emptyFn,
+</span>
+<span id='Ext-util-paintmonitor-Abstract-cfg-scope'>        scope: null,
+</span>
+<span id='Ext-util-paintmonitor-Abstract-cfg-args'>        args: []
+</span>    },
+
+<span id='Ext-util-paintmonitor-Abstract-property-eventName'>    eventName: '',
+</span>
+<span id='Ext-util-paintmonitor-Abstract-property-monitorClass'>    monitorClass: '',
+</span>
+<span id='Ext-util-paintmonitor-Abstract-method-constructor'>    constructor: function(config) {
+</span>        this.onElementPainted = Ext.Function.bind(this.onElementPainted, this);
+
+        this.initConfig(config);
+    },
+
+<span id='Ext-util-paintmonitor-Abstract-method-bindListeners'>    bindListeners: function(bind) {
+</span>        this.monitorElement[bind ? 'addEventListener' : 'removeEventListener'](this.eventName, this.onElementPainted, true);
+    },
+
+<span id='Ext-util-paintmonitor-Abstract-method-applyElement'>    applyElement: function(element) {
+</span>        if (element) {
+            return Ext.get(element);
+        }
+    },
+
+<span id='Ext-util-paintmonitor-Abstract-method-updateElement'>    updateElement: function(element) {
+</span>        this.monitorElement = Ext.Element.create({
+            classList: ['x-paint-monitor', this.monitorClass]
+        }, true);
+        element.appendChild(this.monitorElement);
+        element.addCls('x-paint-monitored');
+        this.bindListeners(true);
+    },
+
+<span id='Ext-util-paintmonitor-Abstract-method-onElementPainted'>    onElementPainted: function() {},
+</span>
+<span id='Ext-util-paintmonitor-Abstract-method-destroy'>    destroy: function() {
+</span>        var monitorElement = this.monitorElement,
+            parentNode = monitorElement.parentNode,
+            element = this.getElement();
+
+        this.bindListeners(false);
+        delete this.monitorElement;
+
+        if (element &amp;&amp; !element.isDestroyed) {
+            element.removeCls('x-paint-monitored');
+            delete this._element;
+        }
+
+        if (parentNode) {
+            parentNode.removeChild(monitorElement);
+        }
+
+        this.callSuper();
+    }
+});
+</pre>
+</body>
+</html>

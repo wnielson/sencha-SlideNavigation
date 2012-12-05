@@ -26,8 +26,8 @@ Ext.define('Ext.behavior.Scrollable', {
         'Ext.scroll.View'
     ],
 
-    constructor: function() {
-        this.listeners = {
+<span id='Ext-behavior-Scrollable-method-constructor'>    constructor: function() {
+</span>        this.listeners = {
             painted: 'onComponentPainted',
             scope: this
         };
@@ -35,14 +35,14 @@ Ext.define('Ext.behavior.Scrollable', {
         this.callParent(arguments);
     },
 
-    onComponentPainted: function() {
-        this.scrollView.refresh();
+<span id='Ext-behavior-Scrollable-method-onComponentPainted'>    onComponentPainted: function() {
+</span>        this.scrollView.refresh();
     },
 
-    setConfig: function(config) {
-        var scrollView = this.scrollView,
+<span id='Ext-behavior-Scrollable-method-setConfig'>    setConfig: function(config) {
+</span>        var scrollView = this.scrollView,
             component = this.component,
-            scrollViewElement, scrollContainer, scrollerElement;
+            scrollerElement;
 
         if (config) {
             if (!scrollView) {
@@ -52,10 +52,9 @@ Ext.define('Ext.behavior.Scrollable', {
                 component.setUseBodyElement(true);
 
                 this.scrollerElement = scrollerElement = component.innerElement;
-                this.scrollContainer = scrollContainer = scrollerElement.wrap();
-                this.scrollViewElement = scrollViewElement = component.bodyElement;
+                this.scrollContainer = scrollerElement.wrap();
 
-                scrollView.setElement(scrollViewElement);
+                scrollView.setElement(component.bodyElement);
 
                 if (component.isPainted()) {
                     this.onComponentPainted(component);
@@ -63,7 +62,7 @@ Ext.define('Ext.behavior.Scrollable', {
 
                 component.on(this.listeners);
             }
-            else if (Ext.isObject(config)) {
+            else if (Ext.isString(config) || Ext.isObject(config)) {
                 scrollView.setConfig(config);
             }
         }
@@ -74,12 +73,12 @@ Ext.define('Ext.behavior.Scrollable', {
         return this;
     },
 
-    getScrollView: function() {
-        return this.scrollView;
+<span id='Ext-behavior-Scrollable-method-getScrollView'>    getScrollView: function() {
+</span>        return this.scrollView;
     },
 
-    onScrollViewDestroy: function() {
-        var component = this.component,
+<span id='Ext-behavior-Scrollable-method-onScrollViewDestroy'>    onScrollViewDestroy: function() {
+</span>        var component = this.component,
             scrollerElement = this.scrollerElement;
 
         if (!scrollerElement.isDestroyed) {
@@ -88,15 +87,17 @@ Ext.define('Ext.behavior.Scrollable', {
 
         this.scrollContainer.destroy();
 
-        component.un(this.listeners);
+        if (!component.isDestroyed) {
+            component.un(this.listeners);
+        }
 
         delete this.scrollerElement;
         delete this.scrollView;
         delete this.scrollContainer;
     },
 
-    onComponentDestroy: function() {
-        var scrollView = this.scrollView;
+<span id='Ext-behavior-Scrollable-method-onComponentDestroy'>    onComponentDestroy: function() {
+</span>        var scrollView = this.scrollView;
 
         if (scrollView) {
             scrollView.destroy();

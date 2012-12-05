@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-draw-gradient-Gradient'>/**
+</span> * @class Ext.draw.gradient.Gradient
+ * 
+ * Creates a gradient.
+ */
+Ext.define(&quot;Ext.draw.gradient.Gradient&quot;, {
+    requires: [&quot;Ext.draw.LimitedCache&quot;],
+    mixins: {
+        identifiable: 'Ext.mixin.Identifiable'
+    },
+<span id='Ext-draw-gradient-Gradient-property-identifiablePrefix'>    identifiablePrefix: 'ext-gradient-',
+</span><span id='Ext-draw-gradient-Gradient-property-isGradient'>    isGradient: true,
+</span>    statics: {
+<span id='Ext-draw-gradient-Gradient-property-gradientCache'>        gradientCache: null
+</span>    },
+
+    config: {
+<span id='Ext-draw-gradient-Gradient-cfg-Defines'>        /**
+</span>         * @cfg {Array/Object} Defines the stops of the gradient.
+         */
+        stops: []
+    },
+
+<span id='Ext-draw-gradient-Gradient-method-applyStops'>    applyStops: function (newStops) {
+</span>        var stops = [],
+            ln = newStops.length,
+            i, stop, color;
+
+        for (i = 0; i &lt; ln; i++) {
+            stop = newStops[i];
+            color = Ext.draw.Color.fly(stop.color || 'none');
+            stops.push({
+                offset: Math.min(1, Math.max(0, 'offset' in stop ? stop.offset : stop.position || 0)),
+                color: color.toString()
+            });
+        }
+        stops.sort(function (a, b) {
+            return a.offset - b.offset;
+        });
+        return stops;
+    },
+
+<span id='Ext-draw-gradient-Gradient-method-onClassExtended'>    onClassExtended: function (subClass, member) {
+</span>        if (!member.alias &amp;&amp; member.type) {
+            member.alias = 'gradient.' + member.type;
+        }
+    },
+    
+<span id='Ext-draw-gradient-Gradient-method-constructor'>    constructor: function (config) {
+</span>        config = config || {};
+        this.gradientCache = new Ext.draw.LimitedCache({
+            feeder: function (gradient, ctx, bbox) {
+                return gradient.generateGradient(ctx, bbox);
+            },
+            scope: this
+        });
+        this.initConfig(config);
+        this.id = config.id;
+        this.getId();
+    },
+
+<span id='Ext-draw-gradient-Gradient-method-generateGradient'>    /**
+</span>     * @protected
+     * Generates the gradient for the given context.
+     * @param ctx The context.
+     * @param bbox 
+     * @return {Object}
+     */
+    generateGradient: Ext.emptyFn,
+
+<span id='Ext-draw-gradient-Gradient-method-getGradient'>    /**
+</span>     * @private
+     * @param ctx
+     * @param bbox
+     * @return {*}
+     */
+    getGradient: function (ctx, bbox) {
+        return this.gradientCache.get(this.id + ',' + bbox.x + ',' + bbox.y + ',' + bbox.width + ',' + bbox.height, this, ctx, bbox);
+    },
+
+<span id='Ext-draw-gradient-Gradient-method-clearCache'>    /**
+</span>     * @private
+     */
+    clearCache: function () {
+        this.gradientCache.clear();
+    }
+
+});</pre>
+</body>
+</html>

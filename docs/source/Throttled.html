@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-scroll-indicator-Throttled'>/**
+</span> * @private
+ */
+Ext.define('Ext.scroll.indicator.Throttled', {
+    extend:'Ext.scroll.indicator.Default',
+    config: {
+<span id='Ext-scroll-indicator-Throttled-cfg-cls'>        cls: 'throttled'
+</span>    },
+<span id='Ext-scroll-indicator-Throttled-method-constructor'>    constructor: function() {
+</span>        this.callParent(arguments);
+        this.updateLength = Ext.Function.createThrottled(this.updateLength, 75, this);
+        this.setOffset = Ext.Function.createThrottled(this.setOffset, 50, this);
+    },
+
+<span id='Ext-scroll-indicator-Throttled-method-doSetHidden'>    doSetHidden: function(hidden) {
+</span>        if (hidden) {
+            this.setOffset(-10000);
+        } else {
+            delete this.lastLength;
+            delete this.lastOffset;
+            this.updateValue(this.getValue());
+        }
+    },
+<span id='Ext-scroll-indicator-Throttled-method-updateLength'>    updateLength: function(length) {
+</span>        length = Math.round(length);
+        if (this.lastLength === length || this.lastOffset === -10000) {
+            return;
+        }
+        this.lastLength = length;
+        Ext.TaskQueue.requestWrite('doUpdateLength', this,[length]);
+    },
+
+<span id='Ext-scroll-indicator-Throttled-method-doUpdateLength'>    doUpdateLength: function(length){
+</span>        if (!this.isDestroyed) {
+            var axis = this.getAxis(),
+                element = this.element;
+
+            if (axis === 'x') {
+                element.setWidth(length);
+            }
+            else {
+                element.setHeight(length);
+            }
+        }
+    },
+
+<span id='Ext-scroll-indicator-Throttled-method-setOffset'>    setOffset: function(offset) {
+</span>        offset = Math.round(offset);
+        if (this.lastOffset === offset || this.lastOffset === -10000) {
+            return;
+        }
+        this.lastOffset = offset;
+        Ext.TaskQueue.requestWrite('doSetOffset', this,[offset]);
+    },
+
+<span id='Ext-scroll-indicator-Throttled-method-doSetOffset'>    doSetOffset: function(offset) {
+</span>        if (!this.isDestroyed) {
+            var axis = this.getAxis(),
+                domStyle = this.element.dom.style;
+
+            if (axis === 'x') {
+                domStyle.webkitTransform = 'translate3d(' + offset + 'px, 0, 0)';
+            }
+            else {
+                domStyle.webkitTransform = 'translate3d(0, ' + offset + 'px, 0)';
+            }
+        }
+    }
+});</pre>
+</body>
+</html>

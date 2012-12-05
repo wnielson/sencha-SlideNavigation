@@ -15,426 +15,374 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function(clsPrefix) {
-
-<span id='Ext-layout-Default'>/**
-</span> * @aside guide layouts
- *
- * The Default Layout is the layout that all other layouts inherit from. The main capability it provides is docking,
- * which means that every other layout can also provide docking support. It's unusual to use Default layout directly,
- * instead it's much more common to use one of the sub classes:
- *
- * * {@link Ext.layout.HBox hbox layout}
- * * {@link Ext.layout.VBox vbox layout}
- * * {@link Ext.layout.Card card layout}
- * * {@link Ext.layout.Fit fit layout}
- *
- * For a full overview of layouts check out the [Layout Guide](#!/guide/layouts).
- *
- * ## Docking
- *
- * Docking enables you to place additional Components at the top, right, bottom or left edges of the parent Container,
- * resizing the other items as necessary. For example, let's say we're using an {@link Ext.layout.HBox hbox layout}
- * with a couple of items and we want to add a banner to the top so that we end up with something like this:
- *
- * {@img ../guides/layouts/docktop.jpg}
- *
- * This is simple to achieve with the `docked: 'top'` configuration below. We can dock as many of the items as we like,
- * to either the top, right, bottom or left edges of the Container:
- *
- *     Ext.create('Ext.Container', {
- *         fullscreen: true,
- *         layout: 'hbox',
- *         items: [
- *             {
- *                 docked: 'top',
- *                 height: 20,
- *                 html: 'This is docked to the top'
- *             },
- *             {
- *                 html: 'message list',
- *                 flex: 1
- *             },
- *             {
- *                 html: 'message preview',
- *                 flex: 2
- *             }
- *         ]
- *     });
- *
- * Similarly, to dock something to the left of a layout (a {@link Ext.layout.VBox vbox} in this case), such as the
- * following:
- *
- * {@img ../guides/layouts/dockleft.jpg}
- *
- * We can simply dock to the left:
- *
- *     Ext.create('Ext.Container', {
- *         fullscreen: true,
- *         layout: 'vbox',
- *         items: [
- *             {
- *                 docked: 'left',
- *                 width: 100,
- *                 html: 'This is docked to the left'
- *             },
- *             {
- *                 html: 'message list',
- *                 flex: 1
- *             },
- *             {
- *                 html: 'message preview',
- *                 flex: 2
- *             }
- *         ]
- *     });
- *
- * We can also dock to the bottom and right and use other layouts than hbox and vbox ({@link Ext.layout.Card card} and
- * {@link Ext.layout.Fit fit} layouts both accept docking too).
+  <pre class="prettyprint lang-js"><span id='Ext-layout-Default'>/**
+</span> *
  */
 Ext.define('Ext.layout.Default', {
-    extend: 'Ext.Evented',
+    extend: 'Ext.layout.Abstract',
 
-    alternateClassName: ['Ext.layout.AutoContainerLayout', 'Ext.layout.ContainerLayout'],
+<span id='Ext-layout-Default-property-isAuto'>    isAuto: true,
+</span>
+    alias: ['layout.default', 'layout.auto'],
 
-    alias: ['layout.auto', 'layout.default'],
-
-    isLayout: true,
-
-    hasDockedItemsCls: clsPrefix + 'hasdocked',
-
-    centeredItemCls: clsPrefix + 'centered',
-
-    floatingItemCls: clsPrefix + 'floating',
-
-    dockingWrapperCls: clsPrefix + 'docking',
-
-    dockingInnerCls: clsPrefix + 'docking-inner',
-
-    maskCls: clsPrefix + 'mask',
-
-    positionMap: {
-        top: 'start',
-        left: 'start',
-        bottom: 'end',
-        right: 'end'
-    },
-
-    positionDirectionMap: {
-        top: 'vertical',
-        bottom: 'vertical',
-        left: 'horizontal',
-        right: 'horizontal'
-    },
-
-    DIRECTION_VERTICAL: 'vertical',
-
-    DIRECTION_HORIZONTAL: 'horizontal',
-
-    POSITION_START: 'start',
-
-    POSITION_END: 'end',
+    requires: [
+        'Ext.util.Wrapper',
+        'Ext.layout.wrapper.BoxDock',
+        'Ext.layout.wrapper.Inner'
+    ],
 
     config: {
 <span id='Ext-layout-Default-cfg-animation'>        /**
 </span>         * @cfg {Ext.fx.layout.Card} animation Layout animation configuration
          * Controls how layout transitions are animated.  Currently only available for
-         * Card Layouts
+         * Card Layouts.
+         *
+         * Possible values are:
+         *
+         * - cover
+         * - cube
+         * - fade
+         * - flip
+         * - pop
+         * - reveal
+         * - scroll
+         * - slide
          * @accessor
          */
         animation: null
     },
 
-    constructor: function(container, config) {
-        this.container = container;
-
-        this.innerItems = [];
-
-        this.centeringWrappers = {};
-
-        this.initConfig(config);
+<span id='Ext-layout-Default-property-centerWrapperClass'>    centerWrapperClass: 'x-center',
+</span>
+<span id='Ext-layout-Default-property-dockWrapperClass'>    dockWrapperClass: 'x-dock',
+</span>
+<span id='Ext-layout-Default-property-positionMap'>    positionMap: {
+</span>        top: 'start',
+        left: 'start',
+        middle: 'center',
+        bottom: 'end',
+        right: 'end'
     },
 
-    reapply: Ext.emptyFn,
-
-    unapply: Ext.emptyFn,
-
-    onItemAdd: function() {
-        this.doItemAdd.apply(this, arguments);
+<span id='Ext-layout-Default-property-positionDirectionMap'>    positionDirectionMap: {
+</span>        top: 'vertical',
+        bottom: 'vertical',
+        left: 'horizontal',
+        right: 'horizontal'
     },
 
-    onItemRemove: function() {
-        this.doItemRemove.apply(this, arguments);
+<span id='Ext-layout-Default-method-setContainer'>    setContainer: function(container) {
+</span>        var options = {
+            delegate: '&gt; component'
+        };
+
+        this.dockedItems = [];
+
+        this.callSuper(arguments);
+
+        container.on('centeredchange', 'onItemCenteredChange', this, options, 'before')
+                 .on('floatingchange', 'onItemFloatingChange', this, options, 'before')
+                 .on('dockedchange', 'onBeforeItemDockedChange', this, options, 'before')
+                 .on('dockedchange', 'onAfterItemDockedChange', this, options);
     },
 
-    onItemMove: function() {
-        this.doItemMove.apply(this, arguments);
+<span id='Ext-layout-Default-method-monitorSizeStateChange'>    monitorSizeStateChange: function() {
+</span>        this.monitorSizeStateChange = Ext.emptyFn;
+        this.container.on('sizestatechange', 'onContainerSizeStateChange', this);
     },
 
-    onItemCenteredChange: function() {
-        this.doItemCenteredChange.apply(this, arguments);
+<span id='Ext-layout-Default-method-monitorSizeFlagsChange'>    monitorSizeFlagsChange: function() {
+</span>        this.monitorSizeFlagsChange = Ext.emptyFn;
+        this.container.on('sizeflagschange', 'onContainerSizeFlagsChange', this);
     },
 
-    onItemFloatingChange: function() {
-        this.doItemFloatingChange.apply(this, arguments);
-    },
-
-    onItemDockedChange: function() {
-        this.doItemDockedChange.apply(this, arguments);
-    },
-
-<span id='Ext-layout-Default-method-doItemAdd'>    /**
-</span>     * @private
-     */
-    doItemAdd: function(item, index) {
-        var docked = item.getDocked();
+<span id='Ext-layout-Default-method-onItemAdd'>    onItemAdd: function(item) {
+</span>        var docked = item.getDocked();
 
         if (docked !== null) {
-            this.dockItem(item, docked);
+            this.dockItem(item);
         }
         else if (item.isCentered()) {
-            this.centerItem(item, index);
+            this.onItemCenteredChange(item, true);
         }
-        else {
-            this.insertItem(item, index);
-        }
-
-        if (item.isFloating()) {
+        else if (item.isFloating()) {
             this.onItemFloatingChange(item, true);
         }
+        else {
+            this.onItemInnerStateChange(item, true);
+        }
     },
 
-<span id='Ext-layout-Default-method-doItemRemove'>    /**
-</span>     * @private
+<span id='Ext-layout-Default-method-onItemInnerStateChange'>    /**
+</span>     *
+     * @param item
+     * @param isInner
+     * @param [destroying]
      */
-    doItemRemove: function(item) {
-        if (item.isDocked()) {
-            this.undockItem(item);
-        }
-        else if (item.isCentered()) {
-            this.uncenterItem(item);
-        }
-
-        if (item.getTranslatable()) {
-            item.setTranslatable(false);
-        }
-
-        Ext.Array.remove(this.innerItems, item);
-
-        try {
-            this.container.innerElement.dom.removeChild(item.renderElement.dom);
-        } catch(e) {}
-    },
-
-<span id='Ext-layout-Default-method-doItemMove'>    /**
-</span>     * @private
-     */
-    doItemMove: function(item, toIndex, fromIndex) {
-        if (item.isCentered()) {
-            item.setZIndex((toIndex + 1) * 2);
+    onItemInnerStateChange: function(item, isInner, destroying) {
+        if (isInner) {
+            this.insertInnerItem(item, this.container.innerIndexOf(item));
         }
         else {
-            if (item.isFloating()) {
-                item.setZIndex((toIndex + 1) * 2);
-            }
-            this.insertItem(item, toIndex);
+            this.removeInnerItem(item);
         }
     },
 
-<span id='Ext-layout-Default-method-doItemCenteredChange'>    /**
-</span>     * @private
-     */
-    doItemCenteredChange: function(item, centered) {
-        if (centered) {
-            this.centerItem(item);
-        }
-        else {
-            this.uncenterItem(item);
-        }
-    },
+<span id='Ext-layout-Default-method-insertInnerItem'>    insertInnerItem: function(item, index) {
+</span>        var container = this.container,
+            containerDom = container.innerElement.dom,
+            itemDom = item.element.dom,
+            nextSibling = container.getInnerAt(index + 1),
+            nextSiblingDom = nextSibling ? nextSibling.element.dom : null;
 
-<span id='Ext-layout-Default-method-doItemFloatingChange'>    /**
-</span>     * @private
-     */
-    doItemFloatingChange: function(item, floating) {
-        var element = item.element,
-            floatingItemCls = this.floatingItemCls;
-
-        if (floating) {
-            if (item.getZIndex() === null) {
-                item.setZIndex((this.container.indexOf(item) + 1) * 2);
-            }
-            element.addCls(floatingItemCls);
-        }
-        else {
-            item.setZIndex(null);
-            element.removeCls(floatingItemCls);
-        }
-    },
-
-<span id='Ext-layout-Default-method-doItemDockedChange'>    /**
-</span>     * @private
-     */
-    doItemDockedChange: function(item, docked, oldDocked) {
-        if (oldDocked) {
-            this.undockItem(item, oldDocked);
-        }
-
-        if (docked) {
-            this.dockItem(item, docked);
-        }
-    },
-
-    centerItem: function(item) {
-        this.insertItem(item, 0);
-
-        if (item.getZIndex() === null) {
-            item.setZIndex((this.container.indexOf(item) + 1) * 2);
-        }
-
-        this.createCenteringWrapper(item);
-
-        // Mainly for styling
-        item.element.addCls(this.floatingItemCls);
-    },
-
-    uncenterItem: function(item) {
-        this.destroyCenteringWrapper(item);
-        item.setZIndex(null);
-        this.insertItem(item, this.container.indexOf(item));
-
-        // Mainly for styling
-        item.element.removeCls(this.floatingItemCls);
-    },
-
-    dockItem: function(item, position) {
-        var container = this.container,
-            itemRenderElement = item.renderElement,
-            itemElement = item.element,
-            dockingInnerElement = this.dockingInnerElement;
-
-        if (!dockingInnerElement) {
-            container.setUseBodyElement(true);
-            this.dockingInnerElement = dockingInnerElement = container.bodyElement;
-        }
-
-        this.getDockingWrapper(position);
-
-        if (this.positionMap[position] === this.POSITION_START) {
-            itemRenderElement.insertBefore(dockingInnerElement);
-        }
-        else {
-            itemRenderElement.insertAfter(dockingInnerElement);
-        }
-
-        itemElement.addCls(clsPrefix + 'docked-' + position);
-    },
-
-    undockItem: function(item, docked) {
-        this.insertItem(item, this.container.indexOf(item));
-        item.element.removeCls(clsPrefix + 'docked-' + docked);
-    },
-
-    getDockingWrapper: function(position) {
-        var currentDockingDirection = this.currentDockingDirection,
-            direction = this.positionDirectionMap[position],
-            dockingWrapper = this.dockingWrapper;
-
-        if (currentDockingDirection !== direction) {
-            this.currentDockingDirection = direction;
-            this.dockingWrapper = dockingWrapper = this.createDockingWrapper(direction);
-        }
-
-        return dockingWrapper;
-    },
-
-    createDockingWrapper: function(direction) {
-        return this.dockingInnerElement.wrap({
-            classList: [this.dockingWrapperCls + '-' + direction]
-        }, true);
-    },
-
-    createCenteringWrapper: function(item) {
-        var id = item.getId(),
-            wrappers = this.centeringWrappers,
-            renderElement = item.renderElement,
-            wrapper;
-
-        wrappers[id] = wrapper = renderElement.wrap({
-            className: this.centeredItemCls
-        });
-
-        return wrapper;
-    },
-
-    destroyCenteringWrapper: function(item) {
-        var id = item.getId(),
-            wrappers = this.centeringWrappers,
-            renderElement = item.renderElement,
-            wrapper = wrappers[id];
-
-        renderElement.unwrap();
-        wrapper.destroy();
-        delete wrappers[id];
+        containerDom.insertBefore(itemDom, nextSiblingDom);
 
         return this;
     },
 
-    insertItem: function(item, index) {
-       var container = this.container,
-           items = container.getItems().items,
-           innerItems = this.innerItems,
-           containerDom = container.innerElement.dom,
-           itemDom = item.renderElement.dom,
-           relativeItem, relativeItemDom, domIndex;
+<span id='Ext-layout-Default-method-insertBodyItem'>    insertBodyItem: function(item) {
+</span>        var container = this.container.setUseBodyElement(true),
+            bodyDom = container.bodyElement.dom;
 
-       if (container.has(item)) {
-           Ext.Array.remove(innerItems, item);
-       }
+        if (item.getZIndex() === null) {
+            item.setZIndex((container.indexOf(item) + 1) * 2);
+        }
 
-       if (typeof index == 'number') {
-           // Retrieve the *logical* relativeItem reference to insertBefore
-           relativeItem = items[index];
+        bodyDom.insertBefore(item.element.dom, bodyDom.firstChild);
 
-           // If it is the item itself, get the next sibling
-           if (relativeItem === item) {
-               relativeItem = items[++index];
-           }
+        return this;
+    },
 
-           // Continue finding the relativeItem that is neither currently centered nor docked
-           while (relativeItem &amp;&amp; (relativeItem.isCentered() || relativeItem.isDocked())) {
-               relativeItem = items[++index];
-           }
+<span id='Ext-layout-Default-method-removeInnerItem'>    removeInnerItem: function(item) {
+</span>        item.element.detach();
+    },
 
-           if (relativeItem) {
-               // Retrieve the *physical* index of that relativeItem
-               domIndex = innerItems.indexOf(relativeItem);
+<span id='Ext-layout-Default-method-removeBodyItem'>    removeBodyItem: function(item) {
+</span>        item.setZIndex(null);
+        item.element.detach();
+    },
 
-               if (domIndex !== -1) {
-                   while (relativeItem &amp;&amp; (relativeItem.isCentered() || relativeItem.isDocked())) {
-                       relativeItem = innerItems[++domIndex];
-                   }
+<span id='Ext-layout-Default-method-onItemRemove'>    onItemRemove: function(item, index, destroying) {
+</span>        var docked = item.getDocked();
 
-                   if (relativeItem) {
-                       innerItems.splice(domIndex, 0, item);
+        if (docked) {
+            this.undockItem(item);
+        }
+        else if (item.isCentered()) {
+            this.onItemCenteredChange(item, false);
+        }
+        else if (item.isFloating()) {
+            this.onItemFloatingChange(item, false);
+        }
+        else {
+            this.onItemInnerStateChange(item, false, destroying);
+        }
+    },
 
-                       relativeItemDom = relativeItem.renderElement.dom;
-                       containerDom.insertBefore(itemDom, relativeItemDom);
+<span id='Ext-layout-Default-method-onItemMove'>    onItemMove: function(item, toIndex, fromIndex) {
+</span>        if (item.isCentered() || item.isFloating()) {
+            item.setZIndex((toIndex + 1) * 2);
+        }
+        else if (item.isInnerItem()) {
+            this.insertInnerItem(item, this.container.innerIndexOf(item));
+        }
+        else {
+            this.undockItem(item);
+            this.dockItem(item);
+        }
+    },
 
-                       return this;
-                   }
-               }
-           }
-       }
+<span id='Ext-layout-Default-method-onItemCenteredChange'>    onItemCenteredChange: function(item, centered) {
+</span>        var wrapperName = '$centerWrapper';
 
-       innerItems.push(item);
-       containerDom.appendChild(itemDom);
+        if (centered) {
+            this.insertBodyItem(item);
+            item.link(wrapperName, new Ext.util.Wrapper({
+                className: this.centerWrapperClass
+            }, item.element));
+        }
+        else {
+            item.unlink(wrapperName);
+            this.removeBodyItem(item);
+        }
+    },
 
-       return this;
-   }
+<span id='Ext-layout-Default-method-onItemFloatingChange'>    onItemFloatingChange: function(item, floating) {
+</span>        if (floating) {
+            this.insertBodyItem(item);
+        }
+        else {
+            this.removeBodyItem(item);
+        }
+    },
+
+<span id='Ext-layout-Default-method-onBeforeItemDockedChange'>    onBeforeItemDockedChange: function(item, docked, oldDocked) {
+</span>        if (oldDocked) {
+            this.undockItem(item);
+        }
+    },
+
+<span id='Ext-layout-Default-method-onAfterItemDockedChange'>    onAfterItemDockedChange: function(item, docked, oldDocked) {
+</span>        if (docked) {
+            this.dockItem(item);
+        }
+    },
+
+<span id='Ext-layout-Default-method-onContainerSizeStateChange'>    onContainerSizeStateChange: function() {
+</span>        var dockWrapper = this.getDockWrapper();
+
+        if (dockWrapper) {
+            dockWrapper.setSizeState(this.container.getSizeState());
+        }
+    },
+
+<span id='Ext-layout-Default-method-onContainerSizeFlagsChange'>    onContainerSizeFlagsChange: function() {
+</span>        var items = this.dockedItems,
+            i, ln, item;
+
+        for (i = 0, ln = items.length; i &lt; ln; i++) {
+            item = items[i];
+            this.refreshDockedItemLayoutSizeFlags(item);
+        }
+    },
+
+<span id='Ext-layout-Default-method-refreshDockedItemLayoutSizeFlags'>    refreshDockedItemLayoutSizeFlags: function(item) {
+</span>        var container = this.container,
+            dockedDirection = this.positionDirectionMap[item.getDocked()],
+            binaryMask = (dockedDirection === 'horizontal') ? container.LAYOUT_HEIGHT : container.LAYOUT_WIDTH,
+            flags = (container.getSizeFlags() &amp; binaryMask);
+
+        item.setLayoutSizeFlags(flags);
+    },
+
+<span id='Ext-layout-Default-method-dockItem'>    dockItem: function(item) {
+</span>        var DockClass = Ext.layout.wrapper.BoxDock,
+            dockedItems = this.dockedItems,
+            ln = dockedItems.length,
+            container = this.container,
+            itemIndex = container.indexOf(item),
+            positionDirectionMap = this.positionDirectionMap,
+            direction = positionDirectionMap[item.getDocked()],
+            dockInnerWrapper = this.dockInnerWrapper,
+            referenceDirection, i, dockedItem, index, previousItem, slice,
+            referenceItem, referenceDocked, referenceWrapper, newWrapper, nestedWrapper;
+
+        this.monitorSizeStateChange();
+        this.monitorSizeFlagsChange();
+
+        if (!dockInnerWrapper) {
+            dockInnerWrapper = this.link('dockInnerWrapper', new Ext.layout.wrapper.Inner({
+                container: this.container
+            }));
+        }
+
+        if (ln === 0) {
+            dockedItems.push(item);
+
+            newWrapper = new DockClass({
+                container: this.container,
+                direction: direction
+            });
+
+            newWrapper.addItem(item);
+            newWrapper.getElement().replace(dockInnerWrapper.getElement());
+            newWrapper.setInnerWrapper(dockInnerWrapper);
+            container.onInitialized('onContainerSizeStateChange', this);
+        }
+        else {
+            for (i = 0; i &lt; ln; i++) {
+                dockedItem = dockedItems[i];
+                index = container.indexOf(dockedItem);
+
+                if (index &gt; itemIndex) {
+                    referenceItem = previousItem || dockedItems[0];
+                    dockedItems.splice(i, 0, item);
+                    break;
+                }
+
+                previousItem = dockedItem;
+            }
+
+            if (!referenceItem) {
+                referenceItem = dockedItems[ln - 1];
+                dockedItems.push(item);
+            }
+
+            referenceDocked = referenceItem.getDocked();
+            referenceWrapper = referenceItem.$dockWrapper;
+            referenceDirection = positionDirectionMap[referenceDocked];
+
+            if (direction === referenceDirection) {
+                referenceWrapper.addItem(item);
+            }
+            else {
+                slice = referenceWrapper.getItemsSlice(itemIndex);
+
+                newWrapper = new DockClass({
+                    container: this.container,
+                    direction: direction
+                });
+
+                if (slice.length &gt; 0) {
+                    if (slice.length === referenceWrapper.itemsCount) {
+                        nestedWrapper = referenceWrapper;
+                        newWrapper.setSizeState(nestedWrapper.getSizeState());
+                        newWrapper.getElement().replace(nestedWrapper.getElement());
+                    }
+                    else {
+                        nestedWrapper = new DockClass({
+                            container: this.container,
+                            direction: referenceDirection
+                        });
+                        nestedWrapper.setInnerWrapper(referenceWrapper.getInnerWrapper());
+                        nestedWrapper.addItems(slice);
+                        referenceWrapper.setInnerWrapper(newWrapper);
+                    }
+
+                    newWrapper.setInnerWrapper(nestedWrapper);
+                }
+                else {
+                    newWrapper.setInnerWrapper(referenceWrapper.getInnerWrapper());
+                    referenceWrapper.setInnerWrapper(newWrapper);
+                }
+
+                newWrapper.addItem(item);
+            }
+        }
+
+        container.onInitialized('refreshDockedItemLayoutSizeFlags', this, [item]);
+    },
+
+<span id='Ext-layout-Default-method-getDockWrapper'>    getDockWrapper: function() {
+</span>        var dockedItems = this.dockedItems;
+
+        if (dockedItems.length &gt; 0) {
+            return dockedItems[0].$dockWrapper;
+        }
+
+        return null;
+    },
+
+<span id='Ext-layout-Default-method-undockItem'>    undockItem: function(item) {
+</span>        var dockedItems = this.dockedItems;
+
+        if (item.$dockWrapper) {
+            item.$dockWrapper.removeItem(item);
+        }
+
+        Ext.Array.remove(dockedItems, item);
+
+        item.setLayoutSizeFlags(0);
+    },
+
+<span id='Ext-layout-Default-method-destroy'>    destroy: function() {
+</span>        this.dockedItems.length = 0;
+
+        delete this.dockedItems;
+
+        this.callSuper();
+    }
 });
-
-})(Ext.baseCSSPrefix);
 </pre>
 </body>
 </html>

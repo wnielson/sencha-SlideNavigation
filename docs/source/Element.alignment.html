@@ -15,7 +15,12 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-dom-Element'>/**
+  <pre class="prettyprint lang-js">//@tag dom,core
+//@define Ext.Element-all
+//@define Ext.Element-alignment
+//@require Ext.Element-static
+
+<span id='Ext-dom-Element'>/**
 </span> * @class Ext.dom.Element
  */
 //&lt;deprecated product=touch since=2.0&gt;
@@ -24,14 +29,14 @@ Ext.dom.Element.addMembers({
 </span>     * Gets the x,y coordinates specified by the anchor position on the element.
      *
      * @deprecated 2.0.0 This method is no longer available for Ext.Element. Please see {@link Ext.Component#showBy}
-     * to do anchoring at Component level instead
+     * to do anchoring at Component level instead.
      *
-     * @param {String} anchor (optional) The specified anchor position (defaults to &quot;c&quot;).
-     * @param {Boolean} local (optional) True to get the local (element top/left-relative) anchor position instead
-     * of page coordinates
-     * @param {Object} size (optional) An object containing the size to use for calculating anchor position
-     * {width: (target width), height: (target height)} (defaults to the element's current size)
-     * @return {Array} [x, y] An array containing the element's x and y coordinates
+     * @param {String} [anchor=c] (optional) The specified anchor position.
+     * @param {Boolean} local (optional) `true` to get the local (element top/left-relative) anchor position instead
+     * of page coordinates.
+     * @param {Object} size (optional) An object containing the size to use for calculating anchor position.
+     * `{width: (target width), height: (target height)}` (defaults to the element's current size)
+     * @return {Array} [x, y] An array containing the element's x and y coordinates.
      */
     getAnchorXY: function(anchor, local, size) {
         //&lt;debug warn&gt;
@@ -74,8 +79,8 @@ Ext.dom.Element.addMembers({
 <span id='Ext-dom-Element-method-getAlignToXY'>    /**
 </span>     * Gets the x,y coordinates to align this element with another element.
      * @param {Mixed} element The element to align to.
-     * @param {String} position (optional, defaults to &quot;tl-bl?&quot;) The position to align to.
-     * @param {Array} offsets (optional) Offset the positioning by [x, y]
+     * @param {String} [position=tl-bl] (optional) The position to align to.
+     * @param {Array} offsets (optional) Offset the positioning by [x, y].
      * @return {Array} [x, y]
      */
     getAlignToXY: function(el, position, offsets, local) {
@@ -173,7 +178,7 @@ Ext.dom.Element.addMembers({
         return [x, y];
     },
 
-    // private
+    // @private
     getAnchor: function(){
         var dom = this.dom;
             if (!dom) {
@@ -187,7 +192,8 @@ Ext.dom.Element.addMembers({
         return anchor;
     },
 
-    // private ==&gt;  used outside of core
+    // @private
+    // used outside of core
     adjustForConstraints: function(xy, parent) {
         var vector = this.getConstrainVector(parent, xy);
         if (vector) {

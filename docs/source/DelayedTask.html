@@ -17,9 +17,9 @@
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js"><span id='Ext-util-DelayedTask-method-constructor'><span id='Ext-util-DelayedTask'>/**
 </span></span> * The DelayedTask class provides a convenient way to &quot;buffer&quot; the execution of a method,
- * performing setTimeout where a new timeout cancels the old timeout. When called, the
- * task will wait the specified time period before executing. If durng that time period,
- * the task is called again, the original call will be cancelled. This continues so that
+ * performing `setTimeout` where a new timeout cancels the old timeout. When called, the
+ * task will wait the specified time period before executing. If during that time period,
+ * the task is called again, the original call will be canceled. This continues so that
  * the function is only called a single time for each iteration.
  *
  * This method is especially useful for things like detecting whether a user has finished
@@ -63,7 +63,7 @@
  *     });
  *
  *     // Wait 500ms before calling our function. If the user presses another key
- *     // during that 500ms, it will be cancelled and we'll wait another 500ms.
+ *     // during that 500ms, it will be canceled and we'll wait another 500ms.
  *     field.on('keyup', function() {
  *         task.delay(500);
  *     });
@@ -77,12 +77,12 @@
  */
 Ext.define('Ext.util.DelayedTask', {
     config: {
-        interval: null,
-        delay: null,
-        fn: null,
-        scope: null,
-        args: null
-    },
+<span id='Ext-util-DelayedTask-cfg-interval'>        interval: null,
+</span><span id='Ext-util-DelayedTask-cfg-delay'>        delay: null,
+</span><span id='Ext-util-DelayedTask-cfg-fn'>        fn: null,
+</span><span id='Ext-util-DelayedTask-cfg-scope'>        scope: null,
+</span><span id='Ext-util-DelayedTask-cfg-args'>        args: null
+</span>    },
 
     constructor: function(fn, scope, args) {
         var config = {

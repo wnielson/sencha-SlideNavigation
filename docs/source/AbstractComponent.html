@@ -19,13 +19,13 @@
 </span> * @private
  * This is the abstract class for {@link Ext.Component}.
  *
- * This should never be overriden.
+ * This should never be overridden.
  */
 Ext.define('Ext.AbstractComponent', {
     extend: 'Ext.Evented',
 
-    onClassExtended: function(Class, members) {
-        if (!members.hasOwnProperty('cachedConfig')) {
+<span id='Ext-AbstractComponent-method-onClassExtended'>    onClassExtended: function(Class, members) {
+</span>        if (!members.hasOwnProperty('cachedConfig')) {
             return;
         }
 
@@ -59,17 +59,17 @@ Ext.define('Ext.AbstractComponent', {
         }
     },
 
-    getElementConfig: Ext.emptyFn,
-
-    referenceAttributeName: 'reference',
-
-    referenceSelector: '[reference]',
-
+<span id='Ext-AbstractComponent-method-getElementConfig'>    getElementConfig: Ext.emptyFn,
+</span>
+<span id='Ext-AbstractComponent-property-referenceAttributeName'>    referenceAttributeName: 'reference',
+</span>
+<span id='Ext-AbstractComponent-property-referenceSelector'>    referenceSelector: '[reference]',
+</span>
 <span id='Ext-AbstractComponent-method-addReferenceNode'>    /**
 </span>     * @private
      * Significantly improve instantiation time for Component with multiple references
      * Ext.Element instance of the reference domNode is only created the very first time
-     * it's ever used
+     * it's ever used.
      */
     addReferenceNode: function(name, domNode) {
         Ext.Object.defineProperty(this, name, {
@@ -84,8 +84,8 @@ Ext.define('Ext.AbstractComponent', {
         });
     },
 
-    initElement: function() {
-        var prototype = this.self.prototype,
+<span id='Ext-AbstractComponent-method-initElement'>    initElement: function() {
+</span>        var prototype = this.self.prototype,
             id = this.getId(),
             referenceList = [],
             cleanAttributes = true,
@@ -133,6 +133,10 @@ Ext.define('Ext.AbstractComponent', {
 
         if (!this.innerElement) {
             this.innerElement = element;
+        }
+
+        if (!this.bodyElement) {
+            this.bodyElement = this.innerElement;
         }
 
         if (renderElement === element.dom) {

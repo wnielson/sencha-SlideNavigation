@@ -28,38 +28,38 @@
 Ext.define('Ext.app.Action', {
     config: {
 <span id='Ext-app-Action-cfg-scope'>        /**
-</span>         * @cfg {Object} scope The scope in which the {@link #action} should be called
+</span>         * @cfg {Object} scope The scope in which the {@link #action} should be called.
          */
         scope: null,
 
 <span id='Ext-app-Action-cfg-application'>        /**
-</span>         * @cfg {Ext.app.Application} application The Application that this Action is bound to
+</span>         * @cfg {Ext.app.Application} application The Application that this Action is bound to.
          */
         application: null,
 
 <span id='Ext-app-Action-cfg-controller'>        /**
 </span>         * @cfg {Ext.app.Controller} controller The {@link Ext.app.Controller controller} whose {@link #action} should
-         * be called
+         * be called.
          */
         controller: null,
 
 <span id='Ext-app-Action-cfg-action'>        /**
-</span>         * @cfg {String} action The name of the action on the {@link #controller} that should be called
+</span>         * @cfg {String} action The name of the action on the {@link #controller} that should be called.
          */
         action: null,
 
 <span id='Ext-app-Action-cfg-args'>        /**
-</span>         * @cfg {Array} args The set of arguments that will be passed to the controller's {@link #action}
+</span>         * @cfg {Array} args The set of arguments that will be passed to the controller's {@link #action}.
          */
         args: [],
 
 <span id='Ext-app-Action-cfg-url'>        /**
-</span>         * @cfg {String} url The url that was decoded into the controller/action/args in this Action
+</span>         * @cfg {String} url The url that was decoded into the controller/action/args in this Action.
          */
         url: undefined,
-        data: {},
-        title: null,
-
+<span id='Ext-app-Action-cfg-data'>        data: {},
+</span><span id='Ext-app-Action-cfg-title'>        title: null,
+</span>
 <span id='Ext-app-Action-cfg-beforeFilters'>        /**
 </span>         * @cfg {Array} beforeFilters The (optional) set of functions to call before the {@link #action} is called.
          * This is usually handled directly by the Controller or Application when an Ext.app.Action instance is
@@ -68,15 +68,15 @@ Ext.define('Ext.app.Action', {
          */
         beforeFilters: [],
 
-<span id='Ext-app-Action-property-currentFilterIndex'>        /**
+<span id='Ext-app-Action-cfg-currentFilterIndex'>        /**
 </span>         * @private
          * Keeps track of which before filter is currently being executed by {@link #resume}
          */
         currentFilterIndex: -1
     },
 
-    constructor: function(config) {
-        this.initConfig(config);
+<span id='Ext-app-Action-method-constructor'>    constructor: function(config) {
+</span>        this.initConfig(config);
 
         this.getUrl();
     },
@@ -92,7 +92,7 @@ Ext.define('Ext.app.Action', {
 <span id='Ext-app-Action-method-resume'>    /**
 </span>     * Resumes the execution of this Action (or starts it if it had not been started already). This iterates over all
      * of the configured {@link #beforeFilters} and calls them. Each before filter is called with this Action as the
-     * sole argument, and is expected to call action.resume() in order to allow the next filter to be called, or if
+     * sole argument, and is expected to call `action.resume()` in order to allow the next filter to be called, or if
      * this is the final filter, the original {@link Ext.app.Controller Controller} function.
      */
     resume: function() {
@@ -122,8 +122,8 @@ Ext.define('Ext.app.Action', {
 
 <span id='Ext-app-Action-method-applyController'>    /**
 </span>     * @private
-     * If the controller config is a string, swap it for a reference to the actuall controller instance
-     * @param {String} controller The controller name
+     * If the controller config is a string, swap it for a reference to the actual controller instance.
+     * @param {String} controller The controller name.
      */
     applyController: function(controller) {
         var app = this.getApplication(),

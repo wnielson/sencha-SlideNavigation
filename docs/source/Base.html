@@ -15,7 +15,11 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-Base'>/**
+  <pre class="prettyprint lang-js">//@tag foundation,core
+//@define Ext.Base
+//@require Ext.Date
+
+<span id='Ext-Base'>/**
 </span> * @class Ext.Base
  *
  * @author Jacky Nguyen &lt;jacky@sencha.com&gt;
@@ -45,7 +49,7 @@ var noArgs = [],
 </span>         * Create a new instance of this Class.
          *
          *     Ext.define('My.cool.Class', {
-         *         ...
+         *         // ...
          *     });
          *
          *     My.cool.Class.create({
@@ -69,7 +73,7 @@ var noArgs = [],
          */
         extend: function(parent) {
             var parentPrototype = parent.prototype,
-                basePrototype, prototype, i, ln, name, statics;
+                prototype, i, ln, name, statics;
 
             prototype = this.prototype = Ext.Object.chain(parentPrototype);
             prototype.self = this;
@@ -77,13 +81,10 @@ var noArgs = [],
             this.superclass = prototype.superclass = parentPrototype;
 
             if (!parent.$isClass) {
-                basePrototype = Ext.Base.prototype;
-
-                for (i in basePrototype) {
-                    if (i in prototype) {
-                        prototype[i] = basePrototype[i];
-                    }
-                }
+                Ext.apply(prototype, Ext.Base.prototype);
+                prototype.constructor = function() {
+                    parentPrototype.constructor.apply(this, arguments);
+                };
             }
 
             //&lt;feature classSystem.inheritableStatics&gt;
@@ -197,13 +198,13 @@ var noArgs = [],
 </span>         * Add / override static properties of this class.
          *
          *     Ext.define('My.cool.Class', {
-         *         ...
+         *         // this.se
          *     });
          *
          *     My.cool.Class.addStatics({
          *         someProperty: 'someValue',      // My.cool.Class.someProperty = 'someValue'
-         *         method1: function() { ... },    // My.cool.Class.method1 = function() { ... };
-         *         method2: function() { ... }     // My.cool.Class.method2 = function() { ... };
+         *         method1: function() {  },    // My.cool.Class.method1 = function() { ... };
+         *         method2: function() {  }     // My.cool.Class.method2 = function() { ... };
          *     });
          *
          * @param {Object} members
@@ -278,19 +279,20 @@ var noArgs = [],
 <span id='Ext-Base-static-method-addMembers'>        /**
 </span>         * Add methods / properties to the prototype of this class.
          *
+         *     @example
          *     Ext.define('My.awesome.Cat', {
          *         constructor: function() {
-         *             ...
+         *             // ...
          *         }
          *     });
          *
-         *      My.awesome.Cat.implement({
+         *      My.awesome.Cat.addMembers({
          *          meow: function() {
          *             alert('Meowww...');
          *          }
          *      });
          *
-         *      var kitty = new My.awesome.Cat;
+         *      var kitty = new My.awesome.Cat();
          *      kitty.meow();
          *
          * @param {Object} members
@@ -299,25 +301,14 @@ var noArgs = [],
          */
         addMembers: function(members) {
             var prototype = this.prototype,
-                enumerables = Ext.enumerables,
                 names = [],
-                i, ln, name, member;
+                name, member;
 
             //&lt;debug&gt;
             var className = this.$className || '';
             //&lt;/debug&gt;
 
             for (name in members) {
-                names.push(name);
-            }
-
-            if (enumerables) {
-                names.push.apply(names, enumerables);
-            }
-
-            for (i = 0,ln = names.length; i &lt; ln; i++) {
-                name = names[i];
-
                 if (members.hasOwnProperty(name)) {
                     member = members[name];
 
@@ -375,7 +366,7 @@ var noArgs = [],
          *     });
          *
          *     Ext.define('Thief', {
-         *         ...
+         *         // ...
          *     });
          *
          *     Thief.borrow(Bank, ['money', 'printMoney']);
@@ -457,11 +448,12 @@ var noArgs = [],
          *                               // alerts &quot;I'm a cat!&quot;
          *                               // alerts &quot;Meeeeoooowwww&quot;
          *
-         * As of 4.1, direct use of this method is deprecated. Use {@link Ext#define Ext.define}
+         * As of 2.1, direct use of this method is deprecated. Use {@link Ext#define Ext.define}
          * instead:
          *
          *     Ext.define('My.CatOverride', {
          *         override: 'My.Cat',
+         *         
          *         constructor: function() {
          *             alert(&quot;I'm going to be a cat!&quot;);
          *
@@ -483,7 +475,7 @@ var noArgs = [],
          * @return {Ext.Base} this class
          * @static
          * @inheritable
-         * @deprecated 4.1.0 Please use {@link Ext#define Ext.define} instead
+         * @deprecated 2.1.0 Please use {@link Ext#define Ext.define} instead
          */
         override: function(members) {
             var me = this,
@@ -558,7 +550,7 @@ var noArgs = [],
         },
 
 <span id='Ext-Base-static-method-callParent'>        /**
-</span>         * @private
+</span>         * @protected
          * @static
          * @inheritable
          */
@@ -638,8 +630,8 @@ var noArgs = [],
 </span>         * Create aliases for existing prototype methods. Example:
          *
          *     Ext.define('My.cool.Class', {
-         *         method1: function() { ... },
-         *         method2: function() { ... }
+         *         method1: function() {  },
+         *         method2: function() {  }
          *     });
          *
          *     var test = new My.cool.Class();
@@ -731,7 +723,7 @@ var noArgs = [],
          *         },
          *
          *         clone: function() {
-         *             var cloned = new this.self;                      // dependent on 'this'
+         *             var cloned = new this.self();                    // dependent on 'this'
          *
          *             cloned.groupName = this.statics().speciesName;   // equivalent to: My.Cat.speciesName
          *
@@ -830,8 +822,8 @@ var noArgs = [],
          *          }
          *      });
          *
-         *      alert(My.Base.method(10);     // alerts 10
-         *      alert(My.Derived2.method(10); // alerts 20
+         *      alert(My.Base.method(10));     // alerts 10
+         *      alert(My.Derived2.method(10)); // alerts 20
          *
          * Lastly, it also works with overridden static methods.
          *
@@ -845,7 +837,10 @@ var noArgs = [],
          *          }
          *      });
          *
-         *      alert(My.Derived2.method(10); // now alerts 40
+         *      alert(My.Derived2.method(10)); // now alerts 40
+         * 
+         * To override a method and replace it and also call the superclass method, use
+         * {@link #callSuper}. This is often done to patch a method to fix a bug.
          *
          * @protected
          * @param {Array/Arguments} args The arguments, either an array or the `arguments` object
@@ -888,6 +883,124 @@ var noArgs = [],
             return superMethod.apply(this, args || noArgs);
         },
 
+<span id='Ext-Base-method-callSuper'>        /**
+</span>         * This method is used by an override to call the superclass method but bypass any
+         * overridden method. This is often done to &quot;patch&quot; a method that contains a bug
+         * but for whatever reason cannot be fixed directly.
+         * 
+         * Consider:
+         * 
+         *      Ext.define('Ext.some.Class', {
+         *          method: function () {
+         *              console.log('Good');
+         *          }
+         *      });
+         * 
+         *      Ext.define('Ext.some.DerivedClass', {
+         *          method: function () {
+         *              console.log('Bad');
+         * 
+         *              // ... logic but with a bug ...
+         *              
+         *              this.callParent();
+         *          }
+         *      });
+         * 
+         * To patch the bug in `DerivedClass.method`, the typical solution is to create an
+         * override:
+         * 
+         *      Ext.define('App.paches.DerivedClass', {
+         *          override: 'Ext.some.DerivedClass',
+         *          
+         *          method: function () {
+         *              console.log('Fixed');
+         * 
+         *              // ... logic but with bug fixed ...
+         *
+         *              this.callSuper();
+         *          }
+         *      });
+         * 
+         * The patch method cannot use `callParent` to call the superclass `method` since
+         * that would call the overridden method containing the bug. In other words, the
+         * above patch would only produce &quot;Fixed&quot; then &quot;Good&quot; in the console log, whereas,
+         * using `callParent` would produce &quot;Fixed&quot; then &quot;Bad&quot; then &quot;Good&quot;.
+         *
+         * @protected
+         * @param {Array/Arguments} args The arguments, either an array or the `arguments` object
+         * from the current method, for example: `this.callSuper(arguments)`
+         * @return {Object} Returns the result of calling the superclass method
+         */
+        callSuper: function(args) {
+            var method,
+                superMethod = (method = this.callSuper.caller) &amp;&amp; ((method = method.$owner ? method : method.caller) &amp;&amp;
+                                method.$owner.superclass[method.$name]);
+
+            //&lt;debug error&gt;
+            if (!superMethod) {
+                method = this.callSuper.caller;
+                var parentClass, methodName;
+
+                if (!method.$owner) {
+                    if (!method.caller) {
+                        throw new Error(&quot;Attempting to call a protected method from the public scope, which is not allowed&quot;);
+                    }
+
+                    method = method.caller;
+                }
+
+                parentClass = method.$owner.superclass;
+                methodName = method.$name;
+
+                if (!(methodName in parentClass)) {
+                    throw new Error(&quot;this.callSuper() was called but there's no such method (&quot; + methodName +
+                                &quot;) found in the parent class (&quot; + (Ext.getClassName(parentClass) || 'Object') + &quot;)&quot;);
+                }
+            }
+            //&lt;/debug&gt;
+
+            return superMethod.apply(this, args || noArgs);
+        },
+
+<span id='Ext-Base-method-callOverridden'>        /**
+</span>         * Call the original method that was previously overridden with {@link Ext.Base#override},
+         * 
+         * This method is deprecated as {@link #callParent} does the same thing.
+         *
+         *     Ext.define('My.Cat', {
+         *         constructor: function() {
+         *             alert(&quot;I'm a cat!&quot;);
+         *         }
+         *     });
+         *
+         *     My.Cat.override({
+         *         constructor: function() {
+         *             alert(&quot;I'm going to be a cat!&quot;);
+         *
+         *             var instance = this.callOverridden();
+         *
+         *             alert(&quot;Meeeeoooowwww&quot;);
+         *
+         *             return instance;
+         *         }
+         *     });
+         *
+         *     var kitty = new My.Cat(); // alerts &quot;I'm going to be a cat!&quot;
+         *                               // alerts &quot;I'm a cat!&quot;
+         *                               // alerts &quot;Meeeeoooowwww&quot;
+         *
+         * @param {Array/Arguments} args The arguments, either an array or the `arguments` object
+         * from the current method, for example: `this.callOverridden(arguments)`
+         * @return {Object} Returns the result of calling the overridden method
+         * @protected
+         * @deprecated Use callParent instead
+         */
+        callOverridden: function(args) {
+            var method;
+
+            return (method = this.callOverridden.caller) &amp;&amp; method.$previous.apply(this, args || noArgs);
+        },
+
 <span id='Ext-Base-property-self'>        /**
 </span>         * @property {Ext.Class} self
          *
@@ -901,7 +1014,7 @@ var noArgs = [],
          *         },
          *
          *         constructor: function() {
-         *             alert(this.self.speciesName); / dependentOL on 'this'
+         *             alert(this.self.speciesName); // dependent on 'this'
          *         },
          *
          *         clone: function() {
@@ -962,6 +1075,11 @@ var noArgs = [],
          * @return {Object} mixins The mixin prototypes as key - value pairs
          */
         initConfig: function(instanceConfig) {
+            //&lt;debug&gt;
+//            if (instanceConfig &amp;&amp; instanceConfig.breakOnInitConfig) {
+//                debugger;
+//            }
+            //&lt;/debug&gt;
             var configNameCache = Ext.Class.configNameCache,
                 prototype = this.self.prototype,
                 initConfigList = this.initConfigList,
@@ -1096,6 +1214,14 @@ var noArgs = [],
             return this;
         },
 
+        set: function(name, value) {
+            return this[Ext.Class.configNameCache[name].set].call(this, value);
+        },
+
+        get: function(name) {
+            return this[Ext.Class.configNameCache[name].get].call(this);
+        },
+
 <span id='Ext-Base-method-getConfig'>        /**
 </span>         * @private
          */
@@ -1162,46 +1288,64 @@ var noArgs = [],
         },
         //&lt;/feature&gt;
 
-<span id='Ext-Base-method-destroy'>        /**
+<span id='Ext-Base-method-link'>        /**
 </span>         * @private
+         * @param name
+         * @param value
+         * @return {Mixed}
+         */
+        link: function(name, value) {
+            this.$links = {};
+            this.link = this.doLink;
+            return this.link.apply(this, arguments);
+        },
+
+        doLink: function(name, value) {
+            this.$links[name] = true;
+
+            this[name] = value;
+
+            return value;
+        },
+
+<span id='Ext-Base-method-unlink'>        /**
+</span>         * @private
+         */
+        unlink: function() {
+            var i, ln, link, value;
+
+            for (i = 0, ln = arguments.length; i &lt; ln; i++) {
+                link = arguments[i];
+                if (this.hasOwnProperty(link)) {
+                    value = this[link];
+                    if (value) {
+                        if (value.isInstance &amp;&amp; !value.isDestroyed) {
+                            value.destroy();
+                        }
+                        else if (value.parentNode &amp;&amp; 'nodeType' in value) {
+                            value.parentNode.removeChild(value);
+                        }
+                    }
+                    delete this[link];
+                }
+            }
+
+            return this;
+        },
+
+<span id='Ext-Base-method-destroy'>        /**
+</span>         * @protected
          */
         destroy: function() {
             this.destroy = Ext.emptyFn;
             this.isDestroyed = true;
+
+            if (this.hasOwnProperty('$links')) {
+                this.unlink.apply(this, Ext.Object.getKeys(this.$links));
+                delete this.$links;
+            }
         }
     });
-
-<span id='Ext-Base-method-callOverridden'>    /**
-</span>     * Call the original method that was previously overridden with {@link Ext.Base#override}
-     *
-     *     Ext.define('My.Cat', {
-     *         constructor: function() {
-     *             alert(&quot;I'm a cat!&quot;);
-     *         }
-     *     });
-     *
-     *     My.Cat.override({
-     *         constructor: function() {
-     *             alert(&quot;I'm going to be a cat!&quot;);
-     *
-     *             var instance = this.callOverridden();
-     *
-     *             alert(&quot;Meeeeoooowwww&quot;);
-     *
-     *             return instance;
-     *         }
-     *     });
-     *
-     *     var kitty = new My.Cat(); // alerts &quot;I'm going to be a cat!&quot;
-     *                               // alerts &quot;I'm a cat!&quot;
-     *                               // alerts &quot;Meeeeoooowwww&quot;
-     *
-     * @param {Array/Arguments} args The arguments, either an array or the `arguments` object
-     * from the current method, for example: `this.callOverridden(arguments)`
-     * @return {Object} Returns the result of calling the overridden method
-     * @protected
-     */
-    Base.prototype.callOverridden = Base.prototype.callParent;
 
     Ext.Base = Base;
 

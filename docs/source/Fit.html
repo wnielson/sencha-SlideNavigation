@@ -16,77 +16,48 @@
 </head>
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js"><span id='Ext-layout-Fit'>/**
-</span> * @aside guide layouts
- *
- * Fit Layout is probably the simplest layout available. All it does is make a child component fit to the full size of
- * its parent Container.
- *
- * {@img ../guides/layouts/fit.jpg}
- *
- * For example, if you have a parent Container that is 200px by 200px and give it a single child component and a 'fit'
- * layout, the child component will also be 200px by 200px:
- *
- *     var panel = Ext.create('Ext.Panel', {
- *         width: 200,
- *         height: 200,
- *         layout: 'fit',
- *
- *         items: {
- *             xtype: 'panel',
- *             html: 'Also 200px by 200px'
- *         }
- *     });
- *
- *     Ext.Viewport.add(panel);
- *
- * For a more detailed overview of what layouts are and the types of layouts shipped with Sencha Touch 2, check out the
- * [Layout Guide](#!/guide/layouts).
+</span> *
  */
 Ext.define('Ext.layout.Fit', {
     extend: 'Ext.layout.Default',
-    alternateClassName: 'Ext.layout.FitLayout',
 
+<span id='Ext-layout-Fit-property-isFit'>    isFit: true,
+</span>
     alias: 'layout.fit',
 
-    cls: Ext.baseCSSPrefix + 'layout-fit',
+<span id='Ext-layout-Fit-property-layoutClass'>    layoutClass: 'x-layout-fit',
+</span>
+<span id='Ext-layout-Fit-property-itemClass'>    itemClass: 'x-layout-fit-item',
+</span>
+<span id='Ext-layout-Fit-method-setContainer'>    setContainer: function(container) {
+</span>        this.callSuper(arguments);
 
-    itemCls: Ext.baseCSSPrefix + 'layout-fit-item',
-
-    constructor: function(container) {
-        this.callParent(arguments);
-
-        this.apply();
+        container.innerElement.addCls(this.layoutClass);
+        this.onContainerSizeFlagsChange();
+        this.monitorSizeFlagsChange();
     },
 
-    apply: function() {
-        this.container.innerElement.addCls(this.cls);
-    },
+<span id='Ext-layout-Fit-method-onContainerSizeFlagsChange'>    onContainerSizeFlagsChange: function() {
+</span>        var container = this.container,
+            sizeFlags = container.getSizeFlags(),
+            stretched = Boolean(sizeFlags &amp; container.LAYOUT_STRETCHED),
+            innerItems = container.innerItems,
+            i, ln, item;
 
-    reapply: function() {
-        this.apply();
-    },
+        this.callSuper();
 
-    unapply: function() {
-        this.container.innerElement.removeCls(this.cls);
-    },
-
-    doItemAdd: function(item, index) {
-        if (item.isInnerItem()) {
-            item.addCls(this.itemCls);
+        for (i = 0,ln = innerItems.length; i &lt; ln; i++) {
+            item = innerItems[i];
+            item.setLayoutSizeFlags(sizeFlags);
         }
 
-        this.callParent(arguments);
+        container.innerElement.toggleCls('x-stretched', stretched);
     },
 
-<span id='Ext-layout-Fit-method-doItemRemove'>    /**
-</span>     * @private
-     */
-    doItemRemove: function(item) {
-        if (item.isInnerItem()) {
-            item.removeCls(this.itemCls);
-        }
-
-        this.callParent(arguments);
+<span id='Ext-layout-Fit-method-onItemInnerStateChange'>    onItemInnerStateChange: function(item, isInner) {
+</span>        this.callSuper(arguments);
+        item.toggleCls(this.itemClass, isInner);
+        item.setLayoutSizeFlags(isInner ? this.container.getSizeFlags() : 0);
     }
 });
 </pre>

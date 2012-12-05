@@ -65,22 +65,22 @@ Ext.define('Ext.data.proxy.Proxy', {
 <span id='Ext-data-proxy-Proxy-cfg-batchOrder'>        /**
 </span>         * @cfg {String} batchOrder
          * Comma-separated ordering 'create', 'update' and 'destroy' actions when batching. Override this to set a different
-         * order for the batched CRUD actions to be executed in. Defaults to 'create,update,destroy'.
+         * order for the batched CRUD actions to be executed in.
          * @accessor
          */
         batchOrder: 'create,update,destroy',
 
 <span id='Ext-data-proxy-Proxy-cfg-batchActions'>        /**
 </span>         * @cfg {Boolean} batchActions
-         * True to batch actions of a particular type when synchronizing the store. Defaults to true.
+         * True to batch actions of a particular type when synchronizing the store.
          * @accessor
          */
         batchActions: true,
 
 <span id='Ext-data-proxy-Proxy-cfg-model'>        /**
-</span>         * @cfg {String/Ext.data.Model} model
+</span>         * @cfg {String/Ext.data.Model} model (required)
          * The name of the Model to tie to this Proxy. Can be either the string name of the Model, or a reference to the
-         * Model constructor. Required.
+         * Model constructor.
          * @accessor
          */
         model: null,
@@ -106,10 +106,10 @@ Ext.define('Ext.data.proxy.Proxy', {
         }
     },
 
-    isProxy: true,
-
-    applyModel: function(model) {
-        if (typeof model == 'string') {
+<span id='Ext-data-proxy-Proxy-property-isProxy'>    isProxy: true,
+</span>
+<span id='Ext-data-proxy-Proxy-method-applyModel'>    applyModel: function(model) {
+</span>        if (typeof model == 'string') {
             model = Ext.data.ModelManager.getModel(model);
 
             if (!model) {
@@ -124,8 +124,8 @@ Ext.define('Ext.data.proxy.Proxy', {
         return model;
     },
 
-    updateModel: function(model) {
-        if (model) {
+<span id='Ext-data-proxy-Proxy-method-updateModel'>    updateModel: function(model) {
+</span>        if (model) {
             var reader = this.getReader();
             if (reader &amp;&amp; !reader.getModel()) {
                 reader.setModel(model);
@@ -133,12 +133,12 @@ Ext.define('Ext.data.proxy.Proxy', {
         }
     },
 
-    applyReader: function(reader, currentReader) {
-        return Ext.factory(reader, Ext.data.Reader, currentReader, 'reader');
+<span id='Ext-data-proxy-Proxy-method-applyReader'>    applyReader: function(reader, currentReader) {
+</span>        return Ext.factory(reader, Ext.data.Reader, currentReader, 'reader');
     },
 
-    updateReader: function(reader) {
-        if (reader) {
+<span id='Ext-data-proxy-Proxy-method-updateReader'>    updateReader: function(reader) {
+</span>        if (reader) {
             var model = this.getModel();
             if (!model) {
                 model = reader.getModel();
@@ -155,8 +155,8 @@ Ext.define('Ext.data.proxy.Proxy', {
         }
     },
 
-    onMetaChange: function(data) {
-        var model = this.getReader().getModel();
+<span id='Ext-data-proxy-Proxy-method-onMetaChange'>    onMetaChange: function(data) {
+</span>        var model = this.getReader().getModel();
         if (!this.getModel() &amp;&amp; model) {
             this.setModel(model);
         }
@@ -170,8 +170,8 @@ Ext.define('Ext.data.proxy.Proxy', {
         this.fireEvent('metachange', this, data);
     },
 
-    applyWriter: function(writer, currentWriter) {
-        return Ext.factory(writer, Ext.data.Writer, currentWriter, 'writer');
+<span id='Ext-data-proxy-Proxy-method-applyWriter'>    applyWriter: function(writer, currentWriter) {
+</span>        return Ext.factory(writer, Ext.data.Writer, currentWriter, 'writer');
     },
 
 <span id='Ext-data-proxy-Proxy-method-create'>    /**
@@ -214,8 +214,8 @@ Ext.define('Ext.data.proxy.Proxy', {
      */
     destroy: Ext.emptyFn,
 
-    onDestroy: function() {
-        Ext.destroy(this.getReader(), this.getWriter());
+<span id='Ext-data-proxy-Proxy-method-onDestroy'>    onDestroy: function() {
+</span>        Ext.destroy(this.getReader(), this.getWriter());
     },
 
 <span id='Ext-data-proxy-Proxy-method-batch'>    /**
@@ -271,7 +271,7 @@ Ext.define('Ext.data.proxy.Proxy', {
     batch: function(options, /* deprecated */listeners) {
         var me = this,
             useBatch = me.getBatchActions(),
-            model = this.getModel(),
+            model = me.getModel(),
             batch,
             records;
 
@@ -280,9 +280,7 @@ Ext.define('Ext.data.proxy.Proxy', {
             // so convert to the single options argument syntax
             options = {
                 operations: options,
-                batch: {
-                    listeners: listeners
-                }
+                listeners: listeners
             };
 
             // &lt;debug warn&gt;
@@ -290,24 +288,18 @@ Ext.define('Ext.data.proxy.Proxy', {
             // &lt;/debug&gt;
         }
 
-        if (options.batch) {
-             if (options.batch.isBatch) {
-                 options.batch.setProxy(me);
-             } else {
-                 options.batch.proxy = me;
-             }
+        if (options.batch &amp;&amp; options.batch.isBatch) {
+            batch = options.batch;
         } else {
-             options.batch = {
-                 proxy: me,
-                 listeners: options.listeners || {}
-             };
+            batch = new Ext.data.Batch(options.batch || {});
         }
 
-        if (!batch) {
-            batch = new Ext.data.Batch(options.batch);
-        }
+        batch.setProxy(me);
 
         batch.on('complete', Ext.bind(me.onBatchComplete, me, [options], 0));
+        if (options.listeners) {
+            batch.on(options.listeners);
+        }
 
         Ext.each(me.getBatchOrder().split(','), function(action) {
              records = options.operations[action];
@@ -354,8 +346,8 @@ Ext.define('Ext.data.proxy.Proxy', {
          }
     }
 
-    // &lt;deprecated product=touch since=2.0&gt;
-    ,onClassExtended: function(cls, data) {
+<span id='Ext-data-proxy-Proxy-method-onClassExtended'>    // &lt;deprecated product=touch since=2.0&gt;
+</span>    ,onClassExtended: function(cls, data) {
         var prototype = this.prototype,
             defaultConfig = prototype.config,
             config = data.config || {},

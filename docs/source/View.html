@@ -15,491 +15,439 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-ux-slidenavigation-View'>/**
-</span> *  {@link Ext.ux.slidenavigation.View} is a subclass of {@link Ext.Container}
- *  that provides a sliding main view with an underlying navigation list.  The
- *  concept was inspired by Facebook's mobile app.
+  <pre class="prettyprint lang-js"><span id='Ext-navigation-View'>/**
+</span> * @author Robert Dougan &lt;rob@sencha.com&gt;
  *
- *  Usage is quite simple:
+ * NavigationView is basically a {@link Ext.Container} with a {@link Ext.layout.Card card} layout, so only one view
+ * can be visible at a time. However, NavigationView also adds extra functionality on top of this to allow
+ * you to `push` and `pop` views at any time. When you do this, your NavigationView will automatically animate
+ * between your current active view, and the new view you want to `push`, or the previous view you want to `pop`.
  *
- *      Ext.define('MyApp.view.Main', {
- *          extend: 'Ext.ux.navigationview.View',
- *          config: {
- *              groups: {
- *                  'Group 1': 1,
- *                  'Group 2': 3,
- *                  'Group 3': 2
- *              },
- *              
- *              items: [{
- *                  xtype: 'panel',
- *                  order: 1,
- *                  group: 'Group 1',
- *                  html: 'Item 1'
- *              }]
- *          }
- *      });
+ * Using the NavigationView is very simple. Here is a basic example of it in action:
  *
- *  @author Weston Nielson &lt;wnielson@github&gt;
+ *     @example
+ *     var view = Ext.create('Ext.NavigationView', {
+ *         fullscreen: true,
+ *
+ *         items: [{
+ *             title: 'First',
+ *             items: [{
+ *                 xtype: 'button',
+ *                 text: 'Push a new view!',
+ *                 handler: function() {
+ *                     // use the push() method to push another view. It works much like
+ *                     // add() or setActiveItem(). it accepts a view instance, or you can give it
+ *                     // a view config.
+ *                     view.push({
+ *                         title: 'Second',
+ *                         html: 'Second view!'
+ *                     });
+ *                 }
+ *             }]
+ *         }]
+ *     });
+ *
+ * Now, here comes the fun part: you can push any view/item into the NavigationView, at any time, and it will
+ * automatically handle the animations between the two views, including adding a back button (if necessary)
+ * and showing the new title.
+ *
+ *     view.push({
+ *         title: 'A new view',
+ *         html: 'Some new content'
+ *     });
+ *
+ * As you can see, it is as simple as calling the {@link #method-push} method, with a new view (instance or object). Done.
+ *
+ * You can also `pop` a view at any time. This will remove the top-most view from the NavigationView, and animate back
+ * to the previous view. You can do this using the {@link #method-pop} method (which requires no arguments).
+ *
+ *     view.pop();
+ *
+ * @aside guide navigation_view
  */
-Ext.define('Ext.ux.slidenavigation.View', {
+Ext.define('Ext.navigation.View', {
     extend: 'Ext.Container',
-    
-    requires: [
-        'Ext.Button',
-        'Ext.Container',
-        'Ext.Function',
-        'Ext.ModelManager',
-        'Ext.Toolbar',
-        'Ext.data.Model',
-        'Ext.data.Store',
-        'Ext.dataview.List',
-    ],
-    
-    xtype: 'slidenavigationview',
-    
+    alternateClassName: 'Ext.NavigationView',
+    xtype: 'navigationview',
+    requires: ['Ext.navigation.Bar'],
+
     config: {
-<span id='Ext-ux-slidenavigation-View-cfg-list'>        /**
-</span>         * @cfg {Object} list Configuration for the navigation list
+<span id='Ext-navigation-View-cfg-baseCls'>        /**
+</span>         * @cfg
+         * @inheritdoc
          */
-        list: {
-            width: 250,
-            maxDrag: null,
-            itemTpl: '{title}',
-            grouped: true,
-            items: [{
-                xtype: 'toolbar',
-                docked: 'top',
-                ui: 'light'
-            }]
-        },
-        
-<span id='Ext-ux-slidenavigation-View-cfg-container'>        /**
-</span>         * @cfg {Object} container Configuration for the container
-         */
-        container: {},
+        baseCls: Ext.baseCSSPrefix + 'navigationview',
 
-<span id='Ext-ux-slidenavigation-View-cfg-items'>        /**
-</span>         * @cfg {Array} items An array of items to put into the navigation list.
-         * The items can either be Ext components or special objects with a &quot;handler&quot;
-         * key, which should be a function to execute when selected.  Additionally, you
-         * can define the order of the items by defining an 'order' parameter.
-         */        
-        items: [],
-        
-<span id='Ext-ux-slidenavigation-View-cfg-groups'>        /**
-</span>         * @cfg {Object} groups Mapping of group name to order.  For example,
-         * say you have defined two groups; &quot;Group 1&quot; and &quot;Group 2&quot;.  By default
-         * these will be presented in the list in that order, since
-         * 'Group 1' &gt; 'Group 2'.  This option allows you to change the ordering,
-         * like so:
+<span id='Ext-navigation-View-cfg-navigationBar'>        /**
+</span>         * @cfg {Boolean/Object} navigationBar
+         * The NavigationBar used in this navigation view. It defaults to be docked to the top.
          *
-         *      groups: {
-         *          'Group 1': 2
-         *          'Group 2': 1
-         *      }
+         * You can just pass in a normal object if you want to customize the NavigationBar. For example:
          *
-         *  You should use integers, starting with 1, as the ordering value.
-         *  By default groups are ordered by their name.
+         *     navigationBar: {
+         *         ui: 'dark',
+         *         docked: 'bottom'
+         *     }
+         *
+         * You **cannot** specify a *title* property in this configuration. The title of the navigationBar is taken
+         * from the configuration of this views children:
+         *
+         *     view.push({
+         *         title: 'This views title which will be shown in the navigation bar',
+         *         html: 'Some HTML'
+         *     });
+         *
+         * @accessor
          */
-        groups: {},
-        
-<span id='Ext-ux-slidenavigation-View-cfg-defaults'>        /**
-</span>         * @cfg {Object} defaults An object of default values to apply to any Ext
-         * components created from those listed in ``items``.
-         */
-        defaults: {
-            layout: 'card'
+        navigationBar: {
+            docked: 'top'
         },
-        
-<span id='Ext-ux-slidenavigation-View-cfg-slideSelector'>        /**
-</span>         * @cfg {String} slideSelector Class selector of object (or parent)
-         * of which dragging should be allowed.  Defaults to the entire container.
-         * For example, this could be set to something like 'x-toolbar' to restrict
-         * dragging only to a toolbar.
+
+<span id='Ext-navigation-View-cfg-defaultBackButtonText'>        /**
+</span>         * @cfg {String} defaultBackButtonText
+         * The text to be displayed on the back button if:
+         *
+         * - The previous view does not have a title.
+         * - The {@link #useTitleForBackButtonText} configuration is `true`.
+         * @accessor
          */
-        slideSelector: '',
-        
-<span id='Ext-ux-slidenavigation-View-cfg-slideDuration'>        /**
-</span>         * @cfg {Integer} slideDuration Number of miliseconds to animate the sliding
-         * of the container when &quot;flicked&quot;.  By default the animation is disable on
-         * Android.
+        defaultBackButtonText: 'Back',
+
+<span id='Ext-navigation-View-cfg-useTitleForBackButtonText'>        /**
+</span>         * @cfg {Boolean} useTitleForBackButtonText
+         * Set to `false` if you always want to display the {@link #defaultBackButtonText} as the text
+         * on the back button. `true` if you want to use the previous views title.
+         * @accessor
          */
-        slideDuration: Ext.os.is.Android ? 0 : 100,
-        
-<span id='Ext-ux-slidenavigation-View-cfg-selectSlideDuration'>        /**
-</span>         * @cfg {Integer} selectSlideDuration Number of miliseconds to animate the sliding
-         * of the container when list item is selected (if closeOnSelect = true). The default
-         * value here of 300 gives a much nicer feel.  By default the animation is disable on
-         * Android.
+        useTitleForBackButtonText: false,
+
+<span id='Ext-navigation-View-cfg-items'>        /**
+</span>         * @cfg {Array/Object} items The child items to add to this NavigationView. This is usually an array of Component
+         * configurations or instances, for example:
+         *
+         *     Ext.create('Ext.Container', {
+         *         items: [
+         *             {
+         *                 xtype: 'panel',
+         *                 title: 'My title',
+         *                 html: 'This is an item'
+         *             }
+         *         ]
+         *     });
+         *
+         * If you want a title to be displayed in the {@link #navigationBar}, you must specify a `title` configuration in your
+         * view, like above.
+         *
+         * __Note:__ Only one view will be visible at a time. If you want to change to another view, use the {@link #method-push} or
+         * {@link #setActiveItem} methods.
+         * @accessor
          */
-        selectSlideDuration: Ext.os.is.Android ? 0 : 300,
-        
-<span id='Ext-ux-slidenavigation-View-cfg-closeOnSelect'>        /**
-</span>         * @cfg {Boolean} closeOnSelect Whether or not to automatically close the container
-         * when an item in the list is selected.  Default is true.
+
+<span id='Ext-navigation-View-cfg-layout'>        /**
+</span>         * @cfg
+         * @hide
          */
-        closeOnSelect: true
-    },
-        
-    initConfig: function() {
-        var me = this;
-        
-        me._indexCount = 0;
-        
-        // Create the store
-        me.store = Ext.create('Ext.data.Store', {
-            model: me.getModel(),
-            sorters: 'order',
-            grouper: {
-                property: 'group',
-                sortProperty: 'groupOrder'
+        layout: {
+            type: 'card',
+            animation: {
+                duration: 300,
+                easing: 'ease-out',
+                type: 'slide',
+                direction: 'left'
             }
-        });
-        
-        // Add the items into the list.
-        me.addItems(me.config.items || []);
-        delete me.config.items;
-        
-        me.callParent(arguments);
-        
-<span id='Ext-ux-slidenavigation-View-property-_cache'>        /**
-</span>         *  This stores the instances of the components created.
-         *  TODO: Support 'autoDestroy'.
-         *  @private
-         */
-        me._cache = {};
-        
-        // Default config values used for creating a slideButton.
-        me.slideButtonDefaults = {
-            xtype: 'button',
-            iconMask: true,
-            iconCls: 'more',
-            name: 'slidebutton',
-            listeners: {
-                release: me.toggleContainer,
-                scope: me
-            },
-            
-            // To add the button into a toolbar, you can add the following
-            // to any item in your navigation list. 
-            //selector: ['toolbar']
-        };
-        
-        //me.config = Ext.merge({}, me.config, config || {});
-        //return me.callParent(arguments);
-    },
-            
-    initialize: function() {
-        this.callParent();
-        
-        this.addCls('x-slidenavigation');
-        
-        this.list = this.createNavigationList();
-        this.container = this.createContainer();
-        
-        this.add([
-            this.list,
-            this.container
-        ]);
-        
-        // TODO: Make this optional, perhaps by defining
-        // &quot;selected: true&quot; in the items list
-        this.list.select(0);
-    },
-    
-<span id='Ext-ux-slidenavigation-View-method-addItems'>    /**
-</span>     *  Adds an array of items (or a single item) into the list.
-     */
-    addItems: function(items) {
-        var me = this,
-            items = Ext.isArray(items) ? items : [items],
-            groups = me.config.groups;
-        
-        Ext.each(items, function(item, index) {
-            if (!Ext.isDefined(item.index)) {
-                item.index = me._indexCount;
-                me._indexCount++;
-            }
-            me.store.add(item);
-        });
-    },
-    
-<span id='Ext-ux-slidenavigation-View-method-createSlideButton'>    /**
-</span>     *  Creates a button that can toggle the navigation menu.  For an example
-     *  config, see ``slideButtonDefaults``.
-     *  @private
-     */
-    createSlideButton: function(el, config) {
-        var me = this,
-            parent = el.down(config.selector);
-        
-        if (parent) {
-            return parent.add(Ext.merge(me.slideButtonDefaults, config));
         }
-        
+
+        // See https://sencha.jira.com/browse/TOUCH-1568
+        // If you do, add to #navigationBar config docs:
+        //
+        //     If you want to add a button on the right of the NavigationBar,
+        //     use the {@link #rightButton} configuration.
+    },
+
+<span id='Ext-navigation-View-event-push'>    /**
+</span>     * @event push
+     * Fires when a view is pushed into this navigation view
+     * @param {Ext.navigation.View} this The component instance
+     * @param {Mixed} view The view that has been pushed
+     */
+
+<span id='Ext-navigation-View-event-pop'>    /**
+</span>     * @event pop
+     * Fires when a view is popped from this navigation view
+     * @param {Ext.navigation.View} this The component instance
+     * @param {Mixed} view The view that has been popped
+     */
+
+<span id='Ext-navigation-View-event-back'>    /**
+</span>     * @event back
+     * Fires when the back button in the navigation view was tapped.
+     * @param {Ext.navigation.View} this The component instance\
+     */
+
+<span id='Ext-navigation-View-method-initialize'>    // @private
+</span>    initialize: function() {
+        var me     = this,
+            navBar = me.getNavigationBar();
+
+        //add a listener onto the back button in the navigationbar
+        navBar.on({
+            back: me.onBackButtonTap,
+            scope: me
+        });
+
+        me.relayEvents(navBar, 'rightbuttontap');
+
+        me.relayEvents(me, {
+            add: 'push',
+            remove: 'pop'
+        });
+
+        //&lt;debug&gt;
+        var layout = me.getLayout();
+        if (layout &amp;&amp; !layout.isCard) {
+            Ext.Logger.error('The base layout for a NavigationView must always be a Card Layout');
+        }
+        //&lt;/debug&gt;
+    },
+
+<span id='Ext-navigation-View-method-applyLayout'>    /**
+</span>     * @private
+     */
+    applyLayout: function(config) {
+        config = config || {};
+
+        return config;
+    },
+
+<span id='Ext-navigation-View-method-onBackButtonTap'>    /**
+</span>     * @private
+     * Called when the user taps on the back button
+     */
+    onBackButtonTap: function() {
+        this.pop();
+        this.fireEvent('back', this);
+    },
+
+<span id='Ext-navigation-View-method-push'>    /**
+</span>     * Pushes a new view into this navigation view using the default animation that this view has.
+     * @param {Object} view The view to push.
+     * @return {Ext.Component} The new item you just pushed.
+     */
+    push: function(view) {
+        return this.add(view);
+    },
+
+<span id='Ext-navigation-View-method-pop'>    /**
+</span>     * Removes the current active view from the stack and sets the previous view using the default animation
+     * of this view. You can also pass a {@link Ext.ComponentQuery} selector to target what inner item to pop to.
+     * @param {Number} count The number of views you want to pop.
+     * @return {Ext.Component} The new active item.
+     */
+    pop: function(count) {
+        if (this.beforePop(count)) {
+            return this.doPop();
+        }
+    },
+
+<span id='Ext-navigation-View-method-beforePop'>    /**
+</span>     * @private
+     * Calculates whether it needs to remove any items from the stack when you are popping more than 1
+     * item. If it does, it removes those views from the stack and returns `true`.
+     * @return {Boolean} `true` if it has removed views.
+     */
+    beforePop: function(count) {
+        var me = this,
+            innerItems = me.getInnerItems();
+
+        if (Ext.isString(count) || Ext.isObject(count)) {
+            var last = innerItems.length - 1,
+                i;
+
+            for (i = last; i &gt;= 0; i--) {
+                if ((Ext.isString(count) &amp;&amp; Ext.ComponentQuery.is(innerItems[i], count)) || (Ext.isObject(count) &amp;&amp; count == innerItems[i])) {
+                    count = last - i;
+                    break;
+                }
+            }
+
+            if (!Ext.isNumber(count)) {
+                return false;
+            }
+        }
+
+        var ln = innerItems.length,
+            toRemove;
+
+        //default to 1 pop
+        if (!Ext.isNumber(count) || count &lt; 1) {
+            count = 1;
+        }
+
+        //check if we are trying to remove more items than we have
+        count = Math.min(count, ln - 1);
+
+        if (count) {
+            //we need to reset the backButtonStack in the navigation bar
+            me.getNavigationBar().beforePop(count);
+
+            //get the items we need to remove from the view and remove theme
+            toRemove = innerItems.splice(-count, count - 1);
+            for (i = 0; i &lt; toRemove.length; i++) {
+                this.remove(toRemove[i]);
+            }
+
+            return true;
+        }
+
         return false;
     },
-    
-<span id='Ext-ux-slidenavigation-View-method-onSelect'>    /**
-</span>     * Called when an item in the list is tapped.
-     * @private
-     */
-    onSelect: function(list, item, eOpts) {
-        var me = this,
-            store = list.getStore(),
-            index = item.raw.index,
-            container = me.container;
-        
-        if (me._cache[index] == undefined) {
-            //container = this.down('container[cls=&quot;x-slidenavigation-container&quot;]');
-            
-            // If the object has a handler defined, then we don't need to
-            // create an Ext object
-            if (Ext.isFunction(item.raw.handler)) {
-                me._cache[index] = item.raw.handler;
-            } else {
-                me._cache[index] = container.add(Ext.merge(me.config.defaults, item.raw));
 
-                // Add a button for controlling the slide, if desired
-                if ((item.raw.slideButton || false)) {
-                    me.createSlideButton(me._cache[index], item.raw.slideButton);
-                }
-            }
-        }
-        
-        if (Ext.isFunction(this._cache[index])) {
-            this._cache[index]();
-        } else {
-            container.setActiveItem(this._cache[index]);
-        }
-        
-        if (this.config.closeOnSelect) {
-            this.closeContainer(this.config.selectSlideDuration);
-        }
+<span id='Ext-navigation-View-method-doPop'>    /**
+</span>     * @private
+     */
+    doPop: function() {
+        var me = this,
+            innerItems = this.getInnerItems();
+
+        //set the new active item to be the new last item of the stack
+        me.remove(innerItems[innerItems.length - 1]);
+        return this.getActiveItem();
     },
-    
-    onContainerDrag: function(draggable, e, offset, eOpts) {
-        if (offset.x &lt; 1) {
-            this.setClosed(true);
-        } else {
-            this.setClosed(false);
-        }
+
+<span id='Ext-navigation-View-method-getPreviousItem'>    /**
+</span>     * Returns the previous item, if one exists.
+     * @return {Mixed} The previous view
+     */
+    getPreviousItem: function() {
+        var innerItems = this.getInnerItems();
+        return innerItems[innerItems.length - 2];
     },
-    
-    onContainerDragstart: function(draggable, e, offset, eOpts) {
-        if (this.config.slideSelector == false) {
-            return false;
-        }
-        
-        if (this.config.slideSelector) {
-            node = e.target;
-            while (node = node.parentNode) {
-                if (node.className &amp;&amp; node.className.indexOf(this.config.slideSelector) &gt; -1) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        return false;
-    },
-    
-    onContainerDragend: function(draggable, e, eOpts) {
-        var velocity  = Math.abs(e.deltaX / e.deltaTime),
-            direction = (e.deltaX &gt; 0) ? &quot;right&quot; : &quot;left&quot;,
-            offset    = Ext.clone(draggable.offset),
-            threshold = parseInt(this.config.list.width * .70);
-        
-        switch (direction) {
-            case &quot;right&quot;:
-                offset.x = (velocity &gt; 0.75 || offset.x &gt; threshold) ? this.config.list.width : 0;
-                break;
-            case &quot;left&quot;:
-                offset.x = (velocity &gt; 0.75 || offset.x &lt; threshold) ? 0 : this.config.list.width;
-                break;
-        }
-        
-        this.moveContainer(offset.x);
-    },
-    
-<span id='Ext-ux-slidenavigation-View-method-getModel'>    /**
-</span>     * Registers the model with {@link Ext.ModelManager}, if it hasn't been
-     * already, and returns the name of the model for use in the store.
+
+<span id='Ext-navigation-View-method-updateUseTitleForBackButtonText'>    /**
+</span>     * Updates the backbutton text accordingly in the {@link #navigationBar}
      * @private
      */
-    getModel: function() {
-        var model = 'SlideNavigationPanelItem',
-            groups = this.config.groups;
-        
-        if (!Ext.ModelManager.get(model)) {
-            Ext.define(model, {
-                extend: 'Ext.data.Model',
-                config: {
-                    idProperty: 'index',
-                    fields: [
-                        'index', 'title', 'group',
-                        {
-                            name: 'order',
-                            defaultValue: 1
-                        },{
-                            name: 'groupOrder',
-                            convert: function(value, record) {
-                                // By default we group and order by group name.
-                                group = record.get('group');
-                                return groups[group] || group;
-                            }
-                        }
-                    ]
-                }
-            });
-        }
-        
-        return model;
-    },
-    
-<span id='Ext-ux-slidenavigation-View-method-closeContainer'>    /**
-</span>     *  Closes the container.  See {@link #moveContainer} for more details.
-     */
-    closeContainer: function(duration) {
-        var duration = duration || this.config.slideDuration;
-        this.moveContainer(0, duration);
-    },
-    
-<span id='Ext-ux-slidenavigation-View-method-openContainer'>    /**
-</span>     *  Opens the container.  See {@link #moveContainer} for more details.
-     */
-    openContainer: function(duration) {
-        var duration = duration || this.config.slideDuration;
-        this.container.addCls('open');
-        this.moveContainer(this.config.list.width, duration);
-    },
-    
-    toggleContainer: function(duration) {
-        var duration = Ext.isNumber(duration) ? duration : this.config.slideDuration;
-        if (this.isClosed()) {
-            this.openContainer(duration);
-        } else {
-            this.closeContainer(duration);
+    updateUseTitleForBackButtonText: function(useTitleForBackButtonText) {
+        var navigationBar = this.getNavigationBar();
+        if (navigationBar) {
+            navigationBar.setUseTitleForBackButtonText(useTitleForBackButtonText);
         }
     },
-    
-<span id='Ext-ux-slidenavigation-View-method-moveContainer'>    /**
-</span>     *  Moves the container to a specified ``offsetX`` pixels.  Positive
-     *  integer values move the container that many pixels from the left edge
-     *  of the window.  If ``duration`` is provided, it should be an integer
-     *  number of milliseconds to animate the slide effect.  If no duration is
-     *  provided, the default defined by {@link #cfg-slideDuration} is used. 
-     */
-    moveContainer: function(offsetX, duration) {
-        var duration = duration || this.config.slideDuration,
-            draggable = this.container.draggableBehavior.draggable;
-        
-        draggable.setOffset(offsetX, 0, {
-            duration: duration
-        });
-    },
-    
-<span id='Ext-ux-slidenavigation-View-method-isClosed'>    /**
-</span>     *  Returns true if the container is closed, false otherwise.  This is a
-     *  computed value based off the current offset position of the container.
-     */
-    isClosed: function() {
-        return (this.container.draggableBehavior.draggable.offset.x == 0);
-    },
-    
-<span id='Ext-ux-slidenavigation-View-method-setClosed'>    /**
-</span>     *  Sets the container as being closed.  This shouldn't ever be called
-     *  directly as it is automatically called by the ``translatable``
-     *  &quot;animationend&quot; event after the container has stopped moving.  All this
-     *  really does is set the CSS class for the container.
-     */
-    setClosed: function(closed) {
-         // TODO:   Consider some way to mask/disable certain elements when
-         //         the container is opened.  The code commented-out below
-         //         'works' but I think there is a better way to approach this.
-        if (closed) {
-            this.container.removeCls('open');
-            
-            /*
-            Ext.each(this.container.getActiveItem().getItems().items, function(item) {
-                if (item.maskOnSlide) {
-                    item.setMasked(false);
-                }
-            });
-            */
-        } else {
-            this.container.addCls('open');
-            /*
-            Ext.each(this.container.getActiveItem().getItems().items, function(item) {
-                if (item.maskOnSlide) {
-                    item.setMasked(true);
-                }
-            });
-            */
-        }
-    },
-    
-<span id='Ext-ux-slidenavigation-View-method-createNavigationList'>    /**
-</span>     * Generates a new Ext.dataview.List object to be used for displaying
-     * the navigation items.
+
+<span id='Ext-navigation-View-method-updateDefaultBackButtonText'>    /**
+</span>     * Updates the backbutton text accordingly in the {@link #navigationBar}
      * @private
      */
-    createNavigationList: function(store) {
-        return Ext.create('Ext.dataview.List', Ext.merge({}, this.config.list, {
-            store: this.store,
-            docked: 'left',
-            cls: 'x-slidenavigation-list',
-            style: 'position: absolute; top: 0; left: 0; height: 100%;' +
-                   'width: 100% !important; z-index: 2',
-            listeners: {
-                select: this.onSelect,
-                scope: this
-            }
-        }));
+    updateDefaultBackButtonText: function(defaultBackButtonText) {
+        var navigationBar = this.getNavigationBar();
+        if (navigationBar) {
+            navigationBar.setDefaultBackButtonText(defaultBackButtonText);
+        }
     },
-    
-<span id='Ext-ux-slidenavigation-View-method-createContainer'>    /**
-</span>     *  Generates and returns the Ext.Container to be used for displaying
-     *  content.  This is the &quot;slideable&quot; container that is positioned above
-     *  the navigation list.
-     *  @private
+
+<span id='Ext-navigation-View-method-applyNavigationBar'>    // @private
+</span>    applyNavigationBar: function(config) {
+        if (!config) {
+            config = {
+                hidden: true,
+                docked: 'top'
+            };
+        }
+
+        if (config.title) {
+            delete config.title;
+            //&lt;debug&gt;
+            Ext.Logger.warn(&quot;Ext.navigation.View: The 'navigationBar' configuration does not accept a 'title' property. You &quot; +
+                            &quot;set the title of the navigationBar by giving this navigation view's children a 'title' property.&quot;);
+            //&lt;/debug&gt;
+        }
+
+        config.view = this;
+        config.useTitleForBackButtonText = this.getUseTitleForBackButtonText();
+
+        return Ext.factory(config, Ext.navigation.Bar, this.getNavigationBar());
+    },
+
+<span id='Ext-navigation-View-method-updateNavigationBar'>    // @private
+</span>    updateNavigationBar: function(newNavigationBar, oldNavigationBar) {
+        if (oldNavigationBar) {
+            this.remove(oldNavigationBar, true);
+        }
+
+        if (newNavigationBar) {
+            this.add(newNavigationBar);
+        }
+    },
+
+<span id='Ext-navigation-View-method-applyActiveItem'>    /**
+</span>     * @private
      */
-    createContainer: function() {
-        return Ext.create('Ext.Container', Ext.merge({}, this.config.container, {
-            docked: 'left',
-            cls: 'x-slidenavigation-container',
-            style: 'width: 100%; height: 100%; position: absolute; opacity: 1; z-index: 5',
-            docked: 'left',
-            layout: 'card',
-            draggable: {
-                direction: 'horizontal',
-                constraint: {
-                    min: { x: 0, y: 0 },
-                    max: { x: this.config.list.maxDrag || Math.max(screen.width, screen.height), y: 0 }
-                },
-                listeners: {
-                    dragstart: {
-                        fn: this.onContainerDragstart,
-                        order: 'before',
-                        scope: this
-                    },
-                    drag: Ext.Function.createThrottled(this.onContainerDrag, 100, this),
-                    dragend: this.onContainerDragend,
-                    scope: this
-                },
-                translatable: {
-                    listeners: {
-                        animationend: function(translatable, b, c) {
-                            // Remove the class when the animation is finished, but only
-                            // if we're &quot;closed&quot;
-                            this.setClosed(this.isClosed());
-                        },
-                        scope: this // The &quot;x-slidenavigation&quot; container
-                    }
-                }
+    applyActiveItem: function(activeItem, currentActiveItem) {
+        var me = this,
+            innerItems = me.getInnerItems();
+
+        // Make sure the items are already initialized
+        me.getItems();
+
+        // If we are not initialzed yet, we should set the active item to the last item in the stack
+        if (!me.initialized) {
+            activeItem = innerItems.length - 1;
+        }
+
+        return this.callParent([activeItem, currentActiveItem]);
+    },
+
+<span id='Ext-navigation-View-method-doResetActiveItem'>    doResetActiveItem: function(innerIndex) {
+</span>        var me = this,
+            innerItems = me.getInnerItems(),
+            animation = me.getLayout().getAnimation();
+
+        if (innerIndex &gt; 0) {
+            if (animation &amp;&amp; animation.isAnimation) {
+                animation.setReverse(true);
             }
-        }));
+            me.setActiveItem(innerIndex - 1);
+            me.getNavigationBar().onViewRemove(me, innerItems[innerIndex], innerIndex);
+        }
+    },
+
+<span id='Ext-navigation-View-method-doRemove'>    /**
+</span>     * @private
+     */
+    doRemove: function() {
+        var animation = this.getLayout().getAnimation();
+
+        if (animation &amp;&amp; animation.isAnimation) {
+            animation.setReverse(false);
+        }
+
+        this.callParent(arguments);
+    },
+
+<span id='Ext-navigation-View-method-onItemAdd'>    /**
+</span>     * @private
+     */
+    onItemAdd: function(item, index) {
+        this.doItemLayoutAdd(item, index);
+
+        if (!this.isItemsInitializing &amp;&amp; item.isInnerItem()) {
+            this.setActiveItem(item);
+            this.getNavigationBar().onViewAdd(this, item, index);
+        }
+
+        if (this.initialized) {
+            this.fireEvent('add', this, item, index);
+        }
+    },
+
+<span id='Ext-navigation-View-method-reset'>    /**
+</span>     * Resets the view by removing all items between the first and last item.
+     * @return {Ext.Component} The view that is now active
+     */
+    reset: function() {
+        return this.pop(this.getInnerItems().length);
     }
-});</pre>
+});
+</pre>
 </body>
 </html>

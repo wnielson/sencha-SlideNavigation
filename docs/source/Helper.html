@@ -15,7 +15,11 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-DomHelper'>/**
+  <pre class="prettyprint lang-js">//@tag dom,core
+//@define Ext.DomHelper
+//@require Ext.dom.Query
+
+<span id='Ext-DomHelper'>/**
 </span> * @class Ext.DomHelper
  * @alternateClassName Ext.dom.Helper
  *
@@ -128,7 +132,7 @@
  *     var tpl = new Ext.DomHelper.createTemplate(html);
  *     tpl.compile();
  *
- *     //... use template like normal
+ *     // ... use template like normal
  *
  * ## Performance Boost
  *
@@ -142,16 +146,16 @@
  *
  */
 Ext.define('Ext.dom.Helper', {
-    emptyTags : /^(?:br|frame|hr|img|input|link|meta|range|spacer|wbr|area|param|col)$/i,
-    confRe : /tag|children|cn|html|tpl|tplData$/i,
-    endRe : /end/i,
-
-    attribXlat: { cls : 'class', htmlFor : 'for' },
-
-    closeTags: {},
-
-    decamelizeName : function () {
-        var camelCaseRe = /([a-z])([A-Z])/g,
+<span id='Ext-DomHelper-property-emptyTags'>    emptyTags : /^(?:br|frame|hr|img|input|link|meta|range|spacer|wbr|area|param|col)$/i,
+</span><span id='Ext-DomHelper-property-confRe'>    confRe : /tag|children|cn|html|tpl|tplData$/i,
+</span><span id='Ext-DomHelper-property-endRe'>    endRe : /end/i,
+</span>
+<span id='Ext-DomHelper-property-attribXlat'>    attribXlat: { cls : 'class', htmlFor : 'for' },
+</span>
+<span id='Ext-DomHelper-property-closeTags'>    closeTags: {},
+</span>
+<span id='Ext-DomHelper-property-decamelizeName'>    decamelizeName : function () {
+</span>        var camelCaseRe = /([a-z])([A-Z])/g,
             cache = {};
 
         function decamel (match, p1, p2) {
@@ -163,8 +167,8 @@ Ext.define('Ext.dom.Helper', {
         };
     }(),
 
-    generateMarkup: function(spec, buffer) {
-        var me = this,
+<span id='Ext-DomHelper-method-generateMarkup'>    generateMarkup: function(spec, buffer) {
+</span>        var me = this,
             attr, val, tag, i, closeTags;
 
         if (typeof spec == &quot;string&quot;) {
@@ -235,7 +239,7 @@ Ext.define('Ext.dom.Helper', {
      *
      *      var buf = [];
      *
-     *      ...
+     *      // ...
      *
      *      Ext.DomHelper.generateStyles({
      *          backgroundColor: 'red'
@@ -263,7 +267,7 @@ Ext.define('Ext.dom.Helper', {
 
 <span id='Ext-DomHelper-method-markup'>    /**
 </span>     * Returns the markup for the passed Element(s) config.
-     * @param {Object} spec The DOM object spec (and children)
+     * @param {Object} spec The DOM object spec (and children).
      * @return {String}
      */
     markup: function(spec) {
@@ -433,8 +437,8 @@ Ext.define('Ext.dom.Helper', {
         return returnElement ? Ext.get(el.firstChild) : el.firstChild;
     },
 
-    doInsert: function(el, o, returnElement, pos) {
-        var newNode = this.insertHtml(pos, Ext.getDom(el), this.markup(o));
+<span id='Ext-DomHelper-method-doInsert'>    doInsert: function(el, o, returnElement, pos) {
+</span>        var newNode = this.insertHtml(pos, Ext.getDom(el), this.markup(o));
         return returnElement ? Ext.get(newNode, true) : newNode;
     },
 

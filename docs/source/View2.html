@@ -15,425 +15,360 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-navigation-View'>/**
-</span> * @author Robert Dougan &lt;rob@sencha.com&gt;
+  <pre class="prettyprint lang-js"><span id='Ext-scroll-View'>/**
+</span> * This is a simple container that is used to compile content and a {@link Ext.scroll.View} instance. It also
+ * provides scroll indicators.
  *
- * NavigationView is basically a {@link Ext.Container} with a {@link Ext.layout.Card card} layout, so only one view
- * can be visible at a time. However, NavigationView also adds extra functionality on top of this to allow
- * you to `push` and `pop` views at any time. When you do this, your NavigationView will automatically animate
- * between your current active view, and the new view you want to `push`, or the previous view you want to `pop`.
+ * 99% of the time all you need to use in this class is {@link #getScroller}.
  *
- * Using the NavigationView is very simple. Here is a basic example of it in action:
- *
- *     @example
- *     var view = Ext.create('Ext.NavigationView', {
- *         fullscreen: true,
- *
- *         items: [{
- *             title: 'First',
- *             items: [{
- *                 xtype: 'button',
- *                 text: 'Push a new view!',
- *                 handler: function() {
- *                     //use the push() method to push another view. It works much like
- *                     //add() or setActiveItem(). it accepts a view instance, or you can give it
- *                     //a view config.
- *                     view.push({
- *                         title: 'Second',
- *                         html: 'Second view!'
- *                     });
- *                 }
- *             }]
- *         }]
- *     });
- *
- * Now, here comes the fun part: you can push any view/item into the NavigationView, at any time, and it will
- * automatically handle the animations between the two views, including adding a back button (if necessary)
- * and showing the new title.
- *
- *     view.push({
- *         title: 'A new view',
- *         html: 'Some new content'
- *     });
- *
- * As you can see, it is as simple as calling the {@link #method-push} method, with a new view (instance or object). Done.
- *
- * You can also `pop` a view at any time. This will remove the top-most view from the NavigationView, and amimate back
- * to the previous view. You can do this using the {@link #method-pop} method (which requires no arguments).
- *
- *     view.pop();
- *
- * @aside guide navigation_view
+ * This should never should be extended.
  */
-Ext.define('Ext.navigation.View', {
-    extend: 'Ext.Container',
-    alternateClassName: 'Ext.NavigationView',
-    xtype: 'navigationview',
-    requires: ['Ext.navigation.Bar'],
+Ext.define('Ext.scroll.View', {
+    extend: 'Ext.Evented',
+
+    alternateClassName: 'Ext.util.ScrollView',
+
+    requires: [
+        'Ext.scroll.Scroller',
+        'Ext.scroll.Indicator'
+    ],
 
     config: {
-<span id='Ext-navigation-View-cfg-baseCls'>        /**
-</span>         * @cfg
-         * @inheritdoc
+<span id='Ext-scroll-View-cfg-indicatorsUi'>        /**
+</span>         * @cfg {String} indicatorsUi
+         * The style of the indicators of this view. Available options are `dark` or `light`.
          */
-        baseCls: Ext.baseCSSPrefix + 'navigationview',
+        indicatorsUi: 'dark',
 
-<span id='Ext-navigation-View-cfg-navigationBar'>        /**
-</span>         * @cfg {Boolean/Object} navigationBar
-         * The NavigationBar used in this navigation view. It defaults to be docked to the top.
-         *
-         * You can just pass in a normal object if you want to customize the NavigationBar. For example:
-         *
-         *     navigationBar: {
-         *         ui: 'dark',
-         *         docked: 'bottom'
-         *     }
-         *
-         * You **cannot** specify a *title* property in this configuration. The title of the navigationBar is taken
-         * from the configuration of this views children:
-         *
-         *     view.push({
-         *         title: 'This views title which will be shown in the navigation bar',
-         *         html: 'Some HTML'
-         *     });
-         *
-         * @accessor
-         */
-        navigationBar: {
-            docked: 'top'
+<span id='Ext-scroll-View-cfg-element'>        element: null,
+</span>
+<span id='Ext-scroll-View-cfg-scroller'>        scroller: {},
+</span>
+<span id='Ext-scroll-View-cfg-indicators'>        indicators: {
+</span>            x: {
+                axis: 'x'
+            },
+            y: {
+                axis: 'y'
+            }
         },
 
-<span id='Ext-navigation-View-cfg-defaultBackButtonText'>        /**
-</span>         * @cfg {String} defaultBackButtonText
-         * The text to be displayed on the back button if:
-         * a) The previous view does not have a title
-         * b) The {@link #useTitleForBackButtonText} configuration is true.
-         * @accessor
-         */
-        defaultBackButtonText: 'Back',
+<span id='Ext-scroll-View-cfg-indicatorsHidingDelay'>        indicatorsHidingDelay: 100,
+</span>
+<span id='Ext-scroll-View-cfg-cls'>        cls: Ext.baseCSSPrefix + 'scroll-view'
+</span>    },
 
-<span id='Ext-navigation-View-cfg-useTitleForBackButtonText'>        /**
-</span>         * @cfg {Boolean} useTitleForBackButtonText
-         * Set to false if you always want to display the {@link #defaultBackButtonText} as the text
-         * on the back button. True if you want to use the previous views title.
-         * @accessor
-         */
-        useTitleForBackButtonText: false,
-
-<span id='Ext-navigation-View-cfg-items'>        /**
-</span>         * @cfg {Array/Object} items The child items to add to this NavigationView. This is usually an array of Component
-         * configurations or instances, for example:
-         *
-         *    Ext.create('Ext.Container', {
-         *        items: [
-         *            {
-         *                xtype: 'panel',
-         *                title: 'My title',
-         *                html: 'This is an item'
-         *            }
-         *        ]
-         *    });
-         *
-         * If you want a title to be displayed in the {@link #navigationBar}, you must specify a `title` configuration in your
-         * view, like above.
-         *
-         * Note: only one view will be visible at a time. If you want to change to another view, use the {@link #method-push} or
-         * {@link #setActiveItem} methods.
-         * @accessor
-         */
-
-<span id='Ext-navigation-View-cfg-layout'>        /**
-</span>         * @cfg
-         * @hide
-         */
-        layout: {
-            type: 'card',
-            animation: {
-                duration: 300,
-                easing: 'ease-out',
-                type: 'slide',
-                direction: 'left'
-            }
-        }
-
-        // See https://sencha.jira.com/browse/TOUCH-1568
-        // If you do, add to #navigationBar config docs:
-        //
-        //     If you want to add a button on the right of the NavigationBar,
-        //     use the {@link #rightButton} configuration.
-    },
-
-<span id='Ext-navigation-View-event-push'>    /**
-</span>     * @event push
-     * Fires when a view is pushed into this navigation view
-     * @param {Ext.navigation.View} this The component instance
-     * @param {Mixed} view The view that has been pushed
+<span id='Ext-scroll-View-method-getScroller'>    /**
+</span>     * @method getScroller
+     * Returns the scroller instance in this view. Checkout the documentation of {@link Ext.scroll.Scroller} and
+     * {@link Ext.Container#getScrollable} for more information.
+     * @return {Ext.scroll.View} The scroller
      */
 
-<span id='Ext-navigation-View-event-pop'>    /**
-</span>     * @event pop
-     * Fires when a view is popped from this navigation view
-     * @param {Ext.navigation.View} this The component instance
-     * @param {Mixed} view The view that has been popped
-     */
-
-<span id='Ext-navigation-View-event-back'>    /**
-</span>     * @event back
-     * Fires when the back button in the navigation view was tapped.
-     * @param {Ext.navigation.View} this The component instance\
-     */
-
-    // @private
-    initialize: function() {
-        //add a listener onto the back button in the navigationbar
-        this.getNavigationBar().on({
-            back: this.onBackButtonTap,
-            scope: this
-        });
-
-        this.relayEvents(this, {
-            add: 'push',
-            remove: 'pop'
-        });
-
-        //&lt;debug&gt;
-        var layout = this.getLayout();
-        if (layout &amp;&amp; !layout.isCard) {
-            Ext.Logger.error('The base layout for a NavigationView must always be a Card Layout');
-        }
-        //&lt;/debug&gt;
-    },
-
-<span id='Ext-navigation-View-method-applyLayout'>    /**
+<span id='Ext-scroll-View-method-processConfig'>    /**
 </span>     * @private
-     * Disable all animations on Android
      */
-    applyLayout: function(config) {
-        config = config || {};
+    processConfig: function(config) {
+        if (!config) {
+            return null;
+        }
 
-        // TODO: This should be a configuration
-        if (Ext.os.is.Android) {
-            config.animation = false;
+        if (typeof config == 'string') {
+            config = {
+                direction: config
+            };
+        }
+
+        config = Ext.merge({}, config);
+
+        var scrollerConfig = config.scroller,
+            name;
+
+        if (!scrollerConfig) {
+            config.scroller = scrollerConfig = {};
+        }
+
+        for (name in config) {
+            if (config.hasOwnProperty(name)) {
+                if (!this.hasConfig(name)) {
+                    scrollerConfig[name] = config[name];
+                    delete config[name];
+                }
+            }
         }
 
         return config;
     },
 
-<span id='Ext-navigation-View-method-onBackButtonTap'>    /**
-</span>     * @private
-     * Called when the user taps on the back button
-     */
-    onBackButtonTap: function() {
-        this.pop();
-        this.fireEvent('back', this);
+<span id='Ext-scroll-View-method-constructor'>    constructor: function(config) {
+</span>        config = this.processConfig(config);
+
+        this.useIndicators = { x: true, y: true };
+
+        this.doHideIndicators = Ext.Function.bind(this.doHideIndicators, this);
+
+        this.initConfig(config);
     },
 
-<span id='Ext-navigation-View-method-push'>    /**
-</span>     * Pushes a new view into this navigation view using the default animation that this view has.
-     * @param {Object} view The view to push
-     * @return {Ext.Component} The new item you just pushed
-     */
-    push: function(view) {
-        return this.add(view);
+<span id='Ext-scroll-View-method-setConfig'>    setConfig: function(config) {
+</span>        return this.callParent([this.processConfig(config)]);
     },
 
-<span id='Ext-navigation-View-method-pop'>    /**
-</span>     * Removes the current active view from the stack and sets the previous view using the default animation
-     * of this view.
-     * @param {Number} count The number of views you want to pop
-     * @return {Ext.Component} The new active item
-     */
-    pop: function(count) {
-        if (this.beforePop(count)) {
-            return this.doPop();
-        }
+<span id='Ext-scroll-View-method-updateIndicatorsUi'>    updateIndicatorsUi: function(newUi) {
+</span>        var indicators = this.getIndicators();
+        indicators.x.setUi(newUi);
+        indicators.y.setUi(newUi);
     },
 
-<span id='Ext-navigation-View-method-beforePop'>    /**
-</span>     * @private
-     * Calculates whether it needs to remove any items from the stack when you are popping more than 1
-     * item. If it does, it removes those views from the stack and returns `true`.
-     * @return {Boolean} True if it has removed views
-     */
-    beforePop: function(count) {
-        var me = this,
-            innerItems = this.getInnerItems(),
-            ln = innerItems.length,
-            toRemove, i;
-
-        //default to 1 pop
-        if (!Ext.isNumber(count) || count &lt; 1) {
-            count = 1;
-        }
-
-        //check if we are trying to remove more items than we have
-        count = Math.min(count, ln - 1);
-
-        if (count) {
-            //we need to reset the backButtonStack in the navigation bar
-            me.getNavigationBar().beforePop(count);
-
-            //get the items we need to remove from the view and remove theme
-            toRemove = innerItems.splice(-count, count - 1);
-            for (i = 0; i &lt; toRemove.length; i++) {
-                this.remove(toRemove[i]);
-            }
-
-            return true;
-        }
-
-        return false;
+<span id='Ext-scroll-View-method-applyScroller'>    applyScroller: function(config, currentScroller) {
+</span>        return Ext.factory(config, Ext.scroll.Scroller, currentScroller);
     },
 
-<span id='Ext-navigation-View-method-doPop'>    /**
-</span>     * @private
-     */
-    doPop: function() {
-        var me = this,
-            innerItems = this.getInnerItems();
+<span id='Ext-scroll-View-method-applyIndicators'>    applyIndicators: function(config, indicators) {
+</span>        var defaultClass = Ext.scroll.Indicator,
+            useIndicators = this.useIndicators;
 
-        //set the new active item to be the new last item of the stack
-        me.remove(innerItems[innerItems.length - 1]);
-        return this.getActiveItem();
-    },
-
-<span id='Ext-navigation-View-method-getPreviousItem'>    /**
-</span>     * Returns the previous item, if one exists.
-     * @return {Mixed} The previous view
-     */
-    getPreviousItem: function() {
-        var innerItems = this.getInnerItems();
-        return innerItems[innerItems.length - 2];
-    },
-
-<span id='Ext-navigation-View-method-updateUseTitleForBackButtonText'>    /**
-</span>     * Updates the backbutton text accordingly in the {@link #navigationBar}
-     * @private
-     */
-    updateUseTitleForBackButtonText: function(useTitleForBackButtonText) {
-        var navigationBar = this.getNavigationBar();
-        if (navigationBar) {
-            navigationBar.setUseTitleForBackButtonText(useTitleForBackButtonText);
-        }
-    },
-
-<span id='Ext-navigation-View-method-updateDefaultBackButtonText'>    /**
-</span>     * Updates the backbutton text accordingly in the {@link #navigationBar}
-     * @private
-     */
-    updateDefaultBackButtonText: function(defaultBackButtonText) {
-        var navigationBar = this.getNavigationBar();
-        if (navigationBar) {
-            navigationBar.setDefaultBackButtonText(defaultBackButtonText);
-        }
-    },
-
-    // @private
-    applyNavigationBar: function(config) {
         if (!config) {
-            config = {
-                hidden: true,
-                docked: 'top'
-            };
+            config = {};
         }
 
-        if (config.title) {
-            delete config.title;
-            //&lt;debug&gt;
-            Ext.Logger.warn(&quot;Ext.navigation.View: The 'navigationBar' configuration does not accept a 'title' property. You &quot; +
-                            &quot;set the title of the navigationBar by giving this navigation view's children a 'title' property.&quot;);
-            //&lt;/debug&gt;
+        if (!config.x) {
+            useIndicators.x = false;
+            config.x = {};
         }
 
-        config.view = this;
+        if (!config.y) {
+            useIndicators.y = false;
+            config.y = {};
+        }
 
-        return Ext.factory(config, Ext.navigation.Bar, this.getNavigationBar());
+        return {
+            x: Ext.factory(config.x, defaultClass, indicators &amp;&amp; indicators.x),
+            y: Ext.factory(config.y, defaultClass, indicators &amp;&amp; indicators.y)
+        };
     },
 
-    // @private
-    updateNavigationBar: function(newNavigationBar, oldNavigationBar) {
-        if (oldNavigationBar) {
-            this.remove(oldNavigationBar, true);
+<span id='Ext-scroll-View-method-updateIndicators'>    updateIndicators: function(indicators) {
+</span>        this.indicatorsGrid = Ext.Element.create({
+            className: 'x-scroll-bar-grid-wrapper',
+            children: [{
+                className: 'x-scroll-bar-grid',
+                children: [
+                    {
+                        children: [{}, {
+                            children: [indicators.y.barElement]
+                        }]
+                    },
+                    {
+                        children: [{
+                            children: [indicators.x.barElement]
+                        }, {}]
+                    }
+                ]
+            }]
+        });
+    },
+
+<span id='Ext-scroll-View-method-updateScroller'>    updateScroller: function(scroller) {
+</span>        scroller.on({
+            scope: this,
+            scrollstart: 'onScrollStart',
+            scroll: 'onScroll',
+            scrollend: 'onScrollEnd',
+            refresh: 'refreshIndicators'
+        });
+    },
+
+<span id='Ext-scroll-View-method-isAxisEnabled'>    isAxisEnabled: function(axis) {
+</span>        return this.getScroller().isAxisEnabled(axis) &amp;&amp; this.useIndicators[axis];
+    },
+
+<span id='Ext-scroll-View-method-applyElement'>    applyElement: function(element) {
+</span>        if (element) {
+            return Ext.get(element);
+        }
+    },
+
+<span id='Ext-scroll-View-method-updateElement'>    updateElement: function(element) {
+</span>        var scrollerElement = element.getFirstChild().getFirstChild(),
+            scroller = this.getScroller();
+
+        element.addCls(this.getCls());
+        element.insertFirst(this.indicatorsGrid);
+
+        scroller.setElement(scrollerElement);
+
+        this.refreshIndicators();
+
+        return this;
+    },
+
+<span id='Ext-scroll-View-method-showIndicators'>    showIndicators: function() {
+</span>        var indicators = this.getIndicators();
+
+        if (this.hasOwnProperty('indicatorsHidingTimer')) {
+            clearTimeout(this.indicatorsHidingTimer);
+            delete this.indicatorsHidingTimer;
         }
 
-        if (newNavigationBar) {
-            var layout = this.getLayout(),
-                animation = (layout &amp;&amp; layout.isLayout) ? layout.getAnimation() : false;
+        if (this.isAxisEnabled('x')) {
+            indicators.x.show();
+        }
 
-            if (animation &amp;&amp; animation.isAnimation) {
-                newNavigationBar.setAnimation(animation.config);
+        if (this.isAxisEnabled('y')) {
+            indicators.y.show();
+        }
+    },
+
+<span id='Ext-scroll-View-method-hideIndicators'>    hideIndicators: function() {
+</span>        var delay = this.getIndicatorsHidingDelay();
+
+        if (delay &gt; 0) {
+            this.indicatorsHidingTimer = setTimeout(this.doHideIndicators, delay);
+        }
+        else {
+            this.doHideIndicators();
+        }
+    },
+
+<span id='Ext-scroll-View-method-doHideIndicators'>    doHideIndicators: function() {
+</span>        var indicators = this.getIndicators();
+
+        if (this.isAxisEnabled('x')) {
+            indicators.x.hide();
+        }
+
+        if (this.isAxisEnabled('y')) {
+            indicators.y.hide();
+        }
+    },
+
+<span id='Ext-scroll-View-method-onScrollStart'>    onScrollStart: function() {
+</span>        this.onScroll.apply(this, arguments);
+        this.showIndicators();
+    },
+
+<span id='Ext-scroll-View-method-onScrollEnd'>    onScrollEnd: function() {
+</span>        this.hideIndicators();
+    },
+
+<span id='Ext-scroll-View-method-onScroll'>    onScroll: function(scroller, x, y) {
+</span>        this.setIndicatorValue('x', x);
+        this.setIndicatorValue('y', y);
+
+        //&lt;debug&gt;
+        if (this.isBenchmarking) {
+            this.framesCount++;
+        }
+        //&lt;/debug&gt;
+    },
+
+<span id='Ext-scroll-View-property-isBenchmarking'>    //&lt;debug&gt;
+</span>    isBenchmarking: false,
+
+<span id='Ext-scroll-View-property-framesCount'>    framesCount: 0,
+</span>
+<span id='Ext-scroll-View-method-getCurrentFps'>    getCurrentFps: function() {
+</span>        var now = Date.now(),
+            fps;
+
+        if (!this.isBenchmarking) {
+            this.isBenchmarking = true;
+            fps = 0;
+        }
+        else {
+            fps = Math.round(this.framesCount * 1000 / (now - this.framesCountStartTime));
+        }
+
+        this.framesCountStartTime = now;
+        this.framesCount = 0;
+
+        return fps;
+    },
+<span id='Ext-scroll-View-method-setIndicatorValue'>    //&lt;/debug&gt;
+</span>
+    setIndicatorValue: function(axis, scrollerPosition) {
+        if (!this.isAxisEnabled(axis)) {
+            return this;
+        }
+
+        var scroller = this.getScroller(),
+            scrollerMaxPosition = scroller.getMaxPosition()[axis],
+            scrollerContainerSize = scroller.getContainerSize()[axis],
+            value;
+
+        if (scrollerMaxPosition === 0) {
+            value = scrollerPosition / scrollerContainerSize;
+
+            if (scrollerPosition &gt;= 0) {
+                value += 1;
             }
-            this.add(newNavigationBar);
         }
-    },
-
-<span id='Ext-navigation-View-method-applyActiveItem'>    /**
-</span>     * @private
-     */
-    applyActiveItem: function(activeItem, currentActiveItem) {
-        var me = this,
-            innerItems = me.getInnerItems();
-
-        // Make sure the items are already initialized
-        me.getItems();
-
-        // If we are not initialzed yet, we should set the active item to the last item in the stack
-        if (!me.initialized) {
-            activeItem = innerItems.length - 1;
-        }
-
-        return this.callParent([activeItem, currentActiveItem]);
-    },
-
-    doResetActiveItem: function(innerIndex) {
-        var me = this,
-            innerItems = me.getInnerItems(),
-            animation = me.getLayout().getAnimation();
-
-        if (innerIndex &gt; 0) {
-            if (animation &amp;&amp; animation.isAnimation) {
-                animation.setReverse(true);
+        else {
+            if (scrollerPosition &gt; scrollerMaxPosition) {
+                value = 1 + ((scrollerPosition - scrollerMaxPosition) / scrollerContainerSize);
             }
-            me.setActiveItem(innerIndex - 1);
-            me.getNavigationBar().onViewRemove(me, innerItems[innerIndex], innerIndex);
+            else if (scrollerPosition &lt; 0) {
+                value = scrollerPosition / scrollerContainerSize;
+            }
+            else {
+                value = scrollerPosition / scrollerMaxPosition;
+            }
         }
+
+        this.getIndicators()[axis].setValue(value);
     },
 
-<span id='Ext-navigation-View-method-doRemove'>    /**
-</span>     * @private
-     */
-    doRemove: function() {
-        var animation = this.getLayout().getAnimation();
-
-        if (animation &amp;&amp; animation.isAnimation) {
-            animation.setReverse(false);
+<span id='Ext-scroll-View-method-refreshIndicator'>    refreshIndicator: function(axis) {
+</span>        if (!this.isAxisEnabled(axis)) {
+            return this;
         }
+
+        var scroller = this.getScroller(),
+            indicator = this.getIndicators()[axis],
+            scrollerContainerSize = scroller.getContainerSize()[axis],
+            scrollerSize = scroller.getSize()[axis],
+            ratio = scrollerContainerSize / scrollerSize;
+
+        indicator.setRatio(ratio);
+        indicator.refresh();
+    },
+
+<span id='Ext-scroll-View-method-refresh'>    refresh: function() {
+</span>        return this.getScroller().refresh();
+    },
+
+<span id='Ext-scroll-View-method-refreshIndicators'>    refreshIndicators: function() {
+</span>        var indicators = this.getIndicators();
+
+        indicators.x.setActive(this.isAxisEnabled('x'));
+        indicators.y.setActive(this.isAxisEnabled('y'));
+
+        this.refreshIndicator('x');
+        this.refreshIndicator('y');
+    },
+
+<span id='Ext-scroll-View-method-destroy'>    destroy: function() {
+</span>        var element = this.getElement(),
+            indicators = this.getIndicators();
+
+        Ext.destroy(this.getScroller(), this.indicatorsGrid);
+
+        if (this.hasOwnProperty('indicatorsHidingTimer')) {
+            clearTimeout(this.indicatorsHidingTimer);
+            delete this.indicatorsHidingTimer;
+        }
+
+        if (element &amp;&amp; !element.isDestroyed) {
+            element.removeCls(this.getCls());
+        }
+
+        indicators.x.destroy();
+        indicators.y.destroy();
+
+        delete this.indicatorsGrid;
 
         this.callParent(arguments);
-    },
-
-<span id='Ext-navigation-View-method-onItemAdd'>    /**
-</span>     * @private
-     */
-    onItemAdd: function(item, index) {
-        this.doItemLayoutAdd(item, index);
-
-        if (!this.isItemsInitializing &amp;&amp; item.isInnerItem()) {
-            this.setActiveItem(item);
-            this.getNavigationBar().onViewAdd(this, item, index);
-        }
-
-        if (this.initialized) {
-            this.fireEvent('add', this, item, index);
-        }
-    },
-
-<span id='Ext-navigation-View-method-reset'>    /**
-</span>     * Resets the view by removing all items between the first and last item.
-     * @return {Ext.Component} The view that is now active
-     */
-    reset: function() {
-        return this.pop(this.getInnerItems().length);
     }
 });
 </pre>

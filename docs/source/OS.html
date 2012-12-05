@@ -15,31 +15,23 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-env-OS'>/**
-</span> * @aside guide environment_package
+  <pre class="prettyprint lang-js">//@tag dom,core
+//@require Ext.env.Browser
+
+<span id='Ext-env-OS'>/**
+</span> * Provides information about operating system environment.
  *
- * Provide useful information about the current operating system environment. Access the global instance stored in
- * Ext.os. Example:
- *
- *     if (Ext.os.is.Windows) {
- *          // Windows specific code here
- *     }
- *
- *     if (Ext.os.is.iOS) {
- *          // iPad, iPod, iPhone, etc.
- *     }
- *
- *     console.log(&quot;Version &quot; + Ext.os.version);
- *
- * For a full list of supported values, refer to: {@link Ext.env.OS#is}
+ * Should not be manually instantiated unless for unit-testing.
+ * Access the global instance stored in {@link Ext.os} instead.
+ * @private
  */
 Ext.define('Ext.env.OS', {
 
     requires: ['Ext.Version'],
 
     statics: {
-        names: {
-            ios: 'iOS',
+<span id='Ext-env-OS-property-names'>        names: {
+</span>            ios: 'iOS',
             android: 'Android',
             webos: 'webOS',
             blackberry: 'BlackBerry',
@@ -50,8 +42,8 @@ Ext.define('Ext.env.OS', {
             bada: 'Bada',
             other: 'Other'
         },
-        prefixes: {
-            ios: 'i(?:Pad|Phone|Pod)(?:.*)CPU(?: iPhone)? OS ',
+<span id='Ext-env-OS-property-prefixes'>        prefixes: {
+</span>            ios: 'i(?:Pad|Phone|Pod)(?:.*)CPU(?: iPhone)? OS ',
             android: '(Android |HTC_|Silk/)', // Some HTC devices ship with an OSX userAgent by default,
                                         // so we need to add a direct check for HTC_
             blackberry: 'BlackBerry(?:.*)Version\/',
@@ -64,41 +56,72 @@ Ext.define('Ext.env.OS', {
 <span id='Ext-env-OS-method-is'>    /**
 </span>     * A &quot;hybrid&quot; property, can be either accessed as a method call, i.e:
      *
-     *     if (Ext.os.is('Android')) { ... }
+     *     if (Ext.os.is('Android')) {
+     *         // ...
+     *     }
      *
      * or as an object with boolean properties, i.e:
      *
-     *     if (Ext.os.is.Android) { ... }
+     *     if (Ext.os.is.Android) {
+     *         // ...
+     *     }
      *
      * Versions can be conveniently checked as well. For example:
      *
-     *     if (Ext.os.is.Android2) { ... } // Equivalent to (Ext.os.is.Android &amp;&amp; Ext.os.version.equals(2))
+     *     if (Ext.os.is.Android2) {
+     *         // Equivalent to (Ext.os.is.Android &amp;&amp; Ext.os.version.equals(2))
+     *     }
      *
-     *     if (Ext.os.is.iOS32) { ... } // Equivalent to (Ext.os.is.iOS &amp;&amp; Ext.os.version.equals(3.2))
+     *     if (Ext.os.is.iOS32) {
+     *         // Equivalent to (Ext.os.is.iOS &amp;&amp; Ext.os.version.equals(3.2))
+     *     }
      *
      * Note that only {@link Ext.Version#getMajor major component} and {@link Ext.Version#getShortVersion simplified}
-     * value of the version are available via direct property checking. Supported values are: iOS, iPad, iPhone, iPod,
-     * Android, WebOS, BlackBerry, Bada, MacOS, Windows, Linux and Other
-     * @param {String} value The OS name to check
+     * value of the version are available via direct property checking. Supported values are:
+     *
+     * - iOS
+     * - iPad
+     * - iPhone
+     * - iPhone5 (also true for 4in iPods).
+     * - iPod
+     * - Android
+     * - WebOS
+     * - BlackBerry
+     * - Bada
+     * - MacOS
+     * - Windows
+     * - Linux
+     * - Other
+     * @param {String} value The OS name to check.
      * @return {Boolean}
      */
     is: Ext.emptyFn,
 
 <span id='Ext-env-OS-property-name'>    /**
 </span>     * @property {String} [name=null]
-     * Read-only - the full name of the current operating system Possible values are: iOS, Android, WebOS, BlackBerry,
-     * MacOS, Windows, Linux and Other
+     * @readonly
+     * The full name of the current operating system. Possible values are:
+     *
+     * - iOS
+     * - Android
+     * - WebOS
+     * - BlackBerry,
+     * - MacOS
+     * - Windows
+     * - Linux
+     * - Other
      */
     name: null,
 
 <span id='Ext-env-OS-property-version'>    /**
 </span>     * @property {Ext.Version} [version=null]
-     * Read-only, refer to {@link Ext.Version}
+     * Refer to {@link Ext.Version}
+     * @readonly
      */
     version: null,
 
-    setFlag: function(name, value) {
-        if (typeof value == 'undefined') {
+<span id='Ext-env-OS-method-setFlag'>    setFlag: function(name, value) {
+</span>        if (typeof value == 'undefined') {
             value = true;
         }
 
@@ -108,8 +131,8 @@ Ext.define('Ext.env.OS', {
         return this;
     },
 
-    constructor: function(userAgent, platform) {
-        var statics = this.statics(),
+<span id='Ext-env-OS-method-constructor'>    constructor: function(userAgent, platform) {
+</span>        var statics = this.statics(),
             names = statics.names,
             prefixes = statics.prefixes,
             name,
@@ -151,7 +174,7 @@ Ext.define('Ext.env.OS', {
         this.version = version;
 
         if (platform) {
-            this.setFlag(platform);
+            this.setFlag(platform.replace(/ simulator$/i, ''));
         }
 
         this.setFlag(name);
@@ -169,6 +192,11 @@ Ext.define('Ext.env.OS', {
                     this.setFlag(item, (name === item));
                 }
             }
+        }
+
+        // Detect if the device is the iPhone 5.
+        if (this.name == &quot;iOS&quot; &amp;&amp; window.screen.height == 568) {
+            this.setFlag('iPhone5');
         }
 
         return this;
@@ -199,6 +227,28 @@ Ext.define('Ext.env.OS', {
     });
     //&lt;/deprecated&gt;
 
+<span id='Ext-os'>    /**
+</span>     * @class Ext.os
+     * @extends Ext.env.OS
+     * @singleton
+     * Provides useful information about the current operating system environment.
+     *
+     * Example:
+     *
+     *     if (Ext.os.is.Windows) {
+     *         // Windows specific code here
+     *     }
+     *
+     *     if (Ext.os.is.iOS) {
+     *         // iPad, iPod, iPhone, etc.
+     *     }
+     *
+     *     console.log(&quot;Version &quot; + Ext.os.version);
+     *
+     * For a full list of supported values, refer to the {@link #is} property/method.
+     *
+     * @aside guide environment_package
+     */
     Ext.os = osEnv = new this(userAgent, navigation.platform);
 
     osName = osEnv.name;
@@ -220,6 +270,9 @@ Ext.define('Ext.env.OS', {
     else {
         if (!osEnv.is.Android &amp;&amp; !osEnv.is.iOS &amp;&amp; /Windows|Linux|MacOS/.test(osName)) {
             deviceType = 'Desktop';
+
+            // always set it to false when you are on a desktop
+            Ext.browser.is.WebView = false;
         }
         else if (osEnv.is.iPad || osEnv.is.Android3 || (osEnv.is.Android4 &amp;&amp; userAgent.search(/mobile/i) == -1)) {
             deviceType = 'Tablet';
@@ -229,6 +282,22 @@ Ext.define('Ext.env.OS', {
         }
     }
 
+<span id='Ext-os-property-deviceType'>    /**
+</span>     * @property {String} deviceType
+     * The generic type of the current device.
+     *
+     * Possible values:
+     *
+     * - Phone
+     * - Tablet
+     * - Desktop
+     *
+     * For testing purposes the deviceType can be overridden by adding
+     * a deviceType parameter to the URL of the page, like so:
+     *
+     *     http://localhost/mypage.html?deviceType=Tablet
+     *
+     */
     osEnv.setFlag(deviceType, true);
     osEnv.deviceType = deviceType;
 
@@ -251,7 +320,7 @@ Ext.define('Ext.env.OS', {
 </span>     * @class Ext.is
      * Used to detect if the current browser supports a certain feature, and the type of the current browser.
      * @deprecated 2.0.0
-     * Please refer to the {@link Ext.env.Browser}, {@link Ext.env.OS} and {@link Ext.feature.has} classes instead.
+     * Please refer to the {@link Ext.browser}, {@link Ext.os} and {@link Ext.feature} classes instead.
      */
 });
 </pre>

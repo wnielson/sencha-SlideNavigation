@@ -15,29 +15,72 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-device-device-Abstract'>/**
+  <pre class="prettyprint lang-js"><span id='Ext-device-connection-Abstract'>/**
 </span> * @private
  */
-Ext.define('Ext.device.device.Abstract', {
-<span id='Ext-device-device-Abstract-property-name'>    /**
-</span>     * @property {String} name
-     * Returns the name of the current device. If the current device does not have a name (for example, in a browser), it will
-     * default to `Not available`.
-     */
-    name: 'not available',
+Ext.define('Ext.device.connection.Abstract', {
+    extend: 'Ext.Evented',
 
-<span id='Ext-device-device-Abstract-property-uuid'>    /**
-</span>     * @property {String} uuid
-     * Returns a unique identifier for the current device. If the current device does not have a unique identifier (for example,
-     * in a browser), it will default to `anonymous`.
-     */
-    uuid: 'anonymous',
+    config: {
+<span id='Ext-device-connection-Abstract-cfg-online'>        online: false,
+</span><span id='Ext-device-connection-Abstract-cfg-type'>        type: null
+</span>    },
 
-<span id='Ext-device-device-Abstract-property-platform'>    /**
-</span>     * @property {String} platform
-     * The current platform the device is running on.
+<span id='Ext-device-connection-Abstract-property-UNKNOWN'>    /**
+</span>     * @property {String} UNKNOWN
+     * Text label for a connection type.
      */
-    platform: Ext.os.name
+    UNKNOWN: 'Unknown connection',
+
+<span id='Ext-device-connection-Abstract-property-ETHERNET'>    /**
+</span>     * @property {String} ETHERNET
+     * Text label for a connection type.
+     */
+    ETHERNET: 'Ethernet connection',
+
+<span id='Ext-device-connection-Abstract-property-WIFI'>    /**
+</span>     * @property {String} WIFI
+     * Text label for a connection type.
+     */
+    WIFI: 'WiFi connection',
+
+<span id='Ext-device-connection-Abstract-property-CELL_2G'>    /**
+</span>     * @property {String} CELL_2G
+     * Text label for a connection type.
+     */
+    CELL_2G: 'Cell 2G connection',
+
+<span id='Ext-device-connection-Abstract-property-CELL_3G'>    /**
+</span>     * @property {String} CELL_3G
+     * Text label for a connection type.
+     */
+    CELL_3G: 'Cell 3G connection',
+
+<span id='Ext-device-connection-Abstract-property-CELL_4G'>    /**
+</span>     * @property {String} CELL_4G
+     * Text label for a connection type.
+     */
+    CELL_4G: 'Cell 4G connection',
+
+<span id='Ext-device-connection-Abstract-property-NONE'>    /**
+</span>     * @property {String} NONE
+     * Text label for a connection type.
+     */
+    NONE: 'No network connection',
+
+<span id='Ext-device-connection-Abstract-method-isOnline'>    /**
+</span>     * True if the device is currently online
+     * @return {Boolean} online
+     */
+    isOnline: function() {
+        return this.getOnline();
+    }
+
+<span id='Ext-device-connection-Abstract-method-getType'>    /**
+</span>     * @method getType
+     * Returns the current connection type.
+     * @return {String} type
+     */
 });
 </pre>
 </body>

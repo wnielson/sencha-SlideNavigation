@@ -15,13 +15,17 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-mixin-Mixin'>/**
+  <pre class="prettyprint lang-js">//@require Ext.Class
+//@require Ext.ClassManager
+//@require Ext.Loader
+
+<span id='Ext-mixin-Mixin'>/**
 </span> * Base class for all mixins.
  * @private
  */
 Ext.define('Ext.mixin.Mixin', {
-    onClassExtended: function(cls, data) {
-        var mixinConfig = data.mixinConfig,
+<span id='Ext-mixin-Mixin-method-onClassExtended'>    onClassExtended: function(cls, data) {
+</span>        var mixinConfig = data.mixinConfig,
             parentClassMixinConfig,
             beforeHooks, afterHooks;
 

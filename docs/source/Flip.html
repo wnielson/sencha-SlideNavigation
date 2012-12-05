@@ -24,21 +24,21 @@ Ext.define('Ext.fx.animation.Flip', {
     alias: 'animation.flip',
 
     config: {
-        easing: 'ease-in',
-
+<span id='Ext-fx-animation-Flip-cfg-easing'>        easing: 'ease-in',
+</span>
 <span id='Ext-fx-animation-Flip-cfg-direction'>        /**
 </span>         * @cfg {String} direction The direction of which the slide animates
          * @accessor
          */
         direction: 'right',
 
-        half: false,
+<span id='Ext-fx-animation-Flip-cfg-half'>        half: false,
+</span>
+<span id='Ext-fx-animation-Flip-cfg-out'>        out: null
+</span>    },
 
-        out: null
-    },
-
-    getData: function() {
-        var from = this.getFrom(),
+<span id='Ext-fx-animation-Flip-method-getData'>    getData: function() {
+</span>        var from = this.getFrom(),
             to = this.getTo(),
             direction = this.getDirection(),
             out = this.getOut(),

@@ -149,7 +149,7 @@
  *     }
  *
  * If you were to pass a response object containing attributes different from those initially defined above, you could
- * use the `metaData` attribute to reconifgure the Reader on the fly. For example:
+ * use the `metaData` attribute to reconfigure the Reader on the fly. For example:
  *
  *     {
  *         &quot;count&quot;: 1,
@@ -211,18 +211,18 @@ Ext.define('Ext.data.reader.Json', {
 
 <span id='Ext-data-reader-Json-cfg-useSimpleAccessors'>        /**
 </span>         * @cfg {Boolean} [useSimpleAccessors=false]
-         * True to ensure that field names/mappings are treated as literals when reading values. Defalts to false. For
+         * `true` to ensure that field names/mappings are treated as literals when reading values. For
          * example, by default, using the mapping &quot;foo.bar.baz&quot; will try and read a property foo from the root, then a
-         * property bar from foo, then a property baz from bar. Setting the simple accessors to true will read the
+         * property bar from foo, then a property baz from bar. Setting the simple accessors to `true` will read the
          * property with the name &quot;foo.bar.baz&quot; direct from the root object.
          */
         useSimpleAccessors: false
     },
 
-    objectRe: /[\[\.]/,
-
-    //inherit docs
-    getResponseData: function(response) {
+<span id='Ext-data-reader-Json-property-objectRe'>    objectRe: /[\[\.]/,
+</span>
+<span id='Ext-data-reader-Json-method-getResponseData'>    // @inheritdoc
+</span>    getResponseData: function(response) {
         var responseText = response;
 
         // Handle an XMLHttpRequest object
@@ -242,7 +242,7 @@ Ext.define('Ext.data.reader.Json', {
         catch (ex) {
 <span id='Ext-data-reader-Json-event-exception'>            /**
 </span>             * @event exception Fires whenever the reader is unable to parse a response.
-             * @param {Ext.data.reader.Xml} reader A reference to this reader
+             * @param {Ext.data.reader.Xml} reader A reference to this reader.
              * @param {XMLHttpRequest} response The XMLHttpRequest response object.
              * @param {String} error The error message.
              */
@@ -260,8 +260,8 @@ Ext.define('Ext.data.reader.Json', {
         return data;
     },
 
-    // inherit docs
-    buildExtractors: function() {
+<span id='Ext-data-reader-Json-method-buildExtractors'>    // @inheritdoc
+</span>    buildExtractors: function() {
         var me = this,
             root = me.getRootProperty();
 
@@ -275,8 +275,8 @@ Ext.define('Ext.data.reader.Json', {
     },
 
 <span id='Ext-data-reader-Json-method-getRoot'>    /**
-</span>     * We create this method because root is now a config so getRoot is already defined, but in the old
-     * data package getRoot was passed a data argument and it would return the data inside of the root
+</span>     * We create this method because `root` is now a config so `getRoot` is already defined, but in the old
+     * data package `getRoot` was passed a data argument and it would return the data inside of the `root`
      * property. This method handles both cases.
      * @param data (Optional)
      * @return {String/Object} Returns the config root value if this method was called without passing
@@ -333,7 +333,7 @@ Ext.define('Ext.data.reader.Json', {
         return this.callParent([data]);
     },
 
-<span id='Ext-data-reader-Json-method-createAccessor'>    /**
+<span id='Ext-data-reader-Json-property-createAccessor'>    /**
 </span>     * @private
      * Returns an accessor function for the given property string. Gives support for properties such as the following:
      * 'someProperty'

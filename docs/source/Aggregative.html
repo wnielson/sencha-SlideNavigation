@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-chart-series-sprite-Aggregative'>/**
+</span> *
+ */
+Ext.define(&quot;Ext.chart.series.sprite.Aggregative&quot;, {
+    extend: 'Ext.chart.series.sprite.Cartesian',
+    requires: ['Ext.draw.LimitedCache', 'Ext.draw.SegmentTree'],
+    inheritableStatics: {
+<span id='Ext-chart-series-sprite-Aggregative-property-def'>        def: {
+</span>            processors: {
+<span id='Ext-chart-series-sprite-Aggregative-cfg-dataHigh'>                /**
+</span>                 * @cfg {Object} [dataHigh=null] Data items representing the high values of the aggregated data.
+                 */
+                dataHigh: 'data',
+
+<span id='Ext-chart-series-sprite-Aggregative-cfg-dataLow'>                /**
+</span>                 * @cfg {Object} [dataLow=null] Data items representing the low values of the aggregated data.
+                 */
+                dataLow: 'data',
+
+<span id='Ext-chart-series-sprite-Aggregative-cfg-dataClose'>                /**
+</span>                 * @cfg {Object} [dataClose=null] Data items representing the closing values of the aggregated data.
+                 */
+                dataClose: 'data'
+            },
+            aliases: {
+<span id='Ext-chart-series-sprite-Aggregative-cfg-dataOpen'>                /**
+</span>                 * @cfg {Object} [dataOpen=null] Data items representing the opening values of the aggregated data.
+                 */
+                dataOpen: 'dataY'
+            },
+            defaults: {
+                dataHigh: null,
+                dataLow: null,
+                dataClose: null
+            }
+        }
+    },
+
+    config: {
+<span id='Ext-chart-series-sprite-Aggregative-cfg-aggregator'>        aggregator: {}
+</span>    },
+
+<span id='Ext-chart-series-sprite-Aggregative-method-applyAggregator'>    applyAggregator: function (aggregator, oldAggr) {
+</span>        return Ext.factory(aggregator, Ext.draw.SegmentTree, oldAggr);
+    },
+
+<span id='Ext-chart-series-sprite-Aggregative-method-constructor'>    constructor: function () {
+</span>        this.callSuper(arguments);
+    },
+
+<span id='Ext-chart-series-sprite-Aggregative-method-processDataY'>    processDataY: function () {
+</span>        var me = this,
+            attr = me.attr,
+            high = attr.dataHigh,
+            low = attr.dataLow,
+            close = attr.dataClose,
+            open = attr.dataY;
+        me.callSuper(arguments);
+        if (attr.dataX &amp;&amp; open &amp;&amp; open.length &gt; 0) {
+            if (high) {
+                me.getAggregator().setData(attr.dataX, attr.dataY, high, low, close);
+            } else {
+                me.getAggregator().setData(attr.dataX, attr.dataY);
+            }
+        }
+    },
+
+<span id='Ext-chart-series-sprite-Aggregative-method-getGapWidth'>    getGapWidth: function () {
+</span>        return 1;
+    },
+
+<span id='Ext-chart-series-sprite-Aggregative-method-renderClipped'>    renderClipped: function (surface, ctx, clip, region) {
+</span>        var me = this,
+            aggregates = me.getAggregator() &amp;&amp; me.getAggregator().getAggregation(
+                clip[0],
+                clip[2],
+                (clip[2] - clip[0]) / region[2] * me.getGapWidth()
+            );
+        if (aggregates) {
+            me.dataStart = aggregates.data.startIdx[aggregates.start];
+            me.dataEnd = aggregates.data.endIdx[aggregates.end - 1];
+            
+            me.renderAggregates(aggregates.data, aggregates.start, aggregates.end, surface, ctx, clip, region);
+        }
+    }
+});</pre>
+</body>
+</html>

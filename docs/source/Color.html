@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">(function () {
+<span id='Ext-draw-Color'>    /**
+</span>     * Represents an RGB color and provides helper functions on it e.g. to get
+     * color components in HSL color space.
+     */
+    Ext.define('Ext.draw.Color', {
+        statics: {
+<span id='Ext-draw-Color-property-colorToHexRe'>            colorToHexRe: /(.*?)rgb\((\d+),\s*(\d+),\s*(\d+)\)/,
+</span><span id='Ext-draw-Color-property-rgbToHexRe'>            rgbToHexRe: /\s*rgb\((\d+),\s*(\d+),\s*(\d+)\)/,
+</span><span id='Ext-draw-Color-property-rgbaToHexRe'>            rgbaToHexRe: /\s*rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\.\d]+)\)/,
+</span><span id='Ext-draw-Color-property-hexRe'>            hexRe: /\s*#([0-9a-fA-F][0-9a-fA-F]?)([0-9a-fA-F][0-9a-fA-F]?)([0-9a-fA-F][0-9a-fA-F]?)\s*/
+</span>        },
+
+<span id='Ext-draw-Color-property-isColor'>        isColor: true,
+</span><span id='Ext-draw-Color-cfg-lightnessFactor'>        /**
+</span>         * @cfg {Number} lightnessFactor
+         *
+         * The default factor to compute the lighter or darker color.
+         */
+        lightnessFactor: 0.2,
+
+<span id='Ext-draw-Color-method-constructor'>        /**
+</span>         * @constructor
+         * @param {Number} red Red component (0..255)
+         * @param {Number} green Green component (0..255)
+         * @param {Number} blue Blue component (0..255)
+         * @param {Number} [alpha=1] (optional) Alpha component (0..1)
+         */
+        constructor: function (red, green, blue, alpha) {
+            this.setRGB(red, green, blue, alpha);
+        },
+
+<span id='Ext-draw-Color-method-setRGB'>        setRGB: function (red, green, blue, alpha) {
+</span>            var me = this;
+            me.r = Math.min(255, Math.max(0, red));
+            me.g = Math.min(255, Math.max(0, green));
+            me.b = Math.min(255, Math.max(0, blue));
+            if (alpha === undefined) {
+                me.a = 1;
+            } else {
+                me.a = Math.min(1, Math.max(0, alpha));
+            }
+        },
+
+<span id='Ext-draw-Color-method-getGrayscale'>        /**
+</span>         * Returns the gray value (0 to 255) of the color.
+         *
+         * The gray value is calculated using the formula r*0.3 + g*0.59 + b*0.11.
+         *
+         * @return {Number}
+         */
+        getGrayscale: function () {
+            // http://en.wikipedia.org/wiki/Grayscale#Converting_color_to_grayscale
+            return this.r * 0.3 + this.g * 0.59 + this.b * 0.11;
+        },
+        
+<span id='Ext-draw-Color-method-getHSL'>        /**
+</span>         * Get the equivalent HSL components of the color.
+         * @param {Array} [target] Optional array to receive the values.
+         * @return {Array}
+         */
+        getHSL: function (target) {
+            var me = this,
+                r = me.r / 255,
+                g = me.g / 255,
+                b = me.b / 255,
+                max = Math.max(r, g, b),
+                min = Math.min(r, g, b),
+                delta = max - min,
+                h,
+                s = 0,
+                l = 0.5 * (max + min);
+
+            // min==max means achromatic (hue is undefined)
+            if (min !== max) {
+                s = (l &lt; 0.5) ? delta / (max + min) : delta / (2 - max - min);
+                if (r === max) {
+                    h = 60 * (g - b) / delta;
+                } else if (g === max) {
+                    h = 120 + 60 * (b - r) / delta;
+                } else {
+                    h = 240 + 60 * (r - g) / delta;
+                }
+                if (h &lt; 0) {
+                    h += 360;
+                }
+                if (h &gt;= 360) {
+                    h -= 360;
+                }
+            }
+            if (target) {
+                target[0] = h;
+                target[1] = s;
+                target[2] = l;
+            } else {
+                target = [h, s, l];
+            }
+            return target;
+        },
+
+<span id='Ext-draw-Color-method-setHSL'>        /**
+</span>         * Set current color based on the specified HSL values.
+         *
+         * @param {Number} h Hue component (0..359)
+         * @param {Number} s Saturation component (0..1)
+         * @param {Number} l Lightness component (0..1)
+         * @return this
+         */
+        setHSL: function (h, s, l) {
+            var c, x, m,
+                abs = Math.abs,
+                floor = Math.floor;
+            h = (h % 360 + 360 ) % 360;
+            s = s &gt; 1 ? 1 : s &lt; 0 ? 0 : s;
+            l = l &gt; 1 ? 1 : l &lt; 0 ? 0 : l;
+            if (s === 0 || h === null) {
+                l *= 255;
+                this.setRGB(l, l, l);
+            }
+            else {
+                // http://en.wikipedia.org/wiki/HSL_and_HSV#From_HSL
+                // C is the chroma
+                // X is the second largest component
+                // m is the lightness adjustment
+                h /= 60;
+                c = s * (1 - abs(2 * l - 1));
+                x = c * (1 - abs(h - 2 * floor(h / 2) - 1));
+                m = l - c / 2;
+                m *= 255;
+                c *= 255;
+                x *= 255;
+                switch (floor(h)) {
+                    case 0:
+                        this.setRGB(c + m, x + m, m);
+                        break;
+                    case 1:
+                        this.setRGB(x + m, c + m, m);
+                        break;
+                    case 2:
+                        this.setRGB(m, c + m, x + m);
+                        break;
+                    case 3:
+                        this.setRGB(m, x + m, c + m);
+                        break;
+                    case 4:
+                        this.setRGB(x + m, m, c + m);
+                        break;
+                    case 5:
+                        this.setRGB(c + m, m, x + m);
+                        break;
+                }
+            }
+            return this;
+        },
+
+<span id='Ext-draw-Color-method-createLighter'>        /**
+</span>         * Return a new color that is lighter than this color.
+         * @param {Number} [factor=0.2] Lighter factor (0..1).
+         * @return {Ext.draw.Color}
+         */
+        createLighter: function (factor) {
+            var hsl = this.getHSL();
+            factor = factor || this.lightnessFactor;
+            // COMPAT Ext.util.Numbers -&gt; Ext.Number
+            hsl[2] = hsl[2] + factor;
+            if (hsl[2] &gt; 1) {
+                hsl[2] = 1;
+            } else if (hsl[2] &lt; 0) {
+                hsl[2] = 0;
+            }
+            return Ext.draw.Color.fromHSL(hsl[0], hsl[1], hsl[2]);
+        },
+
+<span id='Ext-draw-Color-method-createDarker'>        /**
+</span>         * Return a new color that is darker than this color.
+         * @param {Number} [factor=0.2] Darker factor (0..1).
+         * @return {Ext.draw.Color}
+         */
+        createDarker: function (factor) {
+            factor = factor || this.lightnessFactor;
+            return this.createLighter(-factor);
+        },
+
+<span id='Ext-draw-Color-method-toString'>        /**
+</span>         * Return the color in the hex format, i.e. '#rrggbb'.
+         * @return {String}
+         */
+        toString: function () {
+            if (this.a === 1) {
+                var me = this,
+                    round = Math.round,
+                    r = round(me.r).toString(16),
+                    g = round(me.g).toString(16),
+                    b = round(me.b).toString(16);
+                r = (r.length === 1) ? '0' + r : r;
+                g = (g.length === 1) ? '0' + g : g;
+                b = (b.length === 1) ? '0' + b : b;
+                return ['#', r, g, b].join('');
+            } else {
+                return 'rgba(' + [Math.round(this.r), Math.round(this.g), Math.round(this.b), this.a].join(',') + ')';
+            }
+        },
+
+<span id='Ext-draw-Color-method-toHex'>        /**
+</span>         * Convert a color to hexadecimal format.
+         *
+         * @param {String/Array} color The color value (i.e 'rgb(255, 255, 255)', 'color: #ffffff').
+         * Can also be an Array, in this case the function handles the first member.
+         * @return {String} The color in hexadecimal format.
+         */
+        toHex: function (color) {
+            if (Ext.isArray(color)) {
+                color = color[0];
+            }
+            if (!Ext.isString(color)) {
+                return '';
+            }
+            if (color.substr(0, 1) === '#') {
+                return color;
+            }
+            var digits = Ext.draw.Color.colorToHexRe.exec(color);
+
+            if (Ext.isArray(digits)) {
+                var red = parseInt(digits[2], 10),
+                    green = parseInt(digits[3], 10),
+                    blue = parseInt(digits[4], 10),
+                    rgb = blue | (green &lt;&lt; 8) | (red &lt;&lt; 16);
+                return digits[1] + '#' + (&quot;000000&quot; + rgb.toString(16)).slice(-6);
+            }
+            else {
+                return '';
+            }
+        },
+
+<span id='Ext-draw-Color-method-setFromString'>        /**
+</span>         * Parse the string and set current color.
+         *
+         * Supported formats: '#rrggbb', '#rgb', and 'rgb(r,g,b)'.
+         *
+         * If the string is not recognized, an `undefined` will be returned instead.
+         *
+         * @param {String} str Color in string.
+         * @return this
+         */
+        setFromString: function (str) {
+            var values, r, g, b, a = 1,
+                parse = parseInt;
+
+            if (str === 'none') {
+                this.r = this.g = this.b = this.a = 0;
+                return this;
+            }
+
+            if ((str.length === 4 || str.length === 7) &amp;&amp; str.substr(0, 1) === '#') {
+                values = str.match(Ext.draw.Color.hexRe);
+                if (values) {
+                    r = parse(values[1], 16) &gt;&gt; 0;
+                    g = parse(values[2], 16) &gt;&gt; 0;
+                    b = parse(values[3], 16) &gt;&gt; 0;
+                    if (str.length === 4) {
+                        r += (r * 16);
+                        g += (g * 16);
+                        b += (b * 16);
+                    }
+                }
+            }
+            else if ((values = str.match(Ext.draw.Color.rgbToHexRe))) {
+                r = +values[1];
+                g = +values[2];
+                b = +values[3];
+            } else if ((values = str.match(Ext.draw.Color.rgbaToHexRe))) {
+                r = +values[1];
+                g = +values[2];
+                b = +values[3];
+                a = +values[4];
+            } else {
+                if (Ext.draw.Color.ColorList.hasOwnProperty(str.toLowerCase())) {
+                    return this.setFromString(Ext.draw.Color.ColorList[str.toLowerCase()]);
+                }
+            }
+            if (typeof r === 'undefined') {
+                return this;
+            }
+            this.r = r;
+            this.g = g;
+            this.b = b;
+            this.a = a;
+            return this;
+        }
+    }, function () {
+        var flyColor = new this();
+
+        //&lt;deprecated product=touch since=2.2&gt;
+        this.createAlias({
+            &quot;getLighter&quot;: &quot;createLighter&quot;,
+            &quot;getDarker&quot;: &quot;createDarker&quot;
+        });
+        //&lt;/deprecated&gt;
+
+        // TODO(zhangbei): do we have a better way to convert color names to rgb?
+        this.addStatics({
+<span id='Ext-draw-Color-static-method-fly'>            /**
+</span>             * Returns a flyweight instance of Ext.draw.Color.
+             *
+             * Can be called with either a CSS color string or with separate
+             * arguments for red, green, blue, alpha.
+             * 
+             * @param {Number/String} red Red component (0..255) or CSS color string.
+             * @param {Number} [green] Green component (0..255)
+             * @param {Number} [blue] Blue component (0..255)
+             * @param {Number} [alpha=1] Alpha component (0..1)
+             * @return {Ext.draw.Color}
+             * @static
+             */
+            fly: function (r, g, b, a) {
+                switch (arguments.length) {
+                    case 1:
+                        flyColor.setFromString(r);
+                        break;
+                    case 3:
+                    case 4:
+                        flyColor.setRGB(r, g, b, a);
+                        break;
+                    default:
+                        return null;
+                }
+                return flyColor;
+            },
+
+            ColorList: {
+                &quot;aliceblue&quot;: &quot;#f0f8ff&quot;, &quot;antiquewhite&quot;: &quot;#faebd7&quot;, &quot;aqua&quot;: &quot;#00ffff&quot;, &quot;aquamarine&quot;: &quot;#7fffd4&quot;, &quot;azure&quot;: &quot;#f0ffff&quot;,
+                &quot;beige&quot;: &quot;#f5f5dc&quot;, &quot;bisque&quot;: &quot;#ffe4c4&quot;, &quot;black&quot;: &quot;#000000&quot;, &quot;blanchedalmond&quot;: &quot;#ffebcd&quot;, &quot;blue&quot;: &quot;#0000ff&quot;, &quot;blueviolet&quot;: &quot;#8a2be2&quot;, &quot;brown&quot;: &quot;#a52a2a&quot;, &quot;burlywood&quot;: &quot;#deb887&quot;,
+                &quot;cadetblue&quot;: &quot;#5f9ea0&quot;, &quot;chartreuse&quot;: &quot;#7fff00&quot;, &quot;chocolate&quot;: &quot;#d2691e&quot;, &quot;coral&quot;: &quot;#ff7f50&quot;, &quot;cornflowerblue&quot;: &quot;#6495ed&quot;, &quot;cornsilk&quot;: &quot;#fff8dc&quot;, &quot;crimson&quot;: &quot;#dc143c&quot;, &quot;cyan&quot;: &quot;#00ffff&quot;,
+                &quot;darkblue&quot;: &quot;#00008b&quot;, &quot;darkcyan&quot;: &quot;#008b8b&quot;, &quot;darkgoldenrod&quot;: &quot;#b8860b&quot;, &quot;darkgray&quot;: &quot;#a9a9a9&quot;, &quot;darkgreen&quot;: &quot;#006400&quot;, &quot;darkkhaki&quot;: &quot;#bdb76b&quot;, &quot;darkmagenta&quot;: &quot;#8b008b&quot;, &quot;darkolivegreen&quot;: &quot;#556b2f&quot;,
+                &quot;darkorange&quot;: &quot;#ff8c00&quot;, &quot;darkorchid&quot;: &quot;#9932cc&quot;, &quot;darkred&quot;: &quot;#8b0000&quot;, &quot;darksalmon&quot;: &quot;#e9967a&quot;, &quot;darkseagreen&quot;: &quot;#8fbc8f&quot;, &quot;darkslateblue&quot;: &quot;#483d8b&quot;, &quot;darkslategray&quot;: &quot;#2f4f4f&quot;, &quot;darkturquoise&quot;: &quot;#00ced1&quot;,
+                &quot;darkviolet&quot;: &quot;#9400d3&quot;, &quot;deeppink&quot;: &quot;#ff1493&quot;, &quot;deepskyblue&quot;: &quot;#00bfff&quot;, &quot;dimgray&quot;: &quot;#696969&quot;, &quot;dodgerblue&quot;: &quot;#1e90ff&quot;,
+                &quot;firebrick&quot;: &quot;#b22222&quot;, &quot;floralwhite&quot;: &quot;#fffaf0&quot;, &quot;forestgreen&quot;: &quot;#228b22&quot;, &quot;fuchsia&quot;: &quot;#ff00ff&quot;,
+                &quot;gainsboro&quot;: &quot;#dcdcdc&quot;, &quot;ghostwhite&quot;: &quot;#f8f8ff&quot;, &quot;gold&quot;: &quot;#ffd700&quot;, &quot;goldenrod&quot;: &quot;#daa520&quot;, &quot;gray&quot;: &quot;#808080&quot;, &quot;green&quot;: &quot;#008000&quot;, &quot;greenyellow&quot;: &quot;#adff2f&quot;,
+                &quot;honeydew&quot;: &quot;#f0fff0&quot;, &quot;hotpink&quot;: &quot;#ff69b4&quot;,
+                &quot;indianred &quot;: &quot;#cd5c5c&quot;, &quot;indigo &quot;: &quot;#4b0082&quot;, &quot;ivory&quot;: &quot;#fffff0&quot;, &quot;khaki&quot;: &quot;#f0e68c&quot;,
+                &quot;lavender&quot;: &quot;#e6e6fa&quot;, &quot;lavenderblush&quot;: &quot;#fff0f5&quot;, &quot;lawngreen&quot;: &quot;#7cfc00&quot;, &quot;lemonchiffon&quot;: &quot;#fffacd&quot;, &quot;lightblue&quot;: &quot;#add8e6&quot;, &quot;lightcoral&quot;: &quot;#f08080&quot;, &quot;lightcyan&quot;: &quot;#e0ffff&quot;, &quot;lightgoldenrodyellow&quot;: &quot;#fafad2&quot;,
+                &quot;lightgray&quot;: &quot;#d3d3d3&quot;, &quot;lightgrey&quot;: &quot;#d3d3d3&quot;, &quot;lightgreen&quot;: &quot;#90ee90&quot;, &quot;lightpink&quot;: &quot;#ffb6c1&quot;, &quot;lightsalmon&quot;: &quot;#ffa07a&quot;, &quot;lightseagreen&quot;: &quot;#20b2aa&quot;, &quot;lightskyblue&quot;: &quot;#87cefa&quot;, &quot;lightslategray&quot;: &quot;#778899&quot;, &quot;lightsteelblue&quot;: &quot;#b0c4de&quot;,
+                &quot;lightyellow&quot;: &quot;#ffffe0&quot;, &quot;lime&quot;: &quot;#00ff00&quot;, &quot;limegreen&quot;: &quot;#32cd32&quot;, &quot;linen&quot;: &quot;#faf0e6&quot;,
+                &quot;magenta&quot;: &quot;#ff00ff&quot;, &quot;maroon&quot;: &quot;#800000&quot;, &quot;mediumaquamarine&quot;: &quot;#66cdaa&quot;, &quot;mediumblue&quot;: &quot;#0000cd&quot;, &quot;mediumorchid&quot;: &quot;#ba55d3&quot;, &quot;mediumpurple&quot;: &quot;#9370d8&quot;, &quot;mediumseagreen&quot;: &quot;#3cb371&quot;, &quot;mediumslateblue&quot;: &quot;#7b68ee&quot;,
+                &quot;mediumspringgreen&quot;: &quot;#00fa9a&quot;, &quot;mediumturquoise&quot;: &quot;#48d1cc&quot;, &quot;mediumvioletred&quot;: &quot;#c71585&quot;, &quot;midnightblue&quot;: &quot;#191970&quot;, &quot;mintcream&quot;: &quot;#f5fffa&quot;, &quot;mistyrose&quot;: &quot;#ffe4e1&quot;, &quot;moccasin&quot;: &quot;#ffe4b5&quot;,
+                &quot;navajowhite&quot;: &quot;#ffdead&quot;, &quot;navy&quot;: &quot;#000080&quot;,
+                &quot;oldlace&quot;: &quot;#fdf5e6&quot;, &quot;olive&quot;: &quot;#808000&quot;, &quot;olivedrab&quot;: &quot;#6b8e23&quot;, &quot;orange&quot;: &quot;#ffa500&quot;, &quot;orangered&quot;: &quot;#ff4500&quot;, &quot;orchid&quot;: &quot;#da70d6&quot;,
+                &quot;palegoldenrod&quot;: &quot;#eee8aa&quot;, &quot;palegreen&quot;: &quot;#98fb98&quot;, &quot;paleturquoise&quot;: &quot;#afeeee&quot;, &quot;palevioletred&quot;: &quot;#d87093&quot;, &quot;papayawhip&quot;: &quot;#ffefd5&quot;, &quot;peachpuff&quot;: &quot;#ffdab9&quot;, &quot;peru&quot;: &quot;#cd853f&quot;, &quot;pink&quot;: &quot;#ffc0cb&quot;, &quot;plum&quot;: &quot;#dda0dd&quot;, &quot;powderblue&quot;: &quot;#b0e0e6&quot;, &quot;purple&quot;: &quot;#800080&quot;,
+                &quot;red&quot;: &quot;#ff0000&quot;, &quot;rosybrown&quot;: &quot;#bc8f8f&quot;, &quot;royalblue&quot;: &quot;#4169e1&quot;,
+                &quot;saddlebrown&quot;: &quot;#8b4513&quot;, &quot;salmon&quot;: &quot;#fa8072&quot;, &quot;sandybrown&quot;: &quot;#f4a460&quot;, &quot;seagreen&quot;: &quot;#2e8b57&quot;, &quot;seashell&quot;: &quot;#fff5ee&quot;, &quot;sienna&quot;: &quot;#a0522d&quot;, &quot;silver&quot;: &quot;#c0c0c0&quot;, &quot;skyblue&quot;: &quot;#87ceeb&quot;, &quot;slateblue&quot;: &quot;#6a5acd&quot;, &quot;slategray&quot;: &quot;#708090&quot;, &quot;snow&quot;: &quot;#fffafa&quot;, &quot;springgreen&quot;: &quot;#00ff7f&quot;, &quot;steelblue&quot;: &quot;#4682b4&quot;,
+                &quot;tan&quot;: &quot;#d2b48c&quot;, &quot;teal&quot;: &quot;#008080&quot;, &quot;thistle&quot;: &quot;#d8bfd8&quot;, &quot;tomato&quot;: &quot;#ff6347&quot;, &quot;turquoise&quot;: &quot;#40e0d0&quot;,
+                &quot;violet&quot;: &quot;#ee82ee&quot;,
+                &quot;wheat&quot;: &quot;#f5deb3&quot;, &quot;white&quot;: &quot;#ffffff&quot;, &quot;whitesmoke&quot;: &quot;#f5f5f5&quot;,
+                &quot;yellow&quot;: &quot;#ffff00&quot;, &quot;yellowgreen&quot;: &quot;#9acd32&quot;
+            },
+
+<span id='Ext-draw-Color-static-method-fromHSL'>            /**
+</span>             * Create a new color based on the specified HSL values.
+             *
+             * @param {Number} h Hue component (0..359)
+             * @param {Number} s Saturation component (0..1)
+             * @param {Number} l Lightness component (0..1)
+             * @return {Ext.draw.Color}
+             * @static
+             */
+            fromHSL: function (h, s, l) {
+                return (new this(0, 0, 0, 0)).setHSL(h, s, l);
+            },
+
+<span id='Ext-draw-Color-static-method-fromString'>            /**
+</span>             * Parse the string and create a new color.
+             *
+             * Supported formats: '#rrggbb', '#rgb', and 'rgb(r,g,b)'.
+             *
+             * If the string is not recognized, an undefined will be returned instead.
+             *
+             * @param {String} string Color in string.
+             * @returns {Ext.draw.Color}
+             * @static
+             */
+            fromString: function (string) {
+                return (new this(0, 0, 0, 0)).setFromString(string);
+            },
+
+<span id='Ext-draw-Color-static-method-create'>            /**
+</span>             * Convenience method for creating a color.
+             * 
+             * Can be called with several different combinations of arguments:
+             * 
+             *     // Ext.draw.Color is returned unchanged.
+             *     Ext.draw.Color.create(new Ext.draw.color(255, 0, 0, 0));
+             * 
+             *     // CSS color string.
+             *     Ext.draw.Color.create(&quot;red&quot;);
+             * 
+             *     // Array of red, green, blue, alpha
+             *     Ext.draw.Color.create([255, 0, 0, 0]);
+             * 
+             *     // Separate arguments of red, green, blue, alpha
+             *     Ext.draw.Color.create(255, 0, 0, 0);
+             * 
+             *     // Returns black when no arguments given.
+             *     Ext.draw.Color.create();
+             * 
+             * @param {Ext.draw.Color/String/Number[]/Number} [red] Red component (0..255),
+             * CSS color string or array of all components.
+             * @param {Number} [green] Green component (0..255)
+             * @param {Number} [blue] Blue component (0..255)
+             * @param {Number} [alpha=1] Alpha component (0..1)
+             * @return {Ext.draw.Color}
+             * @static
+             */
+            create: function (arg) {
+                if (arg instanceof this) {
+                    return arg;
+                } else if (Ext.isArray(arg)) {
+                    return new Ext.draw.Color(arg[0], arg[1], arg[2], arg[3]);
+                } else if (Ext.isString(arg)) {
+                    return Ext.draw.Color.fromString(arg);
+                } else if (arguments.length &gt; 2) {
+                    return new Ext.draw.Color(arguments[0], arguments[1], arguments[2], arguments[3]);
+                } else {
+                    return new Ext.draw.Color(0, 0, 0, 0);
+                }
+            }
+        });
+    });
+})();</pre>
+</body>
+</html>

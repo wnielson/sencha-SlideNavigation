@@ -15,32 +15,22 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-env-Browser'>/**
-</span> * @aside guide environment_package
+  <pre class="prettyprint lang-js">//@tag dom,core
+//@require Ext-more
+
+<span id='Ext-env-Browser'>/**
+</span> * Provides information about browser.
  *
- * Provides useful information about the current browser. Should not be manually instantiated unless for unit-testing;
- * access the global instance stored in Ext.browser instead. Example:
- *
- * &lt;pre&gt;&lt;code&gt;
- * if (Ext.browser.is.IE) {
- *      // IE specific code here
- * }
- *
- * if (Ext.browser.is.WebKit) {
- *      // WebKit specific code here
- * }
- *
- * console.log(&quot;Version &quot; + Ext.browser.version);
- * &lt;/code&gt;&lt;/pre&gt;
- *
- * For a full list of supported values, refer to: {@link Ext.env.Browser#is}
+ * Should not be manually instantiated unless for unit-testing.
+ * Access the global instance stored in {@link Ext.browser} instead.
+ * @private
  */
 Ext.define('Ext.env.Browser', {
     requires: ['Ext.Version'],
 
     statics: {
-        browserNames: {
-            ie: 'IE',
+<span id='Ext-env-Browser-property-browserNames'>        browserNames: {
+</span>            ie: 'IE',
             firefox: 'Firefox',
             safari: 'Safari',
             chrome: 'Chrome',
@@ -51,21 +41,21 @@ Ext.define('Ext.env.Browser', {
             silk: 'Silk',
             other: 'Other'
         },
-        engineNames: {
-            webkit: 'WebKit',
+<span id='Ext-env-Browser-property-engineNames'>        engineNames: {
+</span>            webkit: 'WebKit',
             gecko: 'Gecko',
             presto: 'Presto',
             trident: 'Trident',
             other: 'Other'
         },
-        enginePrefixes: {
-            webkit: 'AppleWebKit/',
+<span id='Ext-env-Browser-property-enginePrefixes'>        enginePrefixes: {
+</span>            webkit: 'AppleWebKit/',
             gecko: 'Gecko/',
             presto: 'Presto/',
             trident: 'Trident/'
         },
-        browserPrefixes: {
-            ie: 'MSIE ',
+<span id='Ext-env-Browser-property-browserPrefixes'>        browserPrefixes: {
+</span>            ie: 'MSIE ',
             firefox: 'Firefox/',
             chrome: 'Chrome/',
             safari: 'Version/',
@@ -77,24 +67,24 @@ Ext.define('Ext.env.Browser', {
         }
     },
 
-    styleDashPrefixes: {
-        WebKit: '-webkit-',
+<span id='Ext-env-Browser-property-styleDashPrefixes'>    styleDashPrefixes: {
+</span>        WebKit: '-webkit-',
         Gecko: '-moz-',
         Trident: '-ms-',
         Presto: '-o-',
         Other: ''
     },
 
-    stylePrefixes: {
-        WebKit: 'Webkit',
+<span id='Ext-env-Browser-property-stylePrefixes'>    stylePrefixes: {
+</span>        WebKit: 'Webkit',
         Gecko: 'Moz',
         Trident: 'ms',
         Presto: 'O',
         Other: ''
     },
 
-    propertyPrefixes: {
-        WebKit: 'webkit',
+<span id='Ext-env-Browser-property-propertyPrefixes'>    propertyPrefixes: {
+</span>        WebKit: 'webkit',
         Gecko: 'moz',
         Trident: 'ms',
         Presto: 'o',
@@ -104,59 +94,91 @@ Ext.define('Ext.env.Browser', {
     // scope: Ext.env.Browser.prototype
 
 <span id='Ext-env-Browser-method-is'>    /**
-</span>     * A &quot;hybrid&quot; property, can be either accessed as a method call, i.e:
-     * &lt;pre&gt;&lt;code&gt;
-     * if (Ext.browser.is('IE')) { ... }
-     * &lt;/code&gt;&lt;/pre&gt;
+</span>     * A &quot;hybrid&quot; property, can be either accessed as a method call, for example:
      *
-     * or as an object with boolean properties, i.e:
-     * &lt;pre&gt;&lt;code&gt;
-     * if (Ext.browser.is.IE) { ... }
-     * &lt;/code&gt;&lt;/pre&gt;
+     *     if (Ext.browser.is('IE')) {
+     *         // ...
+     *     }
+     *
+     * Or as an object with Boolean properties, for example:
+     *
+     *     if (Ext.browser.is.IE) {
+     *         // ...
+     *     }
      *
      * Versions can be conveniently checked as well. For example:
-     * &lt;pre&gt;&lt;code&gt;
-     * if (Ext.browser.is.IE6) { ... } // Equivalent to (Ext.browser.is.IE &amp;&amp; Ext.browser.version.equals(6))
-     * &lt;/code&gt;&lt;/pre&gt;
      *
-     * Note that only {@link Ext.Version#getMajor major component}  and {@link Ext.Version#getShortVersion simplified}
+     *     if (Ext.browser.is.IE6) {
+     *         // Equivalent to (Ext.browser.is.IE &amp;&amp; Ext.browser.version.equals(6))
+     *     }
+     *
+     * __Note:__ Only {@link Ext.Version#getMajor major component}  and {@link Ext.Version#getShortVersion simplified}
      * value of the version are available via direct property checking.
      *
-     * Supported values are: IE, Firefox, Safari, Chrome, Opera, WebKit, Gecko, Presto, Trident and Other
+     * Supported values are:
      *
-     * @param {String} value The OS name to check
+     * - IE
+     * - Firefox
+     * - Safari
+     * - Chrome
+     * - Opera
+     * - WebKit
+     * - Gecko
+     * - Presto
+     * - Trident
+     * - WebView
+     * - Other
+     *
+     * @param {String} value The OS name to check.
      * @return {Boolean}
      */
     is: Ext.emptyFn,
 
 <span id='Ext-env-Browser-property-name'>    /**
-</span>     * Read-only - the full name of the current browser
-     * Possible values are: IE, Firefox, Safari, Chrome, Opera and Other
+</span>     * The full name of the current browser.
+     * Possible values are:
+     *
+     * - IE
+     * - Firefox
+     * - Safari
+     * - Chrome
+     * - Opera
+     * - Other
      * @type String
+     * @readonly
      */
     name: null,
 
 <span id='Ext-env-Browser-property-version'>    /**
-</span>     * Read-only, refer to {@link Ext.Version}
+</span>     * Refer to {@link Ext.Version}.
      * @type Ext.Version
+     * @readonly
      */
     version: null,
 
 <span id='Ext-env-Browser-property-engineName'>    /**
-</span>     * Read-only - the full name of the current browser's engine
-     * Possible values are: WebKit, Gecko, Presto, Trident and Other
+</span>     * The full name of the current browser's engine.
+     * Possible values are:
+     *
+     * - WebKit
+     * - Gecko
+     * - Presto
+     * - Trident
+     * - Other
      * @type String
+     * @readonly
      */
     engineName: null,
 
 <span id='Ext-env-Browser-property-engineVersion'>    /**
-</span>     * Read-only, refer to {@link Ext.Version}
+</span>     * Refer to {@link Ext.Version}.
      * @type Ext.Version
+     * @readonly
      */
     engineVersion: null,
 
-    setFlag: function(name, value) {
-        if (typeof value == 'undefined') {
+<span id='Ext-env-Browser-method-setFlag'>    setFlag: function(name, value) {
+</span>        if (typeof value == 'undefined') {
             value = true;
         }
 
@@ -166,8 +188,8 @@ Ext.define('Ext.env.Browser', {
         return this;
     },
 
-    constructor: function(userAgent) {
-<span id='Ext-env-Browser-property-userAgent'>        /**
+<span id='Ext-env-Browser-method-constructor'>    constructor: function(userAgent) {
+</span><span id='Ext-env-Browser-property-userAgent'>        /**
 </span>         * @property {String}
          * Browser User Agent string.
          */
@@ -205,6 +227,10 @@ Ext.define('Ext.env.Browser', {
         if (userAgent.match(/FB/) &amp;&amp; browserName == &quot;Other&quot;) {
             browserName = browserNames.safari;
             engineName = engineNames.webkit;
+        }
+
+        if (userAgent.match(/Android.*Chrome/g)) {
+            browserName = 'ChromeMobile';
         }
 
         Ext.apply(this, {
@@ -246,7 +272,7 @@ Ext.define('Ext.env.Browser', {
 
         this.setFlag('Standalone', !!navigator.standalone);
 
-        if (typeof window.PhoneGap != 'undefined') {
+        if (typeof window.PhoneGap != 'undefined' || typeof window.Cordova != 'undefined' || typeof window.cordova != 'undefined') {
             isWebView = true;
             this.setFlag('PhoneGap');
         }
@@ -255,34 +281,39 @@ Ext.define('Ext.env.Browser', {
             this.setFlag('Sencha');
         }
 
+        // Check if running in UIWebView
+        if (/(iPhone|iPod|iPad).*AppleWebKit(?!.*Safari)(?!.*FBAN)/i.test(userAgent)) {
+            isWebView = true;
+        }
+
         // Flag to check if it we are in the WebView
         this.setFlag('WebView', isWebView);
 
 <span id='Ext-env-Browser-property-isStrict'>        /**
 </span>         * @property {Boolean}
-         * True if browser is using strict mode.
+         * `true` if browser is using strict mode.
          */
         this.isStrict = document.compatMode == &quot;CSS1Compat&quot;;
 
 <span id='Ext-env-Browser-property-isSecure'>        /**
 </span>         * @property {Boolean}
-         * True if page is running over SSL.
+         * `true` if page is running over SSL.
          */
         this.isSecure = /^https/i.test(window.location.protocol);
 
         return this;
     },
 
-    getStyleDashPrefix: function() {
-        return this.styleDashPrefixes[this.engineName];
+<span id='Ext-env-Browser-method-getStyleDashPrefix'>    getStyleDashPrefix: function() {
+</span>        return this.styleDashPrefixes[this.engineName];
     },
 
-    getStylePrefix: function() {
-        return this.stylePrefixes[this.engineName];
+<span id='Ext-env-Browser-method-getStylePrefix'>    getStylePrefix: function() {
+</span>        return this.stylePrefixes[this.engineName];
     },
 
-    getVendorProperyName: function(name) {
-        var prefix = this.propertyPrefixes[this.engineName];
+<span id='Ext-env-Browser-method-getVendorProperyName'>    getVendorProperyName: function(name) {
+</span>        var prefix = this.propertyPrefixes[this.engineName];
 
         if (prefix.length &gt; 0) {
             return prefix + Ext.String.capitalize(name);
@@ -292,6 +323,28 @@ Ext.define('Ext.env.Browser', {
     }
 
 }, function() {
+<span id='Ext-browser'>    /**
+</span>     * @class Ext.browser
+     * @extends Ext.env.Browser
+     * @singleton
+     * Provides useful information about the current browser.
+     *
+     * Example:
+     *
+     *     if (Ext.browser.is.IE) {
+     *         // IE specific code here
+     *     }
+     *
+     *     if (Ext.browser.is.WebKit) {
+     *         // WebKit specific code here
+     *     }
+     *
+     *     console.log(&quot;Version &quot; + Ext.browser.version);
+     *
+     * For a full list of supported values, refer to {@link #is} property/method.
+     *
+     * @aside guide environment_package
+     */
     var browserEnv = Ext.browser = new this(Ext.global.navigator.userAgent);
 
     //&lt;deprecated product=touch since=2.0&gt;

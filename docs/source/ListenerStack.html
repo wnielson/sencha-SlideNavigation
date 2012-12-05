@@ -15,17 +15,19 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-event-ListenerStack'>/**
+  <pre class="prettyprint lang-js">//@require @core
+
+<span id='Ext-event-ListenerStack'>/**
 </span> * @private
  */
 Ext.define('Ext.event.ListenerStack', {
 
-    currentOrder: 'current',
-
-    length: 0,
-
-    constructor: function() {
-        this.listeners = {
+<span id='Ext-event-ListenerStack-property-currentOrder'>    currentOrder: 'current',
+</span>
+<span id='Ext-event-ListenerStack-property-length'>    length: 0,
+</span>
+<span id='Ext-event-ListenerStack-method-constructor'>    constructor: function() {
+</span>        this.listeners = {
             before: [],
             current: [],
             after: []
@@ -36,8 +38,8 @@ Ext.define('Ext.event.ListenerStack', {
         return this;
     },
 
-    add: function(fn, scope, options, order) {
-        var lateBindingMap = this.lateBindingMap,
+<span id='Ext-event-ListenerStack-method-add'>    add: function(fn, scope, options, order) {
+</span>        var lateBindingMap = this.lateBindingMap,
             listeners = this.getAll(order),
             i = listeners.length,
             bindingMap, listener, id;
@@ -88,24 +90,24 @@ Ext.define('Ext.event.ListenerStack', {
         return true;
     },
 
-    getAt: function(index, order) {
-        return this.getAll(order)[index];
+<span id='Ext-event-ListenerStack-method-getAt'>    getAt: function(index, order) {
+</span>        return this.getAll(order)[index];
     },
 
-    getAll: function(order) {
-        if (!order) {
+<span id='Ext-event-ListenerStack-method-getAll'>    getAll: function(order) {
+</span>        if (!order) {
             order = this.currentOrder;
         }
 
         return this.listeners[order];
     },
 
-    count: function(order) {
-        return this.getAll(order).length;
+<span id='Ext-event-ListenerStack-method-count'>    count: function(order) {
+</span>        return this.getAll(order).length;
     },
 
-    create: function(fn, scope, options, order) {
-        return {
+<span id='Ext-event-ListenerStack-method-create'>    create: function(fn, scope, options, order) {
+</span>        return {
             stack: this,
             fn: fn,
             firingFn: false,
@@ -117,8 +119,8 @@ Ext.define('Ext.event.ListenerStack', {
         };
     },
 
-    remove: function(fn, scope, order) {
-        var listeners = this.getAll(order),
+<span id='Ext-event-ListenerStack-method-remove'>    remove: function(fn, scope, order) {
+</span>        var listeners = this.getAll(order),
             i = listeners.length,
             isRemoved = false,
             lateBindingMap = this.lateBindingMap,

@@ -25,14 +25,14 @@ Ext.define('Ext.mixin.Sortable', {
         'Ext.util.Sorter'
     ],
 
-    mixinConfig: {
-        id: 'sortable'
+<span id='Ext-mixin-Sortable-property-mixinConfig'>    mixinConfig: {
+</span>        id: 'sortable'
     },
 
     config: {
 <span id='Ext-mixin-Sortable-cfg-sorters'>        /**
 </span>         * @cfg {Array} sorters
-         * An array with sorters. A sorter can be an instance of Ext.util.Sorter, a string
+         * An array with sorters. A sorter can be an instance of {@link Ext.util.Sorter}, a string
          * indicating a property name, an object representing an Ext.util.Sorter configuration,
          * or a sort function.
          */
@@ -40,39 +40,42 @@ Ext.define('Ext.mixin.Sortable', {
 
 <span id='Ext-mixin-Sortable-cfg-defaultSortDirection'>        /**
 </span>         * @cfg {String} defaultSortDirection
-         * The default sort direction to use if one is not specified (defaults to &quot;ASC&quot;)
+         * The default sort direction to use if one is not specified.
          */
         defaultSortDirection: &quot;ASC&quot;,
 
 <span id='Ext-mixin-Sortable-cfg-sortRoot'>        /**
 </span>         * @cfg {String} sortRoot
          * The root inside each item in which the properties exist that we want to sort on.
-         * This is useful for sorting records in which the data exists inside a 'data' property.
+         * This is useful for sorting records in which the data exists inside a `data` property.
          */
         sortRoot: null
     },
 
 <span id='Ext-mixin-Sortable-property-dirtySortFn'>    /**
 </span>     * @property {Boolean} dirtySortFn
-     * A flag indicating wether the currently cashed sort function is still valid. Read-only.
+     * A flag indicating whether the currently cashed sort function is still valid.
+     * @readonly
      */
     dirtySortFn: false,
 
 <span id='Ext-mixin-Sortable-property-currentSortFn'>    /**
 </span>     * @property currentSortFn
      * This is the cached sorting function which is a generated function that calls all the
-     * configured sorters in the correct order. This is a read-only property.
+     * configured sorters in the correct order.
+     * @readonly
      */
     sortFn: null,
 
 <span id='Ext-mixin-Sortable-property-sorted'>    /**
 </span>     * @property {Boolean} sorted
-     * A read-only flag indicating if this object is sorted
+     * A read-only flag indicating if this object is sorted.
+     * @readonly
      */
     sorted: false,
 
-    applySorters: function(sorters, collection) {
-        if (!collection) {
+<span id='Ext-mixin-Sortable-method-applySorters'>    applySorters: function(sorters, collection) {
+</span>        if (!collection) {
             collection = this.createSortersCollection();
         }
 
@@ -86,8 +89,8 @@ Ext.define('Ext.mixin.Sortable', {
         return collection;
     },
 
-    createSortersCollection: function() {
-        this._sorters = Ext.create('Ext.util.Collection', function(sorter) {
+<span id='Ext-mixin-Sortable-method-createSortersCollection'>    createSortersCollection: function() {
+</span>        this._sorters = Ext.create('Ext.util.Collection', function(sorter) {
             return sorter.getId();
         });
         return this._sorters;
@@ -279,7 +282,7 @@ Ext.define('Ext.mixin.Sortable', {
 
 <span id='Ext-mixin-Sortable-method-updateSortFn'>    /**
 </span>     * This updates the cached sortFn based on the current sorters.
-     * @return {Function} sortFn The generated sort function.
+     * @return {Function} The generated sort function.
      * @private
      */
     updateSortFn: function() {
@@ -310,7 +313,7 @@ Ext.define('Ext.mixin.Sortable', {
 
 <span id='Ext-mixin-Sortable-method-getSortFn'>    /**
 </span>     * Returns an up to date sort function.
-     * @return {Function} sortFn The sort function.
+     * @return {Function} The sort function.
      */
     getSortFn: function() {
         if (this.dirtySortFn) {
@@ -321,8 +324,8 @@ Ext.define('Ext.mixin.Sortable', {
 
 <span id='Ext-mixin-Sortable-method-sort'>    /**
 </span>     * This method will sort an array based on the currently configured {@link #sorters}.
-     * @param {Array} data The array you want to have sorted
-     * @return {Array} data The array you passed after it is sorted
+     * @param {Array} data The array you want to have sorted.
+     * @return {Array} The array you passed after it is sorted.
      */
     sort: function(data) {
         Ext.Array.sort(data, this.getSortFn());
@@ -334,7 +337,7 @@ Ext.define('Ext.mixin.Sortable', {
      * on the current sorters.
      * @param {Array} items The array that you want to insert the item into.
      * @param {Mixed} item The item that you want to insert into the items array.
-     * @returns {Number} index The index for the given item in the given array based on the current sorters.
+     * @return {Number} The index for the given item in the given array based on the current sorters.
      */
     findInsertionIndex: function(items, item, sortFn) {
         var start = 0,

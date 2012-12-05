@@ -24,8 +24,8 @@ Ext.define('Ext.fx.layout.card.Reveal', {
     alias: 'fx.layout.card.reveal',
 
     config: {
-        inAnimation: {
-            easing: 'ease-out',
+<span id='Ext-fx-layout-card-Reveal-cfg-inAnimation'>        inAnimation: {
+</span>            easing: 'ease-out',
             from: {
                 opacity: 0.99
             },
@@ -33,8 +33,8 @@ Ext.define('Ext.fx.layout.card.Reveal', {
                 opacity: 1
             }
         },
-        outAnimation: {
-            before: {
+<span id='Ext-fx-layout-card-Reveal-cfg-outAnimation'>        outAnimation: {
+</span>            before: {
                 'z-index': 100
             },
             after: {
@@ -46,8 +46,8 @@ Ext.define('Ext.fx.layout.card.Reveal', {
         }
     },
 
-    updateReverse: function(reverse) {
-        this.getInAnimation().setReverse(reverse);
+<span id='Ext-fx-layout-card-Reveal-method-updateReverse'>    updateReverse: function(reverse) {
+</span>        this.getInAnimation().setReverse(reverse);
         this.getOutAnimation().setReverse(reverse);
     }
 });

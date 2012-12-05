@@ -38,19 +38,19 @@ Ext.define('Ext.data.identifier.Simple', {
     alias: 'data.identifier.simple',
     
     statics: {
-        AUTO_ID: 1
-    },
+<span id='Ext-data-identifier-Simple-property-AUTO_ID'>        AUTO_ID: 1
+</span>    },
 
     config: {
-        prefix: 'ext-record-'
+<span id='Ext-data-identifier-Simple-cfg-prefix'>        prefix: 'ext-record-'
+</span>    },
+
+<span id='Ext-data-identifier-Simple-method-constructor'>    constructor: function(config) {
+</span>        this.initConfig(config);
     },
 
-    constructor: function(config) {
-        this.initConfig(config);
-    },
-
-    generate: function(record) {
-        return this._prefix + this.self.AUTO_ID++;
+<span id='Ext-data-identifier-Simple-method-generate'>    generate: function(record) {
+</span>        return this._prefix + this.self.AUTO_ID++;
     }
 });</pre>
 </body>

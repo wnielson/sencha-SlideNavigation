@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-chart-series-StackedCartesian'>/**
+</span> * @abstract
+ * @extends Ext.chart.series.Cartesian
+ * Abstract class for all the stacked cartesian series including area series
+ * and bar series.
+ */
+Ext.define('Ext.chart.series.StackedCartesian', {
+
+    extend: 'Ext.chart.series.Cartesian',
+
+    config: {
+<span id='Ext-chart-series-StackedCartesian-cfg-stacked'>        /**
+</span>         * @cfg {Boolean}
+         * 'true' to display the series in its stacked configuration.
+         */
+        stacked: true,
+
+<span id='Ext-chart-series-StackedCartesian-cfg-hidden'>        /**
+</span>         * @cfg {Array} hidden
+         */
+        hidden: []
+    },
+
+<span id='Ext-chart-series-StackedCartesian-property-animatingSprites'>    animatingSprites: 0,
+</span>
+<span id='Ext-chart-series-StackedCartesian-method-updateStacked'>    updateStacked: function () {
+</span>        this.processData();
+    },
+
+<span id='Ext-chart-series-StackedCartesian-method-coordinateY'>    coordinateY: function () {
+</span>        return this.coordinateStacked('Y', 1, 2);
+    },
+
+<span id='Ext-chart-series-StackedCartesian-method-getFields'>    getFields: function (fieldCategory) {
+</span>        var me = this,
+            fields = [], fieldsItem,
+            i, ln;
+        for (i = 0, ln = fieldCategory.length; i &lt; ln; i++) {
+            fieldsItem = me['get' + fieldCategory[i] + 'Field']();
+            if (Ext.isArray(fieldsItem)) {
+                fields.push.apply(fields, fieldsItem);
+            } else {
+                fields.push(fieldsItem);
+            }
+        }
+        return fields;
+    },
+
+<span id='Ext-chart-series-StackedCartesian-method-updateLabelOverflowPadding'>    updateLabelOverflowPadding: function (labelOverflowPadding) {
+</span>        this.getLabel().setAttributes({labelOverflowPadding: labelOverflowPadding});
+    },
+
+<span id='Ext-chart-series-StackedCartesian-method-getSprites'>    getSprites: function () {
+</span>        var me = this,
+            chart = this.getChart(),
+            animation = chart &amp;&amp; chart.getAnimate(),
+            fields = me.getFields(me.fieldCategoryY),
+            itemInstancing = me.getItemInstancing(),
+            sprites = me.sprites, sprite,
+            hidden = me.getHidden(),
+            spritesCreated = false,
+            i, length = fields.length;
+
+        if (!chart) {
+            return [];
+        }
+
+        for (i = 0; i &lt; length; i++) {
+            sprite = sprites[i];
+            if (!sprite) {
+                sprite = me.createSprite();
+                if (chart.getFlipXY()) {
+                    sprite.setAttributes({zIndex: i});
+                } else {
+                    sprite.setAttributes({zIndex: -i});
+                }
+                sprite.setField(fields[i]);
+                spritesCreated = true;
+                hidden.push(false);
+                if (itemInstancing) {
+                    sprite.itemsMarker.getTemplate().setAttributes(me.getOverriddenStyleByIndex(i));
+                } else {
+                    sprite.setAttributes(me.getStyleByIndex(i));
+                }
+            }
+            if (animation) {
+                if (itemInstancing) {
+                    sprite.itemsMarker.getTemplate().fx.setConfig(animation);
+                }
+                sprite.fx.setConfig(animation);
+            }
+        }
+
+        if (spritesCreated) {
+            me.updateHidden(hidden);
+        }
+        return sprites;
+    },
+
+<span id='Ext-chart-series-StackedCartesian-method-getItemForPoint'>    getItemForPoint: function (x, y) {
+</span>        if (this.getSprites()) {
+            var me = this,
+                i, ln, sprite,
+                itemInstancing = me.getItemInstancing(),
+                sprites = me.getSprites(),
+                store = me.getStore(),
+                item;
+
+            for (i = 0, ln = sprites.length; i &lt; ln; i++) {
+                sprite = sprites[i];
+                var index = sprite.getIndexNearPoint(x, y);
+                if (index !== -1) {
+                    item = {
+                        series: me,
+                        index: index,
+                        category: itemInstancing ? 'items' : 'markers',
+                        record: store.getData().items[index],
+                        field: this.getYField()[i],
+                        sprite: sprite
+                    };
+                    return item;
+                }
+            }
+        }
+    },
+
+<span id='Ext-chart-series-StackedCartesian-method-provideLegendInfo'>    provideLegendInfo: function (target) {
+</span>        var sprites = this.getSprites(),
+            title = this.getTitle(),
+            field = this.getYField(),
+            hidden = this.getHidden();
+        for (var i = 0; i &lt; sprites.length; i++) {
+            target.push({
+                name: this.getTitle() ? this.getTitle()[i] : (field &amp;&amp; field[i]) || this.getId(),
+                mark: this.getStyleByIndex(i).fillStyle || this.getStyleByIndex(i).strokeStyle || 'black',
+                disabled: hidden[i],
+                series: this.getId(),
+                index: i
+            });
+        }
+    },
+
+<span id='Ext-chart-series-StackedCartesian-method-onSpriteAnimationStart'>    onSpriteAnimationStart: function (sprite) {
+</span>        this.animatingSprites++;
+        if (this.animatingSprites === 1) {
+            this.fireEvent('animationstart');
+        }
+    },
+
+<span id='Ext-chart-series-StackedCartesian-method-onSpriteAnimationEnd'>    onSpriteAnimationEnd: function (sprite) {
+</span>        this.animatingSprites--;
+        if (this.animatingSprites === 0) {
+            this.fireEvent('animationend');
+        }
+    }
+});
+</pre>
+</body>
+</html>

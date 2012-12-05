@@ -16,7 +16,7 @@
 </head>
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js"><span id='Ext-event-recognizer-LongPress'>/**
-</span> * A event recogniser which knows when you tap and hold for more than 1 second.
+</span> * A event recognizer which knows when you tap and hold for more than 1 second.
  *
  * @private
  */
@@ -24,15 +24,15 @@ Ext.define('Ext.event.recognizer.LongPress', {
     extend: 'Ext.event.recognizer.SingleTouch',
 
     inheritableStatics: {
-        DURATION_NOT_ENOUGH: 0x20
-    },
+<span id='Ext-event-recognizer-LongPress-property-DURATION_NOT_ENOUGH'>        DURATION_NOT_ENOUGH: 0x20
+</span>    },
 
     config: {
-        minDuration: 1000
-    },
+<span id='Ext-event-recognizer-LongPress-cfg-minDuration'>        minDuration: 1000
+</span>    },
 
-    handledEvents: ['longpress'],
-
+<span id='Ext-event-recognizer-LongPress-property-handledEvents'>    handledEvents: ['longpress'],
+</span>
 <span id='Ext-dom-Element-event-longpress'>    /**
 </span>     * @member Ext.dom.Element
      * @event longpress
@@ -46,7 +46,6 @@ Ext.define('Ext.event.recognizer.LongPress', {
 </span>     * @member Ext.dom.Element
      * @event taphold
      * @inheritdoc Ext.dom.Element#longpress
-     * @deprecated 2.0.0 Please add listener to 'longpress' event instead
      */
 
     fireLongPress: function(e) {
@@ -60,8 +59,8 @@ Ext.define('Ext.event.recognizer.LongPress', {
         this.isLongPress = true;
     },
 
-    onTouchStart: function(e) {
-        var me = this;
+<span id='Ext-event-recognizer-LongPress-method-onTouchStart'>    onTouchStart: function(e) {
+</span>        var me = this;
 
         if (this.callParent(arguments) === false) {
             return false;
@@ -74,24 +73,23 @@ Ext.define('Ext.event.recognizer.LongPress', {
         }, this.getMinDuration());
     },
 
-    onTouchMove: function() {
-        return this.fail(this.self.TOUCH_MOVED);
+<span id='Ext-event-recognizer-LongPress-method-onTouchMove'>    onTouchMove: function() {
+</span>        return this.fail(this.self.TOUCH_MOVED);
     },
 
-    onTouchEnd: function() {
-        if (!this.isLongPress) {
+<span id='Ext-event-recognizer-LongPress-method-onTouchEnd'>    onTouchEnd: function() {
+</span>        if (!this.isLongPress) {
             return this.fail(this.self.DURATION_NOT_ENOUGH);
         }
     },
 
-    fail: function() {
-        clearTimeout(this.timer);
+<span id='Ext-event-recognizer-LongPress-method-fail'>    fail: function() {
+</span>        clearTimeout(this.timer);
 
         return this.callParent(arguments);
     }
 
 }, function() {
-    //&lt;deprecated product=touch since=2.0&gt;
     this.override({
         handledEvents: ['longpress', 'taphold'],
 
@@ -106,7 +104,6 @@ Ext.define('Ext.event.recognizer.LongPress', {
             return this.callOverridden(arguments);
         }
     });
-    //&lt;/deprecated&gt;
 });
 </pre>
 </body>

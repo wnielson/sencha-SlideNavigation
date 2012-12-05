@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-dataview-component-ListItem'>/**
+</span> * A DataItem is a container for {@link Ext.dataview.DataView} with useComponents: true. It ties together
+ * {@link Ext.data.Model records} to its contained Components via a {@link #dataMap dataMap} configuration.
+ *
+ * For example, lets say you have a `text` configuration which, when applied, gets turned into an instance of an
+ * Ext.Component. We want to update the {@link #html} of a sub-component when the 'text' field of the record gets
+ * changed.
+ *
+ * As you can see below, it is simply a matter of setting the key of the object to be the getter of the config
+ * (`getText`), and then give that property a value of an object, which then has 'setHtml' (the `html` setter) as the key,
+ * and 'text' (the field name) as the value. You can continue this for a as many sub-components as you wish.
+ *
+ *     dataMap: {
+ *         // When the record is updated, get the text configuration, and
+ *         // call {@link #setHtml} with the 'text' field of the record.
+ *         getText: {
+ *             setHtml: 'text'
+ *         },
+ *
+ *         // When the record is updated, get the userName configuration, and
+ *         // call {@link #setHtml} with the 'from_user' field of the record.
+ *         getUserName: {
+ *             setHtml: 'from_user'
+ *         },
+ *
+ *         // When the record is updated, get the avatar configuration, and
+ *         // call `setSrc` with the 'profile_image_url' field of the record.
+ *         getAvatar: {
+ *             setSrc: 'profile_image_url'
+ *         }
+ *     }
+ */
+Ext.define('Ext.dataview.component.ListItem', {
+    extend: 'Ext.dataview.component.DataItem',
+    xtype : 'listitem',
+
+    config: {
+<span id='Ext-dataview-component-ListItem-cfg-baseCls'>        baseCls: Ext.baseCSSPrefix + 'list-item',
+</span>
+<span id='Ext-dataview-component-ListItem-cfg-dataMap'>        dataMap: null,
+</span>
+<span id='Ext-dataview-component-ListItem-cfg-body'>        body: {
+</span>            xtype: 'component',
+            cls: 'x-list-item-body'
+        },
+
+<span id='Ext-dataview-component-ListItem-cfg-disclosure'>        disclosure: {
+</span>            xtype: 'component',
+            cls: 'x-list-disclosure',
+            hidden: true,
+            docked: 'right'
+        },
+
+<span id='Ext-dataview-component-ListItem-cfg-header'>        header: {
+</span>            xtype: 'component',
+            cls: 'x-list-header',
+            html: ' ',
+            hidden: true
+        },
+
+<span id='Ext-dataview-component-ListItem-cfg-tpl'>        tpl: null,
+</span><span id='Ext-dataview-component-ListItem-cfg-items'>        items: null
+</span>    },
+
+<span id='Ext-dataview-component-ListItem-method-applyBody'>    applyBody: function(body) {
+</span>        if (body &amp;&amp; !body.isComponent) {
+            body = Ext.factory(body, Ext.Component, this.getBody());
+        }
+        return body;
+    },
+
+<span id='Ext-dataview-component-ListItem-method-updateBody'>    updateBody: function(body, oldBody) {
+</span>        if (body) {
+            this.add(body);
+        } else if (oldBody) {
+            oldBody.destroy();
+        }
+    },
+
+<span id='Ext-dataview-component-ListItem-method-applyHeader'>    applyHeader: function(header) {
+</span>        if (header &amp;&amp; !header.isComponent) {
+            header = Ext.factory(header, Ext.Component, this.getHeader());
+        }
+        return header;
+    },
+
+<span id='Ext-dataview-component-ListItem-method-updateHeader'>    updateHeader: function(header, oldHeader) {
+</span>        if (header) {
+            this.element.getFirstChild().insertFirst(header.element);
+        } else if (oldHeader) {
+            oldHeader.destroy();
+        }
+    },
+
+<span id='Ext-dataview-component-ListItem-method-applyDisclosure'>    applyDisclosure: function(disclosure) {
+</span>        if (disclosure &amp;&amp; !disclosure.isComponent) {
+            disclosure = Ext.factory(disclosure, Ext.Component, this.getDisclosure());
+        }
+        return disclosure;
+    },
+
+<span id='Ext-dataview-component-ListItem-method-updateDisclosure'>    updateDisclosure: function(disclosure, oldDisclosure) {
+</span>        if (disclosure) {
+            this.add(disclosure);
+        } else if (oldDisclosure) {
+            oldDisclosure.destroy();
+        }
+    },
+
+<span id='Ext-dataview-component-ListItem-method-updateTpl'>    updateTpl: function(tpl) {
+</span>        this.getBody().setTpl(tpl);
+    },
+
+<span id='Ext-dataview-component-ListItem-method-updateRecord'>    updateRecord: function(record) {
+</span>        var me = this,
+            dataview = me.dataview || this.getDataview(),
+            data = record &amp;&amp; dataview.prepareData(record.getData(true), dataview.getStore().indexOf(record), record),
+            dataMap = me.getDataMap(),
+            body = this.getBody(),
+            disclosure = this.getDisclosure();
+
+        me._record = record;
+
+        if (dataMap) {
+            me.doMapData(dataMap, data, body);
+        } else if (body) {
+            body.updateData(data || null);
+        }
+
+        if (disclosure &amp;&amp; record &amp;&amp; dataview.getOnItemDisclosure()) {
+            var disclosureProperty = dataview.getDisclosureProperty();
+            disclosure[(data.hasOwnProperty(disclosureProperty) &amp;&amp; data[disclosureProperty] === false) ? 'hide' : 'show']();
+        }
+
+<span id='Ext-dataview-component-ListItem-event-updatedata'>        /**
+</span>         * @event updatedata
+         * Fires whenever the data of the DataItem is updated.
+         * @param {Ext.dataview.component.DataItem} this The DataItem instance.
+         * @param {Object} newData The new data.
+         */
+        me.fireEvent('updatedata', me, data);
+    }
+});
+</pre>
+</body>
+</html>

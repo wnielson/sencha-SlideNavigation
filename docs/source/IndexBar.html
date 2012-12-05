@@ -56,7 +56,6 @@
  *            {firstName: 'Nigel',   lastName: 'White'},
  *            {firstName: 'Don',     lastName: 'Griffin'},
  *            {firstName: 'Nico',    lastName: 'Ferrero'},
- *            {firstName: 'Nicolas', lastName: 'Belmonte'},
  *            {firstName: 'Jason',   lastName: 'Johnston'}
  *        ]
  *     });
@@ -85,8 +84,8 @@ Ext.define('Ext.dataview.IndexBar', {
      */
 
     config: {
-        baseCls: Ext.baseCSSPrefix + 'indexbar',
-
+<span id='Ext-dataview-IndexBar-cfg-baseCls'>        baseCls: Ext.baseCSSPrefix + 'indexbar',
+</span>
 <span id='Ext-dataview-IndexBar-cfg-direction'>        /**
 </span>         * @cfg {String} direction
          * Layout direction, can be either 'vertical' or 'horizontal'
@@ -101,36 +100,36 @@ Ext.define('Ext.dataview.IndexBar', {
          */
         letters: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
 
-        ui: 'alphabet',
-
+<span id='Ext-dataview-IndexBar-cfg-ui'>        ui: 'alphabet',
+</span>
 <span id='Ext-dataview-IndexBar-cfg-listPrefix'>        /**
 </span>         * @cfg {String} listPrefix
-         * The prefix string to be appended at the beginning of the list.
+         * The prefix string to be used at the beginning of the list.
          * E.g: useful to add a &quot;#&quot; prefix before numbers.
          * @accessor
          */
         listPrefix: null
     },
 
-    // @private
-    itemCls: Ext.baseCSSPrefix + '',
+<span id='Ext-dataview-IndexBar-property-itemCls'>    // @private
+</span>    itemCls: Ext.baseCSSPrefix + '',
 
-    updateDirection: function(newDirection, oldDirection) {
-        var baseCls = this.getBaseCls();
+<span id='Ext-dataview-IndexBar-method-updateDirection'>    updateDirection: function(newDirection, oldDirection) {
+</span>        var baseCls = this.getBaseCls();
 
         this.element.replaceCls(baseCls + '-' + oldDirection, baseCls + '-' + newDirection);
     },
 
-    getElementConfig: function() {
-        return {
+<span id='Ext-dataview-IndexBar-method-getElementConfig'>    getElementConfig: function() {
+</span>        return {
             reference: 'wrapper',
             classList: ['x-centered', 'x-indexbar-wrapper'],
             children: [this.callParent()]
         };
     },
 
-    updateLetters: function(letters) {
-        this.innerElement.setHtml('');
+<span id='Ext-dataview-IndexBar-method-updateLetters'>    updateLetters: function(letters) {
+</span>        this.innerElement.setHtml('');
 
         if (letters) {
             var ln = letters.length,
@@ -144,16 +143,16 @@ Ext.define('Ext.dataview.IndexBar', {
         }
     },
 
-    updateListPrefix: function(listPrefix) {
-        if (listPrefix &amp;&amp; listPrefix.length) {
+<span id='Ext-dataview-IndexBar-method-updateListPrefix'>    updateListPrefix: function(listPrefix) {
+</span>        if (listPrefix &amp;&amp; listPrefix.length) {
             this.innerElement.createChild({
                 html: listPrefix
             }, 0);
         }
     },
 
-    // @private
-    initialize: function() {
+<span id='Ext-dataview-IndexBar-method-initialize'>    // @private
+</span>    initialize: function() {
         this.callParent();
 
         this.innerElement.on({
@@ -164,21 +163,21 @@ Ext.define('Ext.dataview.IndexBar', {
         });
     },
 
-    // @private
-    onTouchStart: function(e, t) {
+<span id='Ext-dataview-IndexBar-method-onTouchStart'>    // @private
+</span>    onTouchStart: function(e, t) {
         e.stopPropagation();
         this.innerElement.addCls(this.getBaseCls() + '-pressed');
         this.pageBox = this.innerElement.getPageBox();
         this.onTouchMove(e);
     },
 
-    // @private
-    onTouchEnd: function(e, t) {
+<span id='Ext-dataview-IndexBar-method-onTouchEnd'>    // @private
+</span>    onTouchEnd: function(e, t) {
         this.innerElement.removeCls(this.getBaseCls() + '-pressed');
     },
 
-    // @private
-    onTouchMove: function(e) {
+<span id='Ext-dataview-IndexBar-method-onTouchMove'>    // @private
+</span>    onTouchMove: function(e) {
         var point = Ext.util.Point.fromEvent(e),
             target,
             pageBox = this.pageBox;
@@ -205,8 +204,8 @@ Ext.define('Ext.dataview.IndexBar', {
         }
     },
 
-    destroy: function() {
-        var me = this,
+<span id='Ext-dataview-IndexBar-method-destroy'>    destroy: function() {
+</span>        var me = this,
             elements = Array.prototype.slice.call(me.innerElement.dom.childNodes),
             ln = elements.length,
             i = 0;
@@ -223,7 +222,7 @@ Ext.define('Ext.dataview.IndexBar', {
 <span id='Ext-dataview-IndexBar-method-isHorizontal'>    /**
 </span>     * @member Ext.dataview.IndexBar
      * @method isHorizontal
-     * Returns true when direction is horizontal.
+     * Returns `true` when direction is horizontal.
      * @removed 2.0.0
      */
     Ext.deprecateMethod(this, 'isHorizontal', null, &quot;Ext.dataview.IndexBar.isHorizontal() has been removed&quot;);
@@ -231,7 +230,7 @@ Ext.define('Ext.dataview.IndexBar', {
 <span id='Ext-dataview-IndexBar-method-isVertical'>    /**
 </span>     * @member Ext.dataview.IndexBar
      * @method isVertical
-     * Returns true when direction is vertical.
+     * Returns `true` when direction is vertical.
      * @removed 2.0.0
      */
     Ext.deprecateMethod(this, 'isVertical', null, &quot;Ext.dataview.IndexBar.isVertical() has been removed&quot;);
@@ -245,9 +244,9 @@ Ext.define('Ext.dataview.IndexBar', {
     Ext.deprecateMethod(this, 'refresh', null, &quot;Ext.dataview.IndexBar.refresh() has been removed&quot;);
 
 <span id='Ext-dataview-IndexBar-cfg-alphabet'>    /**
-</span>     * @Member Ext.dataview.IndexBar
+</span>     * @member Ext.dataview.IndexBar
      * @cfg {Boolean} alphabet
-     * True to use the letters property to show a list of the alphabet.
+     * `true` to use the letters property to show a list of the alphabet.
      * @removed 2.0.0
      */
     Ext.deprecateProperty(this, 'alphabet', null, &quot;Ext.dataview.IndexBar.alphabet has been removed&quot;);

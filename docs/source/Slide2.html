@@ -24,19 +24,19 @@ Ext.define('Ext.fx.layout.card.Slide', {
     alias: 'fx.layout.card.slide',
 
     config: {
-        inAnimation: {
-            type: 'slide',
+<span id='Ext-fx-layout-card-Slide-cfg-inAnimation'>        inAnimation: {
+</span>            type: 'slide',
             easing: 'ease-out'
         },
-        outAnimation: {
-            type: 'slide',
+<span id='Ext-fx-layout-card-Slide-cfg-outAnimation'>        outAnimation: {
+</span>            type: 'slide',
             easing: 'ease-out',
             out: true
         }
     },
 
-    updateReverse: function(reverse) {
-        this.getInAnimation().setReverse(reverse);
+<span id='Ext-fx-layout-card-Slide-method-updateReverse'>    updateReverse: function(reverse) {
+</span>        this.getInAnimation().setReverse(reverse);
         this.getOutAnimation().setReverse(reverse);
     }
 });

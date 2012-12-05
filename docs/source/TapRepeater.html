@@ -49,15 +49,15 @@ Ext.define('Ext.util.TapRepeater', {
      */
 
     config: {
-        el: null,
-        accelerate: true,
-        interval: 10,
-        delay: 250,
-        preventDefault: true,
-        stopDefault: false,
-        timer: 0,
-        pressCls: null
-    },
+<span id='Ext-util-TapRepeater-cfg-el'>        el: null,
+</span><span id='Ext-util-TapRepeater-cfg-accelerate'>        accelerate: true,
+</span><span id='Ext-util-TapRepeater-cfg-interval'>        interval: 10,
+</span><span id='Ext-util-TapRepeater-cfg-delay'>        delay: 250,
+</span><span id='Ext-util-TapRepeater-cfg-preventDefault'>        preventDefault: true,
+</span><span id='Ext-util-TapRepeater-cfg-stopDefault'>        stopDefault: false,
+</span><span id='Ext-util-TapRepeater-cfg-timer'>        timer: 0,
+</span><span id='Ext-util-TapRepeater-cfg-pressCls'>        pressCls: null
+</span>    },
 
 <span id='Ext-util-TapRepeater-method-constructor'>    /**
 </span>     * Creates new TapRepeater.
@@ -77,8 +77,8 @@ Ext.define('Ext.util.TapRepeater', {
         me.initConfig(config);
     },
 
-    updateEl: function(newEl, oldEl) {
-        var eventCfg = {
+<span id='Ext-util-TapRepeater-method-updateEl'>    updateEl: function(newEl, oldEl) {
+</span>        var eventCfg = {
                 touchstart: 'onTouchStart',
                 touchend: 'onTouchEnd',
                 tap: 'eventOptions',
@@ -90,8 +90,8 @@ Ext.define('Ext.util.TapRepeater', {
         newEl.on(eventCfg);
     },
 
-    // @private
-    eventOptions: function(e) {
+<span id='Ext-util-TapRepeater-method-eventOptions'>    // @private
+</span>    eventOptions: function(e) {
         if (this.getPreventDefault()) {
             e.preventDefault();
         }
@@ -100,14 +100,14 @@ Ext.define('Ext.util.TapRepeater', {
         }
     },
 
-    // @private
-    destroy: function() {
+<span id='Ext-util-TapRepeater-method-destroy'>    // @private
+</span>    destroy: function() {
         this.clearListeners();
         Ext.destroy(this.el);
     },
 
-    // @private
-    onTouchStart: function(e) {
+<span id='Ext-util-TapRepeater-method-onTouchStart'>    // @private
+</span>    onTouchStart: function(e) {
         var me = this,
             pressCls = me.getPressCls();
         clearTimeout(me.getTimer());
@@ -126,8 +126,8 @@ Ext.define('Ext.util.TapRepeater', {
         me.setTimer(Ext.defer(me.tap, me.getDelay() || me.getInterval(), me, [e]));
     },
 
-    // @private
-    tap: function(e) {
+<span id='Ext-util-TapRepeater-method-tap'>    // @private
+</span>    tap: function(e) {
         var me = this;
         me.fireEvent('tap', me, e);
         me.setTimer(Ext.defer(me.tap, me.getAccelerate() ? me.easeOutExpo(Ext.Date.getElapsed(me.tapStartTime),
@@ -136,14 +136,14 @@ Ext.define('Ext.util.TapRepeater', {
             12000) : me.getInterval(), me, [e]));
     },
 
-    // Easing calculation
-    // @private
+<span id='Ext-util-TapRepeater-method-easeOutExpo'>    // Easing calculation
+</span>    // @private
     easeOutExpo: function(t, b, c, d) {
         return (t == d) ? b + c : c * ( - Math.pow(2, -10 * t / d) + 1) + b;
     },
 
-    // @private
-    onTouchEnd: function(e) {
+<span id='Ext-util-TapRepeater-method-onTouchEnd'>    // @private
+</span>    onTouchEnd: function(e) {
         var me = this;
         clearTimeout(me.getTimer());
         me.getEl().removeCls(me.getPressCls());

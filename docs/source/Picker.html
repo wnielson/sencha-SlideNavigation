@@ -16,113 +16,114 @@
 </head>
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js"><span id='Ext-picker-Picker'>/**
-</span>A general picker class. {@link Ext.picker.Slot}s are used to organize multiple scrollable slots into a single picker. {@link #slots} is
-the only necessary configuration.
-
-The {@link #slots} configuration with a few key values:
-
- - **name:** The name of the slot (will be the key when using {@link #getValues} in this {@link Ext.picker.Picker})
- - **title:** The title of this slot (if {@link #useTitles} is set to true)
- - **data/store:** The data or store to use for this slot.
-
-Remember, {@link Ext.picker.Slot} class extends from {@link Ext.dataview.DataView}.
-
-## Examples
-
-    @example miniphone preview
-    var picker = Ext.create('Ext.Picker', {
-        slots: [
-            {
-                name : 'limit_speed',
-                title: 'Speed',
-                data : [
-                    {text: '50 KB/s', value: 50},
-                    {text: '100 KB/s', value: 100},
-                    {text: '200 KB/s', value: 200},
-                    {text: '300 KB/s', value: 300}
-                ]
-            }
-        ]
-    });
-    Ext.Viewport.add(picker);
-    picker.show();
-
-You can also customize the top toolbar on the {@link Ext.picker.Picker} by changing the {@link #doneButton} and {@link #cancelButton} configurations:
-
-    @example miniphone preview
-    var picker = Ext.create('Ext.Picker', {
-        doneButton: 'I\'m done!',
-        cancelButton: false,
-        slots: [
-            {
-                name : 'limit_speed',
-                title: 'Speed',
-                data : [
-                    {text: '50 KB/s', value: 50},
-                    {text: '100 KB/s', value: 100},
-                    {text: '200 KB/s', value: 200},
-                    {text: '300 KB/s', value: 300}
-                ]
-            }
-        ]
-    });
-    Ext.Viewport.add(picker);
-    picker.show();
-
-Or by passing a custom {@link #toolbar} configuration:
-
-    @example miniphone preview
-    var picker = Ext.create('Ext.Picker', {
-        doneButton: false,
-        cancelButton: false,
-        toolbar: {
-            ui: 'light',
-            title: 'My Picker!'
-        },
-        slots: [
-            {
-                name : 'limit_speed',
-                title: 'Speed',
-                data : [
-                    {text: '50 KB/s', value: 50},
-                    {text: '100 KB/s', value: 100},
-                    {text: '200 KB/s', value: 200},
-                    {text: '300 KB/s', value: 300}
-                ]
-            }
-        ]
-    });
-    Ext.Viewport.add(picker);
-    picker.show();
+</span> * @aside example pickers
+ * A general picker class. {@link Ext.picker.Slot}s are used to organize multiple scrollable slots into a single picker. {@link #slots} is
+ * the only necessary configuration.
+ *
+ * The {@link #slots} configuration with a few key values:
+ *
+ * - `name`: The name of the slot (will be the key when using {@link #getValues} in this {@link Ext.picker.Picker}).
+ * - `title`: The title of this slot (if {@link #useTitles} is set to `true`).
+ * - `data`/`store`: The data or store to use for this slot.
+ *
+ * Remember, {@link Ext.picker.Slot} class extends from {@link Ext.dataview.DataView}.
+ *
+ * ## Examples
+ *
+ *     @example miniphone preview
+ *     var picker = Ext.create('Ext.Picker', {
+ *         slots: [
+ *             {
+ *                 name : 'limit_speed',
+ *                 title: 'Speed',
+ *                 data : [
+ *                     {text: '50 KB/s', value: 50},
+ *                     {text: '100 KB/s', value: 100},
+ *                     {text: '200 KB/s', value: 200},
+ *                     {text: '300 KB/s', value: 300}
+ *                 ]
+ *             }
+ *         ]
+ *     });
+ *     Ext.Viewport.add(picker);
+ *     picker.show();
+ *
+ * You can also customize the top toolbar on the {@link Ext.picker.Picker} by changing the {@link #doneButton} and {@link #cancelButton} configurations:
+ *
+ *     @example miniphone preview
+ *     var picker = Ext.create('Ext.Picker', {
+ *         doneButton: 'I\'m done!',
+ *         cancelButton: false,
+ *         slots: [
+ *             {
+ *                 name : 'limit_speed',
+ *                 title: 'Speed',
+ *                 data : [
+ *                     {text: '50 KB/s', value: 50},
+ *                     {text: '100 KB/s', value: 100},
+ *                     {text: '200 KB/s', value: 200},
+ *                     {text: '300 KB/s', value: 300}
+ *                 ]
+ *             }
+ *         ]
+ *     });
+ *     Ext.Viewport.add(picker);
+ *     picker.show();
+ *
+ * Or by passing a custom {@link #toolbar} configuration:
+ *
+ *     @example miniphone preview
+ *     var picker = Ext.create('Ext.Picker', {
+ *         doneButton: false,
+ *         cancelButton: false,
+ *         toolbar: {
+ *             ui: 'light',
+ *             title: 'My Picker!'
+ *         },
+ *         slots: [
+ *             {
+ *                 name : 'limit_speed',
+ *                 title: 'Speed',
+ *                 data : [
+ *                     {text: '50 KB/s', value: 50},
+ *                     {text: '100 KB/s', value: 100},
+ *                     {text: '200 KB/s', value: 200},
+ *                     {text: '300 KB/s', value: 300}
+ *                 ]
+ *             }
+ *         ]
+ *     });
+ *     Ext.Viewport.add(picker);
+ *     picker.show();
  */
 Ext.define('Ext.picker.Picker', {
     extend: 'Ext.Sheet',
     alias : 'widget.picker',
     alternateClassName: 'Ext.Picker',
-    requires: ['Ext.picker.Slot', 'Ext.Toolbar', 'Ext.data.Model'],
+    requires: ['Ext.picker.Slot', 'Ext.TitleBar', 'Ext.data.Model'],
 
-    isPicker: true,
-
+<span id='Ext-picker-Picker-property-isPicker'>    isPicker: true,
+</span>
 <span id='Ext-picker-Picker-event-pick'>    /**
 </span>     * @event pick
      * Fired when a slot has been picked
-     * @param {Ext.Picker} this This Picker
-     * @param {Object} The values of this picker's slots, in {name:'value'} format
-     * @param {Ext.Picker.Slot} slot An instance of Ext.Picker.Slot that has been picked
+     * @param {Ext.Picker} this This Picker.
+     * @param {Object} The values of this picker's slots, in `{name:'value'}` format.
+     * @param {Ext.Picker.Slot} slot An instance of Ext.Picker.Slot that has been picked.
      */
 
 <span id='Ext-picker-Picker-event-change'>    /**
 </span>     * @event change
      * Fired when the value of this picker has changed the Done button has been pressed.
-     * @param {Ext.picker.Picker} this This Picker
-     * @param {Object} value The values of this picker's slots, in {name:'value'} format
+     * @param {Ext.picker.Picker} this This Picker.
+     * @param {Object} value The values of this picker's slots, in `{name:'value'}` format.
      */
 
 <span id='Ext-picker-Picker-event-cancel'>    /**
 </span>     * @event cancel
      * Fired when the cancel button is tapped and the values are reverted back to
-     * what they were
-     * @param {Ext.Picker} this This Picker
+     * what they were.
+     * @param {Ext.Picker} this This Picker.
      */
 
     config: {
@@ -134,20 +135,22 @@ Ext.define('Ext.picker.Picker', {
 
 <span id='Ext-picker-Picker-cfg-doneButton'>        /**
 </span>         * @cfg {String/Mixed} doneButton
-         * Can be either:&lt;ul&gt;
-         * &lt;li&gt;A {String} text to be used on the Done button&lt;/li&gt;
-         * &lt;li&gt;An {Object} as config for {@link Ext.Button}&lt;/li&gt;
-         * &lt;li&gt;false or null to hide it&lt;/li&gt;&lt;/ul&gt;
+         * Can be either:
+         *
+         * - A {String} text to be used on the Done button.
+         * - An {Object} as config for {@link Ext.Button}.
+         * - `false` or `null` to hide it.
          * @accessor
          */
         doneButton: true,
 
 <span id='Ext-picker-Picker-cfg-cancelButton'>        /**
 </span>         * @cfg {String/Mixed} cancelButton
-         * Can be either:&lt;ul&gt;
-         * &lt;li&gt;A {String} text to be used on the Cancel button&lt;/li&gt;
-         * &lt;li&gt;An {Object} as config for {@link Ext.Button}&lt;/li&gt;
-         * &lt;li&gt;false or null to hide it&lt;/li&gt;&lt;/ul&gt;
+         * Can be either:
+         *
+         * - A {String} text to be used on the Cancel button.
+         * - An {Object} as config for {@link Ext.Button}.
+         * - `false` or `null` to hide it.
          * @accessor
          */
         cancelButton: true,
@@ -163,17 +166,17 @@ Ext.define('Ext.picker.Picker', {
 <span id='Ext-picker-Picker-cfg-slots'>        /**
 </span>         * @cfg {Array} slots
          * An array of slot configurations.
-         * &lt;ul&gt;
-         *  &lt;li&gt;name - {String} - Name of the slot&lt;/li&gt;
-         *  &lt;li&gt;data - {Array} - An array of text/value pairs in the format {text: 'myKey', value: 'myValue'}&lt;/li&gt;
-         *  &lt;li&gt;title - {String} - Title of the slot. This is used in conjunction with useTitles: true.&lt;/li&gt;
-         * &lt;/ul&gt;
+         *
+         * - `name` {String} - Name of the slot
+         * - `data` {Array} - An array of text/value pairs in the format `{text: 'myKey', value: 'myValue'}`
+         * - `title` {String} - Title of the slot. This is used in conjunction with `useTitles: true`.
+         *
          * @accessor
          */
         slots: null,
 
 <span id='Ext-picker-Picker-cfg-value'>        /**
-</span>         * @cfg {String/Number} value The value to initialize the picker with
+</span>         * @cfg {String/Number} value The value to initialize the picker with.
          * @accessor
          */
         value: null,
@@ -218,8 +221,8 @@ Ext.define('Ext.picker.Picker', {
          */
         bottom: 0,
 
-        // @private
-        defaultType: 'pickerslot',
+<span id='Ext-picker-Picker-cfg-defaultType'>        // @private
+</span>        defaultType: 'pickerslot',
 
 <span id='Ext-picker-Picker-cfg-toolbar'>        /**
 </span>         * @cfg {Ext.TitleBar/Ext.Toolbar/Object} toolbar
@@ -265,8 +268,8 @@ Ext.define('Ext.picker.Picker', {
         toolbar: true
     },
 
-    initElement: function() {
-        this.callParent(arguments);
+<span id='Ext-picker-Picker-method-initElement'>    initElement: function() {
+</span>        this.callParent(arguments);
 
         var me = this,
             clsPrefix = Ext.baseCSSPrefix,
@@ -323,6 +326,8 @@ Ext.define('Ext.picker.Picker', {
 
 <span id='Ext-picker-Picker-method-applyDoneButton'>    /**
 </span>     * Updates the {@link #doneButton} configuration. Will change it into a button when appropriate, or just update the text if needed.
+     * @param {Object} config
+     * @return {Object}
      */
     applyDoneButton: function(config) {
         if (config) {
@@ -346,8 +351,8 @@ Ext.define('Ext.picker.Picker', {
         return Ext.factory(config, 'Ext.Button', this.getDoneButton());
     },
 
-    updateDoneButton: function(newDoneButton, oldDoneButton) {
-        var toolbar = this.getToolbar();
+<span id='Ext-picker-Picker-method-updateDoneButton'>    updateDoneButton: function(newDoneButton, oldDoneButton) {
+</span>        var toolbar = this.getToolbar();
 
         if (newDoneButton) {
             toolbar.add(newDoneButton);
@@ -359,6 +364,8 @@ Ext.define('Ext.picker.Picker', {
 
 <span id='Ext-picker-Picker-method-applyCancelButton'>    /**
 </span>     * Updates the {@link #cancelButton} configuration. Will change it into a button when appropriate, or just update the text if needed.
+     * @param {Object} config
+     * @return {Object}
      */
     applyCancelButton: function(config) {
         if (config) {
@@ -381,8 +388,8 @@ Ext.define('Ext.picker.Picker', {
         return Ext.factory(config, 'Ext.Button', this.getCancelButton());
     },
 
-    updateCancelButton: function(newCancelButton, oldCancelButton) {
-        var toolbar = this.getToolbar();
+<span id='Ext-picker-Picker-method-updateCancelButton'>    updateCancelButton: function(newCancelButton, oldCancelButton) {
+</span>        var toolbar = this.getToolbar();
 
         if (newCancelButton) {
             toolbar.add(newCancelButton);
@@ -408,7 +415,7 @@ Ext.define('Ext.picker.Picker', {
             this.removeCls(cls);
         }
 
-        //show the titme on each of the slots
+        //show the time on each of the slots
         for (i = 0; i &lt; ln; i++) {
             innerItem = innerItems[i];
 
@@ -418,8 +425,8 @@ Ext.define('Ext.picker.Picker', {
         }
     },
 
-    applySlots: function(slots) {
-        //loop through each of the slots and add a referece to this picker
+<span id='Ext-picker-Picker-method-applySlots'>    applySlots: function(slots) {
+</span>        //loop through each of the slots and add a reference to this picker
         if (slots) {
             var ln = slots.length,
                 i;
@@ -461,7 +468,7 @@ Ext.define('Ext.picker.Picker', {
      */
     onDoneButtonTap: function() {
         var oldValue = this._value,
-            newValue = this.getValue();
+            newValue = this.getValue(true);
 
         if (newValue != oldValue) {
             this.fireEvent('change', this, newValue);
@@ -483,37 +490,38 @@ Ext.define('Ext.picker.Picker', {
 </span>     * @private
      * Called when a slot has been picked.
      */
-    onSlotPick: function(slot, value, node) {
-        this.fireEvent('pick', this, this.getValue(), slot);
+    onSlotPick: function(slot) {
+        this.fireEvent('pick', this, this.getValue(true), slot);
     },
 
-    onShow: function() {
-        if (!this.isHidden()) {
+<span id='Ext-picker-Picker-method-onShow'>    onShow: function() {
+</span>        if (!this.isHidden()) {
             this.setValue(this._value);
         }
     },
 
 <span id='Ext-picker-Picker-method-setValue'>    /**
-</span>     * Sets the values of the pickers slots
-     * @param {Object} values The values in a {name:'value'} format
-     * @param {Boolean} animated True to animate setting the values
-     * @return {Ext.Picker} this This picker
+</span>     * Sets the values of the pickers slots.
+     * @param {Object} values The values in a {name:'value'} format.
+     * @param {Boolean} animated `true` to animate setting the values.
+     * @return {Ext.Picker} this This picker.
      */
     setValue: function(values, animated) {
         var me = this,
             slots = me.getInnerItems(),
             ln = slots.length,
-            key, slot, loopSlot, i;
+            key, slot, loopSlot, i, value;
 
         if (!values) {
             values = {};
             for (i = 0; i &lt; ln; i++) {
-                //set the value to false so the slot will return null when getValue is set
-                values[slots[i].config.name] = false;
+                //set the value to false so the slot will return null when getValue is called
+                values[slots[i].config.name] = null;
             }
         }
 
         for (key in values) {
+            slot = null;
             value = values[key];
             for (i = 0; i &lt; slots.length; i++) {
                 loopSlot = slots[i];
@@ -532,48 +540,49 @@ Ext.define('Ext.picker.Picker', {
             }
         }
 
-        me._value = this.getValue();
-        me._values = me._value;
+        me._values = me._value = values;
 
         return me;
     },
 
-    setValueAnimated: function(values) {
-        this.setValue(values, true);
+<span id='Ext-picker-Picker-method-setValueAnimated'>    setValueAnimated: function(values) {
+</span>        this.setValue(values, true);
     },
 
 <span id='Ext-picker-Picker-method-getValue'>    /**
 </span>     * Returns the values of each of the pickers slots
      * @return {Object} The values of the pickers slots
      */
-    getValue: function() {
+    getValue: function(useDom) {
         var values = {},
             items = this.getItems().items,
             ln = items.length,
             item, i;
 
-        for (i = 0; i &lt; ln; i++) {
-            item = items[i];
-            if (item &amp;&amp; item.isSlot) {
-                values[item.getName()] = item.getValue();
+        if (useDom) {
+            for (i = 0; i &lt; ln; i++) {
+                item = items[i];
+                if (item &amp;&amp; item.isSlot) {
+                    values[item.getName()] = item.getValue(useDom);
+                }
             }
-        }
 
-        this._values = values;
+            this._values = values;
+        }
 
         return this._values;
     },
 
 <span id='Ext-picker-Picker-method-getValues'>    /**
-</span>     * Returns the values of eaach of the pickers slots
-     * @return {Object} The values of the pickers slots
+</span>     * Returns the values of each of the pickers slots.
+     * @return {Object} The values of the pickers slots.
      */
     getValues: function() {
         return this.getValue();
     },
 
-    destroy: function() {
-        this.callParent();
+<span id='Ext-picker-Picker-method-destroy'>    destroy: function() {
+</span>        this.callParent();
         Ext.destroy(this.mask, this.bar);
     }
 }, function() {
@@ -599,15 +608,7 @@ Ext.define('Ext.picker.Picker', {
      * @deprecated 2.0.0 Please use {@link #setActiveItem} instead
      */
     Ext.deprecateClassMethod(this, 'setCard', 'setActiveItem');
-
     //&lt;/deprecated&gt;
-
-    Ext.define('x-textvalue', {
-        extend: 'Ext.data.Model',
-        config: {
-            fields: ['text', 'value']
-        }
-    });
 });
 
 </pre>

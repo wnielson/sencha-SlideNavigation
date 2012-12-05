@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-draw-modifier-Highlight'>/**
+</span> * @class Ext.draw.modifier.Highlight
+ * @extends Ext.draw.modifier.Modifier
+ * 
+ * Highlight is a modifier that will override the attributes
+ * with its `highlightStyle` attributes when `highlighted` is true.
+ */
+Ext.define(&quot;Ext.draw.modifier.Highlight&quot;, {
+    extend: 'Ext.draw.modifier.Modifier',
+    alias: 'modifier.highlight',
+
+    config: {
+        
+<span id='Ext-draw-modifier-Highlight-cfg-enabled'>        /**
+</span>         * @cfg {Boolean} enabled 'true' if the highlight is applied.
+         */
+        enabled: false,
+
+<span id='Ext-draw-modifier-Highlight-cfg-highlightStyle'>        /**
+</span>         * @cfg {Object} highlightStyle The style attributes of the highlight modifier.
+         */
+        highlightStyle: null
+    },
+
+<span id='Ext-draw-modifier-Highlight-property-preFx'>    preFx: true,
+</span>
+<span id='Ext-draw-modifier-Highlight-method-applyHighlightStyle'>    applyHighlightStyle: function (style, oldStyle) {
+</span>        oldStyle = oldStyle || {};
+        if (this.getSprite()) {
+            Ext.apply(oldStyle, this.getSprite().self.def.normalize(style));
+        } else {
+            Ext.apply(oldStyle, style);
+        }
+        return oldStyle;
+    },
+
+<span id='Ext-draw-modifier-Highlight-method-prepareAttributes'>    /**
+</span>     * @inheritdoc
+     */
+    prepareAttributes: function (attr) {
+        if (!attr.hasOwnProperty('highlightOriginal')) {
+            attr.highlighted = false;
+            attr.highlightOriginal = Ext.Object.chain(attr);
+        }
+        if (this._previous) {
+            this._previous.prepareAttributes(attr.highlightOriginal);
+        }
+    },
+
+<span id='Ext-draw-modifier-Highlight-method-updateSprite'>    updateSprite: function (sprite, oldSprite) {
+</span>        if (sprite) {
+            if (this.getHighlightStyle()) {
+                this._highlightStyle = sprite.self.def.normalize(this.getHighlightStyle());
+            }
+            this.setHighlightStyle(sprite.config.highlightCfg);
+        }
+
+        // Before attaching to a sprite, register the highlight related
+        // attributes to its definition.
+        //
+        // TODO(zhangbei): Unfortunately this will effect all the sprites of the same type.
+        // As the redundant attributes would not effect performance, it is not yet a big problem.
+        var def = sprite.self.def;
+        this.setSprite(sprite);
+        def.setConfig({
+            defaults: {
+                highlighted: false
+            },
+
+            processors: {
+                highlighted: 'bool'
+            },
+
+            aliases: {
+                &quot;highlight&quot;: &quot;highlighted&quot;,
+                &quot;highlighting&quot;: &quot;highlighted&quot;
+            },
+
+            dirtyFlags: {
+            },
+
+            updaters: {
+
+            }
+        });
+    },
+
+<span id='Ext-draw-modifier-Highlight-method-filterChanges'>    /**
+</span>     * Filter modifier changes if overriding source attributes.
+     * @param attr The source attributes.
+     * @param changes The modifier changes.
+     * @return {*} The filtered changes.
+     */
+    filterChanges: function (attr, changes) {
+        var me = this,
+            name,
+            original = attr.highlightOriginal,
+            style = me.getHighlightStyle();
+        if (attr.highlighted) {
+            for (name in changes) {
+                if (style.hasOwnProperty(name)) {
+                    // If it's highlighted, then save the changes to lower level
+                    // on overridden attributes.
+                    original[name] = changes[name];
+                    delete changes[name];
+                }
+            }
+        }
+
+        for (name in changes) {
+            if (name !== 'highlighted' &amp;&amp; original[name] === changes[name]) {
+                // If it's highlighted, then save the changes to lower level
+                // on overridden attributes.
+                delete changes[name];
+            }
+        }
+
+        return changes;
+    },
+
+<span id='Ext-draw-modifier-Highlight-method-pushDown'>    /**
+</span>     * @inheritdoc
+     */
+    pushDown: function (attr, changes) {
+        var style = this.getHighlightStyle(),
+            original = attr.highlightOriginal,
+            oldHighlighted, name;
+
+        if (changes.hasOwnProperty('highlighted')) {
+            oldHighlighted = changes.highlighted;
+            // Hide `highlighted` and `highlightStyle` to underlying modifiers.
+            delete changes.highlighted;
+
+            if (this._previous) {
+                changes = this._previous.pushDown(original, changes);
+            }
+            changes = this.filterChanges(attr, changes);
+
+            if (oldHighlighted !== attr.highlighted) {
+                if (oldHighlighted) {
+                    // switching on
+                    // At this time, original should be empty.
+                    for (name in style) {
+                        // If changes[name] just changed the value in lower levels,
+                        if (name in changes) {
+                            original[name] = changes[name];
+                        } else {
+                            original[name] = attr[name];
+                        }
+                        if (original[name] !== style[name]) {
+                            changes[name] = style[name];
+                        }
+                    }
+                } else {
+                    // switching off
+                    for (name in style) {
+                        if (!(name in changes)) {
+                            changes[name] = original[name];
+                        }
+                        delete original[name]; // TODO: Need deletion API?
+                    }
+                }
+                changes.highlighted = oldHighlighted;
+            }
+        } else {
+            if (this._previous) {
+                changes = this._previous.pushDown(original, changes);
+            }
+            changes = this.filterChanges(attr, changes);
+        }
+
+        return changes;
+    },
+
+<span id='Ext-draw-modifier-Highlight-method-popUp'>    /**
+</span>     * @inheritdoc
+     */
+    popUp: function (attr, changes) {
+        changes = this.filterChanges(attr, changes);
+        Ext.draw.modifier.Modifier.prototype.popUp.call(this, attr, changes);
+    }
+});</pre>
+</body>
+</html>

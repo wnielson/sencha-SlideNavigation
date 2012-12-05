@@ -37,82 +37,83 @@ Ext.define('Ext.data.proxy.Server', {
 
 <span id='Ext-data-proxy-Server-cfg-pageParam'>        /**
 </span>         * @cfg {String} pageParam
-         * The name of the 'page' parameter to send in a request. Defaults to 'page'. Set this to false if you don't
+         * The name of the `page` parameter to send in a request. Set this to `false` if you don't
          * want to send a page parameter.
          */
         pageParam: 'page',
 
 <span id='Ext-data-proxy-Server-cfg-startParam'>        /**
 </span>         * @cfg {String} startParam
-         * The name of the 'start' parameter to send in a request. Defaults to 'start'. Set this to false if you don't
+         * The name of the `start` parameter to send in a request. Set this to `false` if you don't
          * want to send a start parameter.
          */
         startParam: 'start',
 
 <span id='Ext-data-proxy-Server-cfg-limitParam'>        /**
 </span>         * @cfg {String} limitParam
-         * The name of the 'limit' parameter to send in a request. Defaults to 'limit'. Set this to false if you don't
+         * The name of the `limit` parameter to send in a request. Set this to `false` if you don't
          * want to send a limit parameter.
          */
         limitParam: 'limit',
 
 <span id='Ext-data-proxy-Server-cfg-groupParam'>        /**
 </span>         * @cfg {String} groupParam
-         * The name of the 'group' parameter to send in a request. Defaults to 'group'. Set this to false if you don't
+         * The name of the `group` parameter to send in a request. Set this to `false` if you don't
          * want to send a group parameter.
          */
         groupParam: 'group',
 
 <span id='Ext-data-proxy-Server-cfg-sortParam'>        /**
 </span>         * @cfg {String} sortParam
-         * The name of the 'sort' parameter to send in a request. Defaults to 'sort'. Set this to undefined if you don't
+         * The name of the `sort` parameter to send in a request. Set this to `undefined` if you don't
          * want to send a sort parameter.
          */
         sortParam: 'sort',
 
 <span id='Ext-data-proxy-Server-cfg-filterParam'>        /**
 </span>         * @cfg {String} filterParam
-         * The name of the 'filter' parameter to send in a request. Defaults to 'filter'. Set this to undefined if you don't
+         * The name of the 'filter' parameter to send in a request. Set this to `undefined` if you don't
          * want to send a filter parameter.
          */
         filterParam: 'filter',
 
 <span id='Ext-data-proxy-Server-cfg-directionParam'>        /**
 </span>         * @cfg {String} directionParam
-         * The name of the direction parameter to send in a request. **This is only used when simpleSortMode is set to
-         * true.** Defaults to 'dir'.
+         * The name of the direction parameter to send in a request.
+         *
+         * __Note:__ This is only used when `simpleSortMode` is set to `true`.
          */
         directionParam: 'dir',
 
 <span id='Ext-data-proxy-Server-cfg-enablePagingParams'>        /**
-</span>         * @cfg {Boolean} enablePagingParams This can be set to false if you want to prevent the paging params to be
+</span>         * @cfg {Boolean} enablePagingParams This can be set to `false` if you want to prevent the paging params to be
          * sent along with the requests made by this proxy.
          */
         enablePagingParams: true,
 
 <span id='Ext-data-proxy-Server-cfg-simpleSortMode'>        /**
 </span>         * @cfg {Boolean} simpleSortMode
-         * Enabling simpleSortMode in conjunction with remoteSort will only send one sort property and a direction when a
-         * remote sort is requested. The directionParam and sortParam will be sent with the property name and either 'ASC'
+         * Enabling `simpleSortMode` in conjunction with `remoteSort` will only send one sort property and a direction when a
+         * remote sort is requested. The `directionParam` and `sortParam` will be sent with the property name and either 'ASC'
          * or 'DESC'.
          */
         simpleSortMode: false,
 
 <span id='Ext-data-proxy-Server-cfg-noCache'>        /**
 </span>         * @cfg {Boolean} noCache
-         * Disable caching by adding a unique parameter name to the request. Set to false to allow caching. Defaults to true.
+         * Disable caching by adding a unique parameter name to the request. Set to `false` to allow caching.
          */
         noCache : true,
 
 <span id='Ext-data-proxy-Server-cfg-cacheString'>        /**
 </span>         * @cfg {String} cacheString
-         * The name of the cache param added to the url when using noCache. Defaults to &quot;_dc&quot;.
+         * The name of the cache param added to the url when using `noCache`.
          */
         cacheString: &quot;_dc&quot;,
 
 <span id='Ext-data-proxy-Server-cfg-timeout'>        /**
 </span>         * @cfg {Number} timeout
-         * The number of milliseconds to wait for a response. Defaults to 30000 milliseconds (30 seconds).
+         * The number of milliseconds to wait for a response.
          */
         timeout : 30000,
 
@@ -158,8 +159,8 @@ Ext.define('Ext.data.proxy.Server', {
         extraParams: {}
     },
 
-    constructor: function(config) {
-        config = config || {};
+<span id='Ext-data-proxy-Server-method-constructor'>    constructor: function(config) {
+</span>        config = config || {};
         if (config.nocache !== undefined) {
             config.noCache = config.nocache;
             // &lt;debug&gt;
@@ -169,21 +170,21 @@ Ext.define('Ext.data.proxy.Server', {
         this.callParent([config]);
     },
 
-    //in a ServerProxy all four CRUD operations are executed in the same manner, so we delegate to doRequest in each case
-    create: function() {
+<span id='Ext-data-proxy-Server-method-create'>    //in a ServerProxy all four CRUD operations are executed in the same manner, so we delegate to doRequest in each case
+</span>    create: function() {
         return this.doRequest.apply(this, arguments);
     },
 
-    read: function() {
-        return this.doRequest.apply(this, arguments);
+<span id='Ext-data-proxy-Server-method-read'>    read: function() {
+</span>        return this.doRequest.apply(this, arguments);
     },
 
-    update: function() {
-        return this.doRequest.apply(this, arguments);
+<span id='Ext-data-proxy-Server-method-update'>    update: function() {
+</span>        return this.doRequest.apply(this, arguments);
     },
 
-    destroy: function() {
-        return this.doRequest.apply(this, arguments);
+<span id='Ext-data-proxy-Server-method-destroy'>    destroy: function() {
+</span>        return this.doRequest.apply(this, arguments);
     },
 
 <span id='Ext-data-proxy-Server-method-setExtraParam'>    /**
@@ -227,7 +228,7 @@ Ext.define('Ext.data.proxy.Server', {
 <span id='Ext-data-proxy-Server-method-processResponse'>    /**
 </span>     * This method handles the processing of the response and is usually overridden by subclasses to
      * do additional processing.
-     * @param {Boolean} success Wether or not this request was successful
+     * @param {Boolean} success Whether or not this request was successful
      * @param {Ext.data.Operation} operation The operation we made this request for
      * @param {Ext.data.Request} request The request that was made
      * @param {Object} response The response that we got
@@ -287,10 +288,12 @@ Ext.define('Ext.data.proxy.Server', {
      * @param {Object} response The response
      */
     setException: function(operation, response) {
-        operation.setException({
-            status: response.status,
-            statusText: response.statusText
-        });
+        if (Ext.isObject(response)) {
+            operation.setException({
+                status: response.status,
+                statusText: response.statusText
+            });
+        }
     },
 
 <span id='Ext-data-proxy-Server-method-applyEncoding'>    /**

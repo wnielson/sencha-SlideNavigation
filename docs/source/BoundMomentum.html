@@ -46,10 +46,10 @@ Ext.define('Ext.fx.easing.BoundMomentum', {
          */
         bounce: null,
 
-        minMomentumValue: 0,
-
-        maxMomentumValue: 0,
-
+<span id='Ext-fx-easing-BoundMomentum-cfg-minMomentumValue'>        minMomentumValue: 0,
+</span>
+<span id='Ext-fx-easing-BoundMomentum-cfg-maxMomentumValue'>        maxMomentumValue: 0,
+</span>
 <span id='Ext-fx-easing-BoundMomentum-cfg-minVelocity'>        /**
 </span>         * @cfg {Number} minVelocity
          * The minimum velocity to end this easing
@@ -65,30 +65,30 @@ Ext.define('Ext.fx.easing.BoundMomentum', {
         startVelocity: 0
     },
 
-    applyMomentum: function(config, currentEasing) {
-        return Ext.factory(config, Ext.fx.easing.Momentum, currentEasing);
+<span id='Ext-fx-easing-BoundMomentum-method-applyMomentum'>    applyMomentum: function(config, currentEasing) {
+</span>        return Ext.factory(config, Ext.fx.easing.Momentum, currentEasing);
     },
 
-    applyBounce: function(config, currentEasing) {
-        return Ext.factory(config, Ext.fx.easing.Bounce, currentEasing);
+<span id='Ext-fx-easing-BoundMomentum-method-applyBounce'>    applyBounce: function(config, currentEasing) {
+</span>        return Ext.factory(config, Ext.fx.easing.Bounce, currentEasing);
     },
 
-    updateStartTime: function(startTime) {
-        this.getMomentum().setStartTime(startTime);
+<span id='Ext-fx-easing-BoundMomentum-method-updateStartTime'>    updateStartTime: function(startTime) {
+</span>        this.getMomentum().setStartTime(startTime);
 
         this.callParent(arguments);
     },
 
-    updateStartVelocity: function(startVelocity) {
-        this.getMomentum().setStartVelocity(startVelocity);
+<span id='Ext-fx-easing-BoundMomentum-method-updateStartVelocity'>    updateStartVelocity: function(startVelocity) {
+</span>        this.getMomentum().setStartVelocity(startVelocity);
     },
 
-    updateStartValue: function(startValue) {
-        this.getMomentum().setStartValue(startValue);
+<span id='Ext-fx-easing-BoundMomentum-method-updateStartValue'>    updateStartValue: function(startValue) {
+</span>        this.getMomentum().setStartValue(startValue);
     },
 
-    reset: function() {
-        this.lastValue = null;
+<span id='Ext-fx-easing-BoundMomentum-method-reset'>    reset: function() {
+</span>        this.lastValue = null;
 
         this.isBouncingBack = false;
 
@@ -97,8 +97,8 @@ Ext.define('Ext.fx.easing.BoundMomentum', {
         return this.callParent(arguments);
     },
 
-    getValue: function() {
-        var momentum = this.getMomentum(),
+<span id='Ext-fx-easing-BoundMomentum-method-getValue'>    getValue: function() {
+</span>        var momentum = this.getMomentum(),
             bounce = this.getBounce(),
             startVelocity = momentum.getStartVelocity(),
             direction = startVelocity &gt; 0 ? 1 : -1,

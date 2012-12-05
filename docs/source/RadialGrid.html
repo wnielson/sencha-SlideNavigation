@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-chart-grid-RadialGrid'>/**
+</span> * @class Ext.chart.grid.RadialGrid
+ * @extends Ext.draw.sprite.Path
+ * 
+ * Radial Grid sprite. Used by Radar to render a series of concentric circles.
+ * Represents the scale of the radar chart on the yField.
+ */
+Ext.define(&quot;Ext.chart.grid.RadialGrid&quot;, {
+    extend: 'Ext.draw.sprite.Path',
+    alias: 'grid.radial',
+
+    inheritableStatics: {
+<span id='Ext-chart-grid-RadialGrid-property-def'>        def: {
+</span>            processors: {
+                startRadius: 'number',
+                endRadius: 'number'
+            },
+
+            defaults: {
+                startRadius: 0,
+                endRadius: 1,
+                scalingCenterX: 0,
+                scalingCenterY: 0,
+                strokeStyle: '#DDD'
+            },
+
+            dirtyTriggers: {
+                startRadius: 'path,bbox',
+                endRadius: 'path,bbox'
+            }
+        }
+    },
+
+<span id='Ext-chart-grid-RadialGrid-method-render'>    render: function () {
+</span>        this.callSuper(arguments);
+    },
+
+<span id='Ext-chart-grid-RadialGrid-method-updatePath'>    updatePath: function (path, attr) {
+</span>        var startRadius = attr.startRadius,
+            endRadius = attr.endRadius;
+        path.moveTo(startRadius, 0);
+        path.lineTo(endRadius, 0);
+    }
+});</pre>
+</body>
+</html>

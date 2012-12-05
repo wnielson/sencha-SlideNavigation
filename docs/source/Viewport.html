@@ -27,19 +27,17 @@ Ext.define('Ext.viewport.Viewport', {
         'Ext.viewport.Android'
     ],
 
-    constructor: function(config) {
-        var osName = Ext.os.name,
+<span id='Ext-viewport-Viewport-method-constructor'>    constructor: function(config) {
+</span>        var osName = Ext.os.name,
             viewportName, viewport;
 
         switch (osName) {
             case 'Android':
-                viewportName = 'Android';
+                viewportName = (Ext.browser.name == 'ChromeMobile') ? 'Default' : 'Android';
                 break;
-
             case 'iOS':
                 viewportName = 'Ios';
                 break;
-
             default:
                 viewportName = 'Default';
         }

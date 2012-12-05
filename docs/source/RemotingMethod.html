@@ -22,19 +22,19 @@
  */
 Ext.define('Ext.direct.RemotingMethod', {
     config: {
-        name: null,
-        params: null,
-        formHandler: null,
-        len: null,
-        ordered: true
+<span id='Ext-direct-RemotingMethod-cfg-name'>        name: null,
+</span><span id='Ext-direct-RemotingMethod-cfg-params'>        params: null,
+</span><span id='Ext-direct-RemotingMethod-cfg-formHandler'>        formHandler: null,
+</span><span id='Ext-direct-RemotingMethod-cfg-len'>        len: null,
+</span><span id='Ext-direct-RemotingMethod-cfg-ordered'>        ordered: true
+</span>    },
+
+<span id='Ext-direct-RemotingMethod-method-constructor'>    constructor: function(config) {
+</span>        this.initConfig(config);
     },
 
-    constructor: function(config) {
-        this.initConfig(config);
-    },
-
-    applyParams: function(params) {
-        if (Ext.isNumber(params)) {
+<span id='Ext-direct-RemotingMethod-method-applyParams'>    applyParams: function(params) {
+</span>        if (Ext.isNumber(params)) {
             this.setLen(params);
         } else if (Ext.isArray(params)) {
             this.setOrdered(false);
@@ -53,8 +53,8 @@ Ext.define('Ext.direct.RemotingMethod', {
         }
     },
 
-    getArgs: function(params, paramOrder, paramsAsHash) {
-        var args = [],
+<span id='Ext-direct-RemotingMethod-method-getArgs'>    getArgs: function(params, paramOrder, paramsAsHash) {
+</span>        var args = [],
             i, ln;
 
         if (this.getOrdered()) {

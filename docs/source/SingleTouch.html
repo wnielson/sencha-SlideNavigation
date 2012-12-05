@@ -22,12 +22,12 @@ Ext.define('Ext.event.recognizer.SingleTouch', {
     extend: 'Ext.event.recognizer.Touch',
 
     inheritableStatics: {
-        NOT_SINGLE_TOUCH: 0x01,
-        TOUCH_MOVED:  0x02
-    },
+<span id='Ext-event-recognizer-SingleTouch-property-NOT_SINGLE_TOUCH'>        NOT_SINGLE_TOUCH: 0x01,
+</span><span id='Ext-event-recognizer-SingleTouch-property-TOUCH_MOVED'>        TOUCH_MOVED:  0x02
+</span>    },
 
-    onTouchStart: function(e) {
-        if (e.touches.length &gt; 1) {
+<span id='Ext-event-recognizer-SingleTouch-method-onTouchStart'>    onTouchStart: function(e) {
+</span>        if (e.touches.length &gt; 1) {
             return this.fail(this.self.NOT_SINGLE_TOUCH);
         }
     }

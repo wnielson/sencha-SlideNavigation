@@ -26,8 +26,8 @@ Ext.define('Ext.device.Communicator', {
 
     singleton: true,
 
-    constructor: function() {
-        if (Ext.os.is.Android) {
+<span id='Ext-device-Communicator-method-constructor'>    constructor: function() {
+</span>        if (Ext.os.is.Android) {
             return new Ext.device.communicator.Android();
         }
 

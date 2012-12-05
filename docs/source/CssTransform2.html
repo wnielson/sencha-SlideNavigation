@@ -21,32 +21,20 @@
  * CSS Transform implementation
  */
 Ext.define('Ext.util.translatable.CssTransform', {
-    extend: 'Ext.util.translatable.Abstract',
+    extend: 'Ext.util.translatable.Dom',
 
-    doTranslate: function(x, y) {
-        var domStyle = this.getElement().dom.style;
-
-        if (typeof x != 'number') {
-            x = this.x;
-        }
-
-        if (typeof y != 'number') {
-            y = this.y;
-        }
-
-        domStyle.webkitTransform = 'translate3d(' + x + 'px, ' + y + 'px, 0px)';
-
-        return this.callParent(arguments);
+<span id='Ext-util-translatable-CssTransform-method-doTranslate'>    doTranslate: function() {
+</span>        this.getElement().dom.style.webkitTransform = 'translate3d(' + this.x + 'px, ' + this.y + 'px, 0px)';
     },
 
-    destroy: function() {
-        var element = this.getElement();
+<span id='Ext-util-translatable-CssTransform-method-destroy'>    destroy: function() {
+</span>        var element = this.getElement();
 
         if (element &amp;&amp; !element.isDestroyed) {
             element.dom.style.webkitTransform = null;
         }
 
-        this.callParent(arguments);
+        this.callSuper();
     }
 });
 </pre>

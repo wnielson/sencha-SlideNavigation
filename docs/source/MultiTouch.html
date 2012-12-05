@@ -21,14 +21,14 @@
 Ext.define('Ext.event.recognizer.MultiTouch', {
     extend: 'Ext.event.recognizer.Touch',
 
-    requiredTouchesCount: 2,
-
-    isTracking: false,
-
-    isStarted: false,
-
-    onTouchStart: function(e) {
-        var requiredTouchesCount = this.requiredTouchesCount,
+<span id='Ext-event-recognizer-MultiTouch-property-requiredTouchesCount'>    requiredTouchesCount: 2,
+</span>
+<span id='Ext-event-recognizer-MultiTouch-property-isTracking'>    isTracking: false,
+</span>
+<span id='Ext-event-recognizer-MultiTouch-property-isStarted'>    isStarted: false,
+</span>
+<span id='Ext-event-recognizer-MultiTouch-method-onTouchStart'>    onTouchStart: function(e) {
+</span>        var requiredTouchesCount = this.requiredTouchesCount,
             touches = e.touches,
             touchesCount = touches.length;
 
@@ -40,19 +40,19 @@ Ext.define('Ext.event.recognizer.MultiTouch', {
         }
     },
 
-    onTouchEnd: function(e) {
-        this.end(e);
+<span id='Ext-event-recognizer-MultiTouch-method-onTouchEnd'>    onTouchEnd: function(e) {
+</span>        this.end(e);
     },
 
-    start: function() {
-        if (!this.isTracking) {
+<span id='Ext-event-recognizer-MultiTouch-method-start'>    start: function() {
+</span>        if (!this.isTracking) {
             this.isTracking = true;
             this.isStarted = false;
         }
     },
 
-    end: function(e) {
-        if (this.isTracking) {
+<span id='Ext-event-recognizer-MultiTouch-method-end'>    end: function(e) {
+</span>        if (this.isTracking) {
             this.isTracking = false;
 
             if (this.isStarted) {

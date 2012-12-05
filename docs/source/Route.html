@@ -25,9 +25,9 @@
  *
  * For information on how to use routes we suggest reading the following guides:
  *
- * * &lt;a href=&quot;#!/guide/history_support&quot;&gt;Using History Support&lt;/a&gt;
- * * &lt;a href=&quot;#!/guide/apps_intro&quot;&gt;Intro to Applications&lt;/a&gt;
- * * &lt;a href=&quot;#!/guide/controllers&quot;&gt;Using Controllers&lt;/a&gt;
+ * - [Using History Support](#!/guide/history_support)
+ * - [Intro to Applications](#!/guide/apps_intro)
+ * - [Using Controllers](#!/guide/controllers)
  *
  */
 Ext.define('Ext.app.Route', {
@@ -47,19 +47,19 @@ Ext.define('Ext.app.Route', {
         conditions: {},
 
 <span id='Ext-app-Route-cfg-url'>        /**
-</span>         * @cfg {String} url The url regex to match against. Required
+</span>         * @cfg {String} url (required) The url regex to match against.
          */
         url: null,
 
 <span id='Ext-app-Route-cfg-controller'>        /**
 </span>         * @cfg {String} controller The name of the Controller whose {@link #action} will be called if this route is
-         * matched
+         * matched.
          */
         controller: null,
 
 <span id='Ext-app-Route-cfg-action'>        /**
 </span>         * @cfg {String} action The name of the action that will be called on the {@link #controller} if this route is
-         * matched
+         * matched.
          */
         action: null,
 
@@ -71,14 +71,14 @@ Ext.define('Ext.app.Route', {
         initialized: false
     },
 
-    constructor: function(config) {
-        this.initConfig(config);
+<span id='Ext-app-Route-method-constructor'>    constructor: function(config) {
+</span>        this.initConfig(config);
     },
 
 <span id='Ext-app-Route-method-recognize'>    /**
-</span>     * Attempts to recognize a given url string and return controller/action pair for it
-     * @param {String} url The url to recognize
-     * @return {Object} The matched data, or false if no match
+</span>     * Attempts to recognize a given url string and return controller/action pair for it.
+     * @param {String} url The url to recognize.
+     * @return {Object/Boolean} The matched data, or `false` if no match.
      */
     recognize: function(url) {
         if (!this.getInitialized()) {
@@ -102,13 +102,13 @@ Ext.define('Ext.app.Route', {
 
 <span id='Ext-app-Route-method-initialize'>    /**
 </span>     * @private
-     * Sets up the relevant regular expressions used to match against this route
+     * Sets up the relevant regular expressions used to match against this route.
      */
     initialize: function() {
         /*
          * The regular expression we use to match a segment of a route mapping
-         * this will recognise segments starting with a colon,
-         * e.g. on 'namespace/:controller/:action', :controller and :action will be recognised
+         * this will recognize segments starting with a colon,
+         * e.g. on 'namespace/:controller/:action', :controller and :action will be recognized
          */
         this.paramMatchingRegex = new RegExp(/:([0-9A-Za-z\_]*)/g);
 

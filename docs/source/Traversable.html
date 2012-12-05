@@ -22,12 +22,12 @@
 Ext.define('Ext.mixin.Traversable', {
     extend: 'Ext.mixin.Mixin',
 
-    mixinConfig: {
-        id: 'traversable'
+<span id='Ext-mixin-Traversable-property-mixinConfig'>    mixinConfig: {
+</span>        id: 'traversable'
     },
 
-    setParent: function(parent) {
-        this.parent = parent;
+<span id='Ext-mixin-Traversable-method-setParent'>    setParent: function(parent) {
+</span>        this.parent = parent;
 
         return this;
     },
@@ -50,8 +50,8 @@ Ext.define('Ext.mixin.Traversable', {
         return this.parent;
     },
 
-    getAncestors: function() {
-        var ancestors = [],
+<span id='Ext-mixin-Traversable-method-getAncestors'>    getAncestors: function() {
+</span>        var ancestors = [],
             parent = this.getParent();
 
         while (parent) {
@@ -62,8 +62,8 @@ Ext.define('Ext.mixin.Traversable', {
         return ancestors;
     },
 
-    getAncestorIds: function() {
-        var ancestorIds = [],
+<span id='Ext-mixin-Traversable-method-getAncestorIds'>    getAncestorIds: function() {
+</span>        var ancestorIds = [],
             parent = this.getParent();
 
         while (parent) {

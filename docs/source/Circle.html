@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-draw-sprite-Circle'>/**
+</span> * @class Ext.draw.sprite.Circle
+ * @extends Ext.draw.sprite.Path
+ *
+ * A sprite that represents a circle.
+ *
+ *     @example preview miniphone
+ *     new Ext.draw.Component({
+ *       fullscreen: true,
+ *       items: [{
+ *         type: 'circle',
+ *         cx: 100,
+ *         cy: 100,
+ *         r: 25,
+ *         fillStyle: 'blue'
+ *       }]
+ *     });
+ *
+ */
+Ext.define(&quot;Ext.draw.sprite.Circle&quot;, {
+    extend: &quot;Ext.draw.sprite.Path&quot;,
+    alias: 'sprite.circle',
+<span id='Ext-draw-sprite-Circle-property-type'>    type: 'circle',
+</span>    inheritableStatics: {
+<span id='Ext-draw-sprite-Circle-property-def'>        def: {
+</span>            processors: {
+<span id='Ext-draw-sprite-Circle-cfg-cx'>                /**
+</span>                 * @cfg {Number} [cx=0] The center coordinate of the sprite on the x-axis.
+                 */
+                cx: &quot;number&quot;,
+
+<span id='Ext-draw-sprite-Circle-cfg-cy'>                /**
+</span>                 * @cfg {Number} [cy=0] The center coordinate of the sprite on the y-axis.
+                 */
+                cy: &quot;number&quot;,
+
+<span id='Ext-draw-sprite-Circle-cfg-r'>                /**
+</span>                 * @cfg {Number} [r=0] The radius of the sprite.
+                 */
+                r: &quot;number&quot;
+            },
+            aliases: {
+                radius: &quot;r&quot;,
+                x: &quot;cx&quot;,
+                y: &quot;cy&quot;,
+                centerX: &quot;cx&quot;,
+                centerY: &quot;cy&quot;
+            },
+            defaults: {
+                cx: 0,
+                cy: 0,
+                r: 0
+            },
+            dirtyTriggers: {
+                cx: 'path',
+                cy: 'path',
+                r: 'path'
+            }
+        }
+    },
+
+<span id='Ext-draw-sprite-Circle-method-updatePlainBBox'>    updatePlainBBox: function (plain) {
+</span>        var attr = this.attr,
+            cx = attr.cx,
+            cy = attr.cy,
+            r = attr.r;
+        plain.x = cx - r;
+        plain.y = cy - r;
+        plain.width = r + r;
+        plain.height = r + r;
+    },
+
+<span id='Ext-draw-sprite-Circle-method-updateTransformedBBox'>    updateTransformedBBox: function (transform) {
+</span>        var attr = this.attr,
+            cx = attr.cx,
+            cy = attr.cy,
+            r = attr.r,
+            matrix = attr.matrix,
+            scalesX = matrix.getScaleX(),
+            scalesY = matrix.getScaleY(),
+            w, h;
+        w = scalesX * r;
+        h = scalesY * r;
+        transform.x = matrix.x(cx, cy) - w;
+        transform.y = matrix.y(cx, cy) - h;
+        transform.width = w + w;
+        transform.height = h + h;
+    },
+
+<span id='Ext-draw-sprite-Circle-method-updatePath'>    updatePath: function (path, attr) {
+</span>        path.arc(attr.cx, attr.cy, attr.r, 0, Math.PI * 2, false);
+    }
+});</pre>
+</body>
+</html>

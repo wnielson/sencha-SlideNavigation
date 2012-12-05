@@ -20,167 +20,151 @@
  * @class Ext.data.reader.Xml
  * @extends Ext.data.reader.Reader
  *
- * &lt;p&gt;The XML Reader is used by a Proxy to read a server response that is sent back in XML format. This usually
- * happens as a result of loading a Store - for example we might create something like this:&lt;/p&gt;
+ * The XML Reader is used by a Proxy to read a server response that is sent back in XML format. This usually
+ * happens as a result of loading a Store - for example we might create something like this:
  *
-&lt;pre&gt;&lt;code&gt;
-Ext.define('User', {
-    extend: 'Ext.data.Model',
-    config: {
-        fields: ['id', 'name', 'email']
-    }
-});
-
-var store = Ext.create('Ext.data.Store', {
-    model: 'User',
-    proxy: {
-        type: 'ajax',
-        url : 'users.xml',
-        reader: {
-            type: 'xml',
-            record: 'user'
-        }
-    }
-});
-&lt;/code&gt;&lt;/pre&gt;
+ *     Ext.define('User', {
+ *         extend: 'Ext.data.Model',
+ *         config: {
+ *             fields: ['id', 'name', 'email']
+ *         }
+ *     });
  *
- * &lt;p&gt;The example above creates a 'User' model. Models are explained in the {@link Ext.data.Model Model} docs if you're
- * not already familiar with them.&lt;/p&gt;
+ *     var store = Ext.create('Ext.data.Store', {
+ *         model: 'User',
+ *         proxy: {
+ *             type: 'ajax',
+ *             url : 'users.xml',
+ *             reader: {
+ *                 type: 'xml',
+ *                 record: 'user'
+ *             }
+ *         }
+ *     });
  *
- * &lt;p&gt;We created the simplest type of XML Reader possible by simply telling our {@link Ext.data.Store Store}'s
+ * The example above creates a 'User' model. Models are explained in the {@link Ext.data.Model Model} docs if you're
+ * not already familiar with them.
+ *
+ * We created the simplest type of XML Reader possible by simply telling our {@link Ext.data.Store Store}'s
  * {@link Ext.data.proxy.Proxy Proxy} that we want a XML Reader. The Store automatically passes the configured model to the
  * Store, so it is as if we passed this instead:
  *
-&lt;pre&gt;&lt;code&gt;
-reader: {
-    type : 'xml',
-    model: 'User',
-    record: 'user'
-}
-&lt;/code&gt;&lt;/pre&gt;
+ *     reader: {
+ *         type : 'xml',
+ *         model: 'User',
+ *         record: 'user'
+ *     }
  *
- * &lt;p&gt;The reader we set up is ready to read data from our server - at the moment it will accept a response like this:&lt;/p&gt;
+ * The reader we set up is ready to read data from our server - at the moment it will accept a response like this:
  *
-&lt;pre&gt;&lt;code&gt;
-&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;
-&amp;lt;user&amp;gt;
-    &amp;lt;id&amp;gt;1&amp;lt;/id&amp;gt;
-    &amp;lt;name&amp;gt;Ed Spencer&amp;lt;/name&amp;gt;
-    &amp;lt;email&amp;gt;ed@sencha.com&amp;lt;/email&amp;gt;
-&amp;lt;/user&amp;gt;
-&amp;lt;user&amp;gt;
-    &amp;lt;id&amp;gt;2&amp;lt;/id&amp;gt;
-    &amp;lt;name&amp;gt;Abe Elias&amp;lt;/name&amp;gt;
-    &amp;lt;email&amp;gt;abe@sencha.com&amp;lt;/email&amp;gt;
-&amp;lt;/user&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
+ *     &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+ *     &lt;user&gt;
+ *         &lt;id&gt;1&lt;/id&gt;
+ *         &lt;name&gt;Ed Spencer&lt;/name&gt;
+ *         &lt;email&gt;ed@sencha.com&lt;/email&gt;
+ *     &lt;/user&gt;
+ *     &lt;user&gt;
+ *         &lt;id&gt;2&lt;/id&gt;
+ *         &lt;name&gt;Abe Elias&lt;/name&gt;
+ *         &lt;email&gt;abe@sencha.com&lt;/email&gt;
+ *     &lt;/user&gt;
  *
- * &lt;p&gt;The XML Reader uses the configured {@link #record} option to pull out the data for each record - in this case we
- * set record to 'user', so each &amp;lt;user&amp;gt; above will be converted into a User model.&lt;/p&gt;
+ * The XML Reader uses the configured {@link #record} option to pull out the data for each record - in this case we
+ * set record to 'user', so each `&lt;user&gt;` above will be converted into a User model.
  *
- * &lt;p&gt;&lt;u&gt;Reading other XML formats&lt;/u&gt;&lt;/p&gt;
+ * ## Reading other XML formats
  *
- * &lt;p&gt;If you already have your XML format defined and it doesn't look quite like what we have above, you can usually
+ * If you already have your XML format defined and it doesn't look quite like what we have above, you can usually
  * pass XmlReader a couple of configuration options to make it parse your format. For example, we can use the
- * {@link #rootProperty} configuration to parse data that comes back like this:&lt;/p&gt;
+ * {@link #rootProperty} configuration to parse data that comes back like this:
  *
-&lt;pre&gt;&lt;code&gt;
-&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;
-&amp;lt;users&amp;gt;
-    &amp;lt;user&amp;gt;
-        &amp;lt;id&amp;gt;1&amp;lt;/id&amp;gt;
-        &amp;lt;name&amp;gt;Ed Spencer&amp;lt;/name&amp;gt;
-        &amp;lt;email&amp;gt;ed@sencha.com&amp;lt;/email&amp;gt;
-    &amp;lt;/user&amp;gt;
-    &amp;lt;user&amp;gt;
-        &amp;lt;id&amp;gt;2&amp;lt;/id&amp;gt;
-        &amp;lt;name&amp;gt;Abe Elias&amp;lt;/name&amp;gt;
-        &amp;lt;email&amp;gt;abe@sencha.com&amp;lt;/email&amp;gt;
-    &amp;lt;/user&amp;gt;
-&amp;lt;/users&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
+ *     &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+ *     &lt;users&gt;
+ *         &lt;user&gt;
+ *             &lt;id&gt;1&lt;/id&gt;
+ *             &lt;name&gt;Ed Spencer&lt;/name&gt;
+ *             &lt;email&gt;ed@sencha.com&lt;/email&gt;
+ *         &lt;/user&gt;
+ *         &lt;user&gt;
+ *             &lt;id&gt;2&lt;/id&gt;
+ *             &lt;name&gt;Abe Elias&lt;/name&gt;
+ *             &lt;email&gt;abe@sencha.com&lt;/email&gt;
+ *         &lt;/user&gt;
+ *     &lt;/users&gt;
  *
- * &lt;p&gt;To parse this we just pass in a {@link #rootProperty} configuration that matches the 'users' above:&lt;/p&gt;
+ * To parse this we just pass in a {@link #rootProperty} configuration that matches the 'users' above:
  *
-&lt;pre&gt;&lt;code&gt;
-reader: {
-    type: 'xml',
-    record: 'user',
-    rootProperty: 'users'
-}
-&lt;/code&gt;&lt;/pre&gt;
+ *     reader: {
+ *         type: 'xml',
+ *         record: 'user',
+ *         rootProperty: 'users'
+ *     }
  *
- * &lt;p&gt;Note that XmlReader doesn't care whether your {@link #rootProperty} and {@link #record} elements are nested deep
+ * Note that XmlReader doesn't care whether your {@link #rootProperty} and {@link #record} elements are nested deep
  * inside a larger structure, so a response like this will still work:
  *
-&lt;pre&gt;&lt;code&gt;
-&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;
-&amp;lt;deeply&amp;gt;
-    &amp;lt;nested&amp;gt;
-        &amp;lt;xml&amp;gt;
-            &amp;lt;users&amp;gt;
-                &amp;lt;user&amp;gt;
-                    &amp;lt;id&amp;gt;1&amp;lt;/id&amp;gt;
-                    &amp;lt;name&amp;gt;Ed Spencer&amp;lt;/name&amp;gt;
-                    &amp;lt;email&amp;gt;ed@sencha.com&amp;lt;/email&amp;gt;
-                &amp;lt;/user&amp;gt;
-                &amp;lt;user&amp;gt;
-                    &amp;lt;id&amp;gt;2&amp;lt;/id&amp;gt;
-                    &amp;lt;name&amp;gt;Abe Elias&amp;lt;/name&amp;gt;
-                    &amp;lt;email&amp;gt;abe@sencha.com&amp;lt;/email&amp;gt;
-                &amp;lt;/user&amp;gt;
-            &amp;lt;/users&amp;gt;
-        &amp;lt;/xml&amp;gt;
-    &amp;lt;/nested&amp;gt;
-&amp;lt;/deeply&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
+ *     &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+ *     &lt;deeply&gt;
+ *         &lt;nested&gt;
+ *             &lt;xml&gt;
+ *                 &lt;users&gt;
+ *                     &lt;user&gt;
+ *                         &lt;id&gt;1&lt;/id&gt;
+ *                         &lt;name&gt;Ed Spencer&lt;/name&gt;
+ *                         &lt;email&gt;ed@sencha.com&lt;/email&gt;
+ *                     &lt;/user&gt;
+ *                     &lt;user&gt;
+ *                         &lt;id&gt;2&lt;/id&gt;
+ *                         &lt;name&gt;Abe Elias&lt;/name&gt;
+ *                         &lt;email&gt;abe@sencha.com&lt;/email&gt;
+ *                     &lt;/user&gt;
+ *                 &lt;/users&gt;
+ *             &lt;/xml&gt;
+ *         &lt;/nested&gt;
+ *     &lt;/deeply&gt;
  *
- * &lt;p&gt;&lt;u&gt;Response metadata&lt;/u&gt;&lt;/p&gt;
+ * ## Response metadata
  *
- * &lt;p&gt;The server can return additional data in its response, such as the {@link #totalProperty total number of records}
+ * The server can return additional data in its response, such as the {@link #totalProperty total number of records}
  * and the {@link #successProperty success status of the response}. These are typically included in the XML response
- * like this:&lt;/p&gt;
+ * like this:
  *
-&lt;pre&gt;&lt;code&gt;
-&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;
-&amp;lt;total&amp;gt;100&amp;lt;/total&amp;gt;
-&amp;lt;success&amp;gt;true&amp;lt;/success&amp;gt;
-&amp;lt;users&amp;gt;
-    &amp;lt;user&amp;gt;
-        &amp;lt;id&amp;gt;1&amp;lt;/id&amp;gt;
-        &amp;lt;name&amp;gt;Ed Spencer&amp;lt;/name&amp;gt;
-        &amp;lt;email&amp;gt;ed@sencha.com&amp;lt;/email&amp;gt;
-    &amp;lt;/user&amp;gt;
-    &amp;lt;user&amp;gt;
-        &amp;lt;id&amp;gt;2&amp;lt;/id&amp;gt;
-        &amp;lt;name&amp;gt;Abe Elias&amp;lt;/name&amp;gt;
-        &amp;lt;email&amp;gt;abe@sencha.com&amp;lt;/email&amp;gt;
-    &amp;lt;/user&amp;gt;
-&amp;lt;/users&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
+ *     &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+ *     &lt;total&gt;100&lt;/total&gt;
+ *     &lt;success&gt;true&lt;/success&gt;
+ *     &lt;users&gt;
+ *         &lt;user&gt;
+ *             &lt;id&gt;1&lt;/id&gt;
+ *             &lt;name&gt;Ed Spencer&lt;/name&gt;
+ *             &lt;email&gt;ed@sencha.com&lt;/email&gt;
+ *         &lt;/user&gt;
+ *         &lt;user&gt;
+ *             &lt;id&gt;2&lt;/id&gt;
+ *             &lt;name&gt;Abe Elias&lt;/name&gt;
+ *             &lt;email&gt;abe@sencha.com&lt;/email&gt;
+ *         &lt;/user&gt;
+ *     &lt;/users&gt;
  *
- * &lt;p&gt;If these properties are present in the XML response they can be parsed out by the XmlReader and used by the
+ * If these properties are present in the XML response they can be parsed out by the XmlReader and used by the
  * Store that loaded it. We can set up the names of these properties by specifying a final pair of configuration
- * options:&lt;/p&gt;
+ * options:
  *
-&lt;pre&gt;&lt;code&gt;
-reader: {
-    type: 'xml',
-    rootProperty: 'users',
-    totalProperty  : 'total',
-    successProperty: 'success'
-}
-&lt;/code&gt;&lt;/pre&gt;
+ *     reader: {
+ *         type: 'xml',
+ *         rootProperty: 'users',
+ *         totalProperty  : 'total',
+ *         successProperty: 'success'
+ *     }
  *
- * &lt;p&gt;These final options are not necessary to make the Reader work, but can be useful when the server needs to report
+ * These final options are not necessary to make the Reader work, but can be useful when the server needs to report
  * an error or if it needs to indicate that there is a lot of data available of which only a subset is currently being
- * returned.&lt;/p&gt;
+ * returned.
  *
- * &lt;p&gt;&lt;u&gt;Response format&lt;/u&gt;&lt;/p&gt;
+ * ## Response format
  *
- * &lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; in order for the browser to parse a returned XML document, the Content-Type header in the HTTP
+ * __Note:__ In order for the browser to parse a returned XML document, the Content-Type header in the HTTP
  * response must be set to &quot;text/xml&quot; or &quot;application/xml&quot;. This is very important - the XmlReader will not
- * work correctly otherwise.&lt;/p&gt;
+ * work correctly otherwise.
  */
 Ext.define('Ext.data.reader.Xml', {
     extend: 'Ext.data.reader.Reader',
@@ -196,8 +180,8 @@ Ext.define('Ext.data.reader.Xml', {
 
 <span id='Ext-data-reader-Xml-method-createAccessor'>    /**
 </span>     * @private
-     * Creates a function to return some particular key of data from a response. The totalProperty and
-     * successProperty are treated as special cases for type casting, everything else is just a simple selector.
+     * Creates a function to return some particular key of data from a response. The {@link #totalProperty} and
+     * {@link #successProperty} are treated as special cases for type casting, everything else is just a simple selector.
      * @param {String} expr
      * @return {Function}
      */
@@ -217,15 +201,15 @@ Ext.define('Ext.data.reader.Xml', {
         };
     },
 
-    getNodeValue: function(node) {
-        if (node &amp;&amp; node.firstChild) {
+<span id='Ext-data-reader-Xml-method-getNodeValue'>    getNodeValue: function(node) {
+</span>        if (node &amp;&amp; node.firstChild) {
             return node.firstChild.nodeValue;
         }
         return undefined;
     },
 
-    //inherit docs
-    getResponseData: function(response) {
+<span id='Ext-data-reader-Xml-method-getResponseData'>    //inherit docs
+</span>    getResponseData: function(response) {
         // Check to see if the response is already an xml node.
         if (response.nodeType === 1 || response.nodeType === 9) {
             return response;
@@ -237,7 +221,7 @@ Ext.define('Ext.data.reader.Xml', {
         if (!xml) {
 <span id='Ext-data-reader-Xml-event-exception'>            /**
 </span>             * @event exception Fires whenever the reader is unable to parse a response.
-             * @param {Ext.data.reader.Xml} reader A reference to this reader
+             * @param {Ext.data.reader.Xml} reader A reference to this reader.
              * @param {XMLHttpRequest} response The XMLHttpRequest response object.
              * @param {String} error The error message.
              */
@@ -251,9 +235,9 @@ Ext.define('Ext.data.reader.Xml', {
     },
 
 <span id='Ext-data-reader-Xml-method-getData'>    /**
-</span>     * Normalizes the data object
-     * @param {Object} data The raw data object
-     * @return {Object} Returns the documentElement property of the data object if present, or the same object if not
+</span>     * Normalizes the data object.
+     * @param {Object} data The raw data object.
+     * @return {Object} Returns the `documentElement` property of the data object if present, or the same object if not.
      */
     getData: function(data) {
         return data.documentElement || data;
@@ -261,9 +245,9 @@ Ext.define('Ext.data.reader.Xml', {
 
 <span id='Ext-data-reader-Xml-method-getRoot'>    /**
 </span>     * @private
-     * Given an XML object, returns the Element that represents the root as configured by the Reader's meta data
-     * @param {Object} data The XML data object
-     * @return {XMLElement} The root node element
+     * Given an XML object, returns the Element that represents the root as configured by the Reader's meta data.
+     * @param {Object} data The XML data object.
+     * @return {XMLElement} The root node element.
      */
     getRoot: function(data) {
         var nodeName = data.nodeName,
@@ -281,9 +265,9 @@ Ext.define('Ext.data.reader.Xml', {
 
 <span id='Ext-data-reader-Xml-method-extractData'>    /**
 </span>     * @private
-     * We're just preparing the data for the superclass by pulling out the record nodes we want
-     * @param {XMLElement} root The XML root node
-     * @return {Ext.data.Model[]} The records
+     * We're just preparing the data for the superclass by pulling out the record nodes we want.
+     * @param {XMLElement} root The XML root node.
+     * @return {Ext.data.Model[]} The records.
      */
     extractData: function(root) {
         var recordName = this.getRecord();
@@ -294,7 +278,7 @@ Ext.define('Ext.data.reader.Xml', {
         }
         //&lt;/debug&gt;
 
-        if (recordName != root.nodeName) {
+        if (recordName != root.nodeName &amp;&amp; recordName !== root.localName) {
             root = Ext.DomQuery.select(recordName, root);
         } else {
             root = [root];
@@ -304,19 +288,19 @@ Ext.define('Ext.data.reader.Xml', {
 
 <span id='Ext-data-reader-Xml-method-getAssociatedDataRoot'>    /**
 </span>     * @private
-     * See Ext.data.reader.Reader's getAssociatedDataRoot docs
-     * @param {Object} data The raw data object
-     * @param {String} associationName The name of the association to get data for (uses associationKey if present)
-     * @return {XMLElement} The root
+     * See {@link Ext.data.reader.Reader#getAssociatedDataRoot} docs.
+     * @param {Object} data The raw data object.
+     * @param {String} associationName The name of the association to get data for (uses {@link Ext.data.association.Association#associationKey} if present).
+     * @return {XMLElement} The root.
      */
     getAssociatedDataRoot: function(data, associationName) {
         return Ext.DomQuery.select(associationName, data)[0];
     },
 
 <span id='Ext-data-reader-Xml-method-readRecords'>    /**
-</span>     * Parses an XML document and returns a ResultSet containing the model instances
-     * @param {Object} doc Parsed XML document
-     * @return {Ext.data.ResultSet} The parsed result set
+</span>     * Parses an XML document and returns a ResultSet containing the model instances.
+     * @param {Object} doc Parsed XML document.
+     * @return {Ext.data.ResultSet} The parsed result set.
      */
     readRecords: function(doc) {
         //it's possible that we get passed an array here by associations. Make sure we strip that out (see Ext.data.reader.Reader#readAssociated)
@@ -329,8 +313,9 @@ Ext.define('Ext.data.reader.Xml', {
 <span id='Ext-data-reader-Xml-method-createFieldAccessExpression'>    /**
 </span>     * @private
      * Returns an accessor expression for the passed Field from an XML element using either the Field's mapping, or
-     * its ordinal position in the fields collsction as the index.
-     * This is used by buildExtractors to create optimized on extractor function which converts raw data into model instances.
+     * its ordinal position in the fields collection as the index.
+     *
+     * This is used by `buildExtractors` to create optimized on extractor function which converts raw data into model instances.
      */
     createFieldAccessExpression: function(field, fieldVarName, dataName) {
         var selector = field.getMapping() || field.getName(),
@@ -339,7 +324,17 @@ Ext.define('Ext.data.reader.Xml', {
         if (typeof selector === 'function') {
             result = fieldVarName + '.getMapping()(' + dataName + ', this)';
         } else {
-            result = 'me.getNodeValue(Ext.DomQuery.selectNode(&quot;' + selector + '&quot;, ' + dataName + '))';
+            selector = selector.split('@');
+
+            if (selector.length === 2 &amp;&amp; selector[0]) {
+                result = 'me.getNodeValue(Ext.DomQuery.selectNode(&quot;@' + selector[1] + '&quot;, Ext.DomQuery.selectNode(&quot;' + selector[0] + '&quot;, ' + dataName + ')))';
+            } else if (selector.length === 2) {
+                result = 'me.getNodeValue(Ext.DomQuery.selectNode(&quot;@' + selector[1] + '&quot;, ' + dataName + '))';
+            } else if (selector.length === 1) {
+                result = 'me.getNodeValue(Ext.DomQuery.selectNode(&quot;' + selector[0] + '&quot;, ' + dataName + '))';
+            } else {
+                throw &quot;Unsupported query - too many queries for attributes in &quot; + selector.join('@');
+            }
         }
         return result;
     }

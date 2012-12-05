@@ -89,19 +89,35 @@ Ext.define('Ext.Img', {
 </span>         * @cfg
          * @inheritdoc
          */
-        baseCls: Ext.baseCSSPrefix + 'img',
+        baseCls : Ext.baseCSSPrefix + 'img',
 
+<span id='Ext-Img-cfg-imageCls'>        /**
+</span>         * @cfg {String} imageCls The CSS class to be used when {@link #mode} is not set to 'background'
+         * @accessor
+         */
+        imageCls : Ext.baseCSSPrefix + 'img-image',
+
+<span id='Ext-Img-cfg-backgroundCls'>        /**
+</span>         * @cfg {String} backgroundCls The CSS class to be used when {@link #mode} is set to 'background'
+         * @accessor
+         */
+        backgroundCls : Ext.baseCSSPrefix + 'img-background',
+
+<span id='Ext-Img-cfg-mode'>        /**
+</span>         * @cfg {String} mode If set to 'background', uses a background-image CSS property instead of an
+         * `&lt;img&gt;` tag to display the image.
+         */
         mode: 'background'
     },
 
-    beforeInitialize: function() {
-        var me = this;
+<span id='Ext-Img-method-beforeInitialize'>    beforeInitialize: function() {
+</span>        var me = this;
         me.onLoad = Ext.Function.bind(me.onLoad, me);
         me.onError = Ext.Function.bind(me.onError, me);
     },
 
-    initialize: function() {
-        var me = this;
+<span id='Ext-Img-method-initialize'>    initialize: function() {
+</span>        var me = this;
         me.callParent();
 
         me.relayEvents(me.renderElement, '*');
@@ -112,39 +128,54 @@ Ext.define('Ext.Img', {
         });
     },
 
-    hide: function() {
-        this.callParent();
+<span id='Ext-Img-method-hide'>    hide: function() {
+</span>        this.callParent();
         this.hiddenSrc = this.hiddenSrc || this.getSrc();
         this.setSrc(null);
     },
 
-    show: function() {
-        this.callParent();
+<span id='Ext-Img-method-show'>    show: function() {
+</span>        this.callParent();
         if (this.hiddenSrc) {
             this.setSrc(this.hiddenSrc);
             delete this.hiddenSrc;
         }
     },
 
-    updateMode: function(mode) {
+<span id='Ext-Img-method-updateMode'>    updateMode: function(mode) {
+</span>        var me            = this,
+            imageCls      = me.getImageCls(),
+            backgroundCls = me.getBackgroundCls();
+
         if (mode === 'background') {
-            if (this.imageElement) {
-                this.imageElement.destroy();
-                delete this.imageElement;
-                this.updateSrc(this.getSrc());
+            if (me.imageElement) {
+                me.imageElement.destroy();
+                delete me.imageElement;
+                me.updateSrc(me.getSrc());
             }
-        }
-        else {
-            this.imageElement = this.element.createChild({ tag: 'img' });
+
+            me.replaceCls(imageCls, backgroundCls);
+        } else {
+            me.imageElement = me.element.createChild({ tag: 'img' });
+
+            me.replaceCls(backgroundCls, imageCls);
         }
     },
 
-    onTap: function(e) {
-        this.fireEvent('tap', this, e);
+<span id='Ext-Img-method-updateImageCls'>    updateImageCls : function (newCls, oldCls) {
+</span>        this.replaceCls(oldCls, newCls);
     },
 
-    onAfterRender: function() {
-        this.updateSrc(this.getSrc());
+<span id='Ext-Img-method-updateBackgroundCls'>    updateBackgroundCls : function (newCls, oldCls) {
+</span>        this.replaceCls(oldCls, newCls);
+    },
+
+<span id='Ext-Img-method-onTap'>    onTap: function(e) {
+</span>        this.fireEvent('tap', this, e);
+    },
+
+<span id='Ext-Img-method-onAfterRender'>    onAfterRender: function() {
+</span>        this.updateSrc(this.getSrc());
     },
 
 <span id='Ext-Img-method-updateSrc'>    /**
@@ -168,8 +199,8 @@ Ext.define('Ext.Img', {
         dom.addEventListener('error', me.onError, false);
     },
 
-    detachListeners: function() {
-        var dom = this.imageObject;
+<span id='Ext-Img-method-detachListeners'>    detachListeners: function() {
+</span>        var dom = this.imageObject;
 
         if (dom) {
             dom.removeEventListener('load', this.onLoad, false);
@@ -177,8 +208,8 @@ Ext.define('Ext.Img', {
         }
     },
 
-    onLoad : function(e) {
-        this.detachListeners();
+<span id='Ext-Img-method-onLoad'>    onLoad : function(e) {
+</span>        this.detachListeners();
 
         if (this.getMode() === 'background') {
             this.element.dom.style.backgroundImage = 'url(&quot;' + this.imageObject.src + '&quot;)';
@@ -187,32 +218,33 @@ Ext.define('Ext.Img', {
         this.fireEvent('load', this, e);
     },
 
-    onError : function(e) {
-        this.detachListeners();
+<span id='Ext-Img-method-onError'>    onError : function(e) {
+</span>        this.detachListeners();
         this.fireEvent('error', this, e);
     },
 
-    doSetWidth: function(width) {
-        var sizingElement = (this.getMode() === 'background') ? this.element : this.imageElement;
+<span id='Ext-Img-method-doSetWidth'>    doSetWidth: function(width) {
+</span>        var sizingElement = (this.getMode() === 'background') ? this.element : this.imageElement;
 
         sizingElement.setWidth(width);
 
         this.callParent(arguments);
     },
 
-    doSetHeight: function(height) {
-        var sizingElement = (this.getMode() === 'background') ? this.element : this.imageElement;
+<span id='Ext-Img-method-doSetHeight'>    doSetHeight: function(height) {
+</span>        var sizingElement = (this.getMode() === 'background') ? this.element : this.imageElement;
 
         sizingElement.setHeight(height);
 
         this.callParent(arguments);
     },
 
-    destroy: function() {
-        this.detachListeners();
+<span id='Ext-Img-method-destroy'>    destroy: function() {
+</span>        this.detachListeners();
 
-        Ext.destroy(this.imageObject);
+        Ext.destroy(this.imageObject, this.imageElement);
         delete this.imageObject;
+        delete this.imageElement;
 
         this.callParent();
     }

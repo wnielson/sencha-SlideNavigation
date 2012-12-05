@@ -84,8 +84,8 @@ Ext.define('Ext.direct.Provider', {
         this.initConfig(config);
     },
 
-    applyId: function(id) {
-        if (id === undefined) {
+<span id='Ext-direct-Provider-method-applyId'>    applyId: function(id) {
+</span>        if (id === undefined) {
             id = this.getUniqueId();
         }
         return id;
@@ -94,6 +94,7 @@ Ext.define('Ext.direct.Provider', {
 <span id='Ext-direct-Provider-method-isConnected'>    /**
 </span>     * Returns whether or not the server-side is currently connected.
      * Abstract method for subclasses to implement.
+     * @return {Boolean}
      */
     isConnected: function() {
         return false;

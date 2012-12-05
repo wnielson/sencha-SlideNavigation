@@ -24,9 +24,9 @@
  *
  * Containers give the following extra functionality:
  *
- * * Adding child Components at instantiation and run time
- * * Removing child Components
- * * Specifying a [Layout](#!/guide/layouts)
+ * - Adding child Components at instantiation and run time
+ * - Removing child Components
+ * - Specifying a [Layout](#!/guide/layouts)
  *
  * Layouts determine how the child Components should be laid out on the screen. In our mail app example we'd use an
  * HBox layout so that we can pin the email list to the left hand edge of the screen and allow the preview pane to
@@ -66,26 +66,29 @@
  * Here we created three Panels in total. First we made the aboutPanel, which we might use to tell the user a little
  * about the app. Then we create one called mainPanel, which already contains a third Panel in its
  * {@link Ext.Container#cfg-items items} configuration, with some dummy text (&quot;First Panel&quot;). Finally, we add the first
- * panel to the second by calling the {@link Ext.Container#method-add add} method on mainPanel.
+ * panel to the second by calling the {@link Ext.Container#method-add add} method on `mainPanel`.
  *
  * In this case we gave our mainPanel another hbox layout, but we also introduced some
  * {@link Ext.Container#defaults defaults}. These are applied to every item in the Panel, so in this case every child
- * inside mainPanel will be given a flex: 1 configuration. The effect of this is that when we first render the screen
- * only a single child is present inside mainPanel, so that child takes up the full width available to it. Once the
- * mainPanel.add line is called though, the aboutPanel is rendered inside of it and also given a flex of 1, which will
- * cause it and the first panel to both receive half the full width of the mainPanel.
+ * inside `mainPanel` will be given a `flex: 1` configuration. The effect of this is that when we first render the screen
+ * only a single child is present inside `mainPanel`, so that child takes up the full width available to it. Once the
+ * `mainPanel.add` line is called though, the `aboutPanel` is rendered inside of it and also given a `flex` of 1, which will
+ * cause it and the first panel to both receive half the full width of the `mainPanel`.
  *
  * Likewise, it's easy to remove items from a Container:
  *
  *     mainPanel.remove(aboutPanel);
  *
  * After this line is run everything is back to how it was, with the first child panel once again taking up the full
- * width inside mainPanel.
+ * width inside `mainPanel`.
  *
  * ## Further Reading
  *
  * See the [Component &amp; Container Guide](#!/guide/components) for more information, and check out the
  * {@link Ext.Container} class docs also.
+ *
+ * @aside guide components
+ * @aside guide layouts
  */
 Ext.define('Ext.Container', {
     extend: 'Ext.Component',
@@ -93,7 +96,7 @@ Ext.define('Ext.Container', {
     alternateClassName: 'Ext.lib.Container',
 
     requires: [
-        'Ext.layout.Layout',
+        'Ext.layout.*',
         'Ext.ItemCollection',
         'Ext.behavior.Scrollable',
         'Ext.Mask'
@@ -103,64 +106,84 @@ Ext.define('Ext.Container', {
 
 <span id='Ext-Container-event-add'>    /**
 </span>     * @event add
-     * Fires whenever item added to the Container
-     * @param {Ext.Container} this The Container instance
-     * @param {Object} item The item added to the Container
-     * @param {Number} index The index of the item within the Container
+     * Fires whenever item added to the Container.
+     * @param {Ext.Container} this The Container instance.
+     * @param {Object} item The item added to the Container.
+     * @param {Number} index The index of the item within the Container.
      */
 
 <span id='Ext-Container-event-remove'>    /**
 </span>     * @event remove
-     * Fires whenever item removed from the Container
-     * @param {Ext.Container} this The Container instance
-     * @param {Object} item The item removed from the Container
-     * @param {Number} index The index of the item that was removed
+     * Fires whenever item removed from the Container.
+     * @param {Ext.Container} this The Container instance.
+     * @param {Object} item The item removed from the Container.
+     * @param {Number} index The index of the item that was removed.
      */
 
 <span id='Ext-Container-event-move'>    /**
 </span>     * @event move
-     * Fires whenever item moved within the Container
-     * @param {Ext.Container} this The Container instance
-     * @param {Object} item The item moved within the Container
-     * @param {Number} toIndex The new index of the item
-     * @param {Number} fromIndex The old index of the item
+     * Fires whenever item moved within the Container.
+     * @param {Ext.Container} this The Container instance.
+     * @param {Object} item The item moved within the Container.
+     * @param {Number} toIndex The new index of the item.
+     * @param {Number} fromIndex The old index of the item.
      */
 
 <span id='Ext-Container-event-renderedchange'>    /**
 </span>     * @private
      * @event renderedchange
      * Fires whenever an item is rendered into a container or derendered
-     * from a Container
-     * @param {Ext.Container} this The Container instance
-     * @param {Object} item The item in the Container
-     * @param {Boolean} rendered The current rendered status of the item
+     * from a Container.
+     * @param {Ext.Container} this The Container instance.
+     * @param {Object} item The item in the Container.
+     * @param {Boolean} rendered The current rendered status of the item.
      */
 
 <span id='Ext-Container-event-activate'>    /**
 </span>     * @event activate
-     * Fires whenever item within the Container is activated
-     * @param {Ext.Container} this The Container instance
-     * @param {Object} newActiveItem The new active item within the container
-     * @param {Object} oldActiveItem The old active item within the container
+     * Fires whenever item within the Container is activated.
+     * @param {Ext.Container} this The Container instance.
+     * @param {Object} newActiveItem The new active item within the container.
+     * @param {Object} oldActiveItem The old active item within the container.
      */
 
 <span id='Ext-Container-event-deactivate'>    /**
 </span>     * @event deactivate
-     * Fires whenever item within the Container is deactivated
-     * @param {Ext.Container} this The Container instance
-     * @param {Object} newActiveItem The new active item within the container
-     * @param {Object} oldActiveItem The old active item within the container
+     * Fires whenever item within the Container is deactivated.
+     * @param {Ext.Container} this The Container instance.
+     * @param {Object} newActiveItem The new active item within the container.
+     * @param {Object} oldActiveItem The old active item within the container.
      */
 
     eventedConfig: {
 <span id='Ext-Container-cfg-activeItem'>        /**
-</span>         * @cfg {Object/Number} activeItem The item from the {@link #cfg-items} collection that will be active first. This is
+</span>         * @cfg {Object/String/Number} activeItem The item from the {@link #cfg-items} collection that will be active first. This is
          * usually only meaningful in a {@link Ext.layout.Card card layout}, where only one item can be active at a
-         * time
+         * time. If passes a string, it will be assumed to be a {@link Ext.ComponentQuery} selector.
          * @accessor
          * @evented
          */
-        activeItem: 0
+        activeItem: 0,
+
+<span id='Ext-Container-cfg-scrollable'>        /**
+</span>         * @cfg {Boolean/String/Object} scrollable
+         * Configuration options to make this Container scrollable. Acceptable values are:
+         *
+         * - `'horizontal'`, `'vertical'`, `'both'` to enabling scrolling for that direction.
+         * - `true`/`false` to explicitly enable/disable scrolling.
+         *
+         * Alternatively, you can give it an object which is then passed to the scroller instance:
+         *
+         *     scrollable: {
+         *         direction: 'vertical',
+         *         directionLock: true
+         *     }
+         *
+         * Please look at the {@link Ext.scroll.Scroller} documentation for more example on how to use this.
+         * @accessor
+         * @evented
+         */
+        scrollable: null
     },
 
     config: {
@@ -173,26 +196,26 @@ Ext.define('Ext.Container', {
 <span id='Ext-Container-cfg-layout'>        /**
 </span>         * @cfg {Object/String} layout Configuration for this Container's layout. Example:
          *
-         *    Ext.create('Ext.Container', {
-         *        layout: {
-         *            type: 'hbox',
-         *            align: 'middle'
-         *        },
-         *        items: [
-         *            {
-         *                xtype: 'panel',
-         *                flex: 1,
-         *                style: 'background-color: red;'
-         *            },
-         *            {
-         *                xtype: 'panel',
-         *                flex: 2,
-         *                style: 'background-color: green'
-         *            }
-         *        ]
-         *    });
+         *     Ext.create('Ext.Container', {
+         *         layout: {
+         *             type: 'hbox',
+         *             align: 'middle'
+         *         },
+         *         items: [
+         *             {
+         *                 xtype: 'panel',
+         *                 flex: 1,
+         *                 style: 'background-color: red;'
+         *             },
+         *             {
+         *                 xtype: 'panel',
+         *                 flex: 2,
+         *                 style: 'background-color: green'
+         *             }
+         *         ]
+         *     });
          *
-         * See the layouts guide for more information
+         * See the [Layouts Guide](#!/guide/layouts) for more information.
          *
          * @accessor
          */
@@ -210,15 +233,15 @@ Ext.define('Ext.Container', {
          *            }
          *         },
          *
-         *         hideMe: function() {
-         *             this.hide()
+         *         hideMe: function () {
+         *             this.hide();
          *         }
          *     });
          *
          * We used a {@link Ext.ComponentQuery} selector to listen to the {@link Ext.Button#tap tap} event on any
          * {@link Ext.Button button} anywhere inside the Container that has the {@link Ext.Button#text text} 'Disable'.
-         * Whenever a Component matching that selector fires the 'tap' event our hideMe function is called. hideMe is
-         * called with scope: this (e.g. 'this' is the Container instance).
+         * Whenever a Component matching that selector fires the `tap` event our `hideMe` function is called. `hideMe` is
+         * called with scope: `this` (e.g. `this` is the Container instance).
          *
          */
         control: {},
@@ -229,19 +252,19 @@ Ext.define('Ext.Container', {
          * example here we can specify that each child is a panel and avoid repeating the xtype declaration for each
          * one:
          *
-         *    Ext.create('Ext.Container', {
-         *        defaults: {
-         *            xtype: 'panel'
-         *        },
-         *        items: [
-         *            {
-         *                html: 'Panel 1'
-         *            },
-         *            {
-         *                html: 'Panel 2'
-         *            }
-         *        ]
-         *    });
+         *     Ext.create('Ext.Container', {
+         *         defaults: {
+         *             xtype: 'panel'
+         *         },
+         *         items: [
+         *             {
+         *                 html: 'Panel 1'
+         *             },
+         *             {
+         *                 html: 'Panel 2'
+         *             }
+         *         ]
+         *     });
          *
          * @accessor
          */
@@ -251,21 +274,21 @@ Ext.define('Ext.Container', {
 </span>         * @cfg {Array/Object} items The child items to add to this Container. This is usually an array of Component
          * configurations or instances, for example:
          *
-         *    Ext.create('Ext.Container', {
-         *        items: [
-         *            {
-         *                xtype: 'panel',
-         *                html: 'This is an item'
-         *            }
-         *        ]
-         *    });
+         *     Ext.create('Ext.Container', {
+         *         items: [
+         *             {
+         *                 xtype: 'panel',
+         *                 html: 'This is an item'
+         *             }
+         *         ]
+         *     });
          * @accessor
          */
         items: null,
 
 <span id='Ext-Container-cfg-autoDestroy'>        /**
-</span>         * @cfg {Boolean} autoDestroy If true, child items will be destroyed as soon as they are {@link #method-remove removed}
-         * from this container
+</span>         * @cfg {Boolean} autoDestroy If `true`, child items will be destroyed as soon as they are {@link #method-remove removed}
+         * from this container.
          * @accessor
          */
         autoDestroy: true,
@@ -277,27 +300,8 @@ Ext.define('Ext.Container', {
          */
         defaultType: null,
 
-<span id='Ext-Container-cfg-scrollable'>        /**
-</span>         * @cfg {Boolean/String/Object} scrollable
-         * Configuration options to make this Container scrollable. Acceptable values are:
-         *
-         * * 'horizontal', 'vertical', 'both' to enabling scrolling for that direction.
-         * * true/false to explicitly enable/disable scrolling.
-         *
-         * Alternatively, you can give it an object which is then passed to the scroller instance:
-         *
-         *     scrollable: {
-         *         direction: 'vertical',
-         *         directionLock: true
-         *     }
-         *
-         * Please look at the {@link Ext.scroll.Scroller} documentation for more example on how to use this.
-         * @accessor
-         */
-        scrollable: null,
-
-        //@private
-        useBodyElement: null,
+<span id='Ext-Container-cfg-useBodyElement'>        //@private
+</span>        useBodyElement: null,
 
 <span id='Ext-Container-cfg-masked'>        /**
 </span>         * @cfg {Boolean/Object/Ext.Mask/Ext.LoadMask} masked
@@ -310,15 +314,15 @@ Ext.define('Ext.Container', {
          *         message: 'My message'
          *     }
          *
-         * Alternatively, you can just call the setter at any time with true/false to show/hide the mask&quot;
+         * Alternatively, you can just call the setter at any time with `true`/`false` to show/hide the mask:
          *
          *     setMasked(true); //show the mask
          *     setMasked(false); //hides the mask
          *
-         * There are also two convience methods, {@link #method-mask} and {@link #unmask}, to allow you to mask and unmask
+         * There are also two convenient methods, {@link #method-mask} and {@link #unmask}, to allow you to mask and unmask
          * this container at any time.
          *
-         * Remember, the Ext.Viewport is always a container, so if you want to mask your whole application at anytime,
+         * Remember, the {@link Ext.Viewport} is always a container, so if you want to mask your whole application at anytime,
          * can call:
          *
          *     Ext.Viewport.setMasked({
@@ -331,32 +335,25 @@ Ext.define('Ext.Container', {
         masked: null,
 
 <span id='Ext-Container-cfg-modal'>        /**
-</span>         * @cfg {Boolean} modal True to make this Container modal. This will create a mask underneath the Container
+</span>         * @cfg {Boolean} modal `true` to make this Container modal. This will create a mask underneath the Container
          * that covers its parent and does not allow the user to interact with any other Components until this
-         * Container is dismissed
+         * Container is dismissed.
          * @accessor
          */
         modal: null,
 
 <span id='Ext-Container-cfg-hideOnMaskTap'>        /**
-</span>         * @cfg {Boolean} hideOnMaskTap When using a {@link #modal} Component, setting this to true (the default) will
-         * hide the modal mask and the Container when the mask is tapped on
+</span>         * @cfg {Boolean} hideOnMaskTap When using a {@link #modal} Component, setting this to `true` will hide the modal
+         * mask and the Container when the mask is tapped on.
          * @accessor
          */
         hideOnMaskTap: null
     },
 
-    isContainer: true,
-
-    delegateListeners: {
-        delegate: '&gt; component',
-        centeredchange: 'onItemCenteredChange',
-        dockedchange: 'onItemDockedChange',
-        floatingchange: 'onItemFloatingChange'
-    },
-
-    constructor: function(config) {
-        var me = this;
+<span id='Ext-Container-property-isContainer'>    isContainer: true,
+</span>
+<span id='Ext-Container-method-constructor'>    constructor: function(config) {
+</span>        var me = this;
 
         me._items = me.items = new Ext.ItemCollection();
         me.innerItems = [];
@@ -366,10 +363,10 @@ Ext.define('Ext.Container', {
         me.callParent(arguments);
     },
 
-    getElementConfig: function() {
-        return {
+<span id='Ext-Container-method-getElementConfig'>    getElementConfig: function() {
+</span>        return {
             reference: 'element',
-            className: 'x-container',
+            classList: ['x-container', 'x-unsized'],
             children: [{
                 reference: 'innerElement',
                 className: 'x-inner'
@@ -381,20 +378,31 @@ Ext.define('Ext.Container', {
 </span>     * Changes the {@link #masked} configuration when its setter is called, which will convert the value
      * into a proper object/instance of {@link Ext.Mask}/{@link Ext.LoadMask}. If a mask already exists,
      * it will use that instead.
+     * @param masked
+     * @param currentMask
+     * @return {Object}
      */
     applyMasked: function(masked, currentMask) {
+        var isVisible = true;
+
+        if (masked === false) {
+            masked = true;
+            isVisible = false;
+        }
+
         currentMask = Ext.factory(masked, Ext.Mask, currentMask);
 
         if (currentMask) {
             this.add(currentMask);
+            currentMask.setHidden(!isVisible);
         }
 
         return currentMask;
     },
 
 <span id='Ext-Container-method-mask'>    /**
-</span>     * Convience method which calls {@link #setMasked} with a value of true (to show the mask). For additional
-     * functionality, call the {@link #setMasked} function direction (See the {@link #masked} configuration documention
+</span>     * Convenience method which calls {@link #setMasked} with a value of `true` (to show the mask). For additional
+     * functionality, call the {@link #setMasked} function direction (See the {@link #masked} configuration documentation
      * for more information).
      */
     mask: function(mask) {
@@ -402,86 +410,69 @@ Ext.define('Ext.Container', {
     },
 
 <span id='Ext-Container-method-unmask'>    /**
-</span>     * Convience method which calls {@link #setMasked} with a value of false (to hide the mask). For additional
-     * functionality, call the {@link #setMasked} function direction (See the {@link #masked} configuration documention
+</span>     * Convenience method which calls {@link #setMasked} with a value of false (to hide the mask). For additional
+     * functionality, call the {@link #setMasked} function direction (See the {@link #masked} configuration documentation
      * for more information).
      */
     unmask: function() {
         this.setMasked(false);
     },
 
-    applyModal: function(modal, currentMask) {
-        if (!modal &amp;&amp; !currentMask) {
-            return;
-        }
 
-        return Ext.factory(modal, Ext.Mask, currentMask);
-    },
+<span id='Ext-Container-method-setParent'>    setParent: function(container) {
+</span>        this.callSuper(arguments);
 
-    updateModal: function(newModal, oldModal) {
-        var listeners = {
-            painted: 'refreshModalMask',
-            erased: 'destroyModalMask'
-        };
+        if (container) {
+            var modal = this.getModal();
 
-        if (newModal) {
-            this.on(listeners);
-            newModal.on('destroy', 'onModalDestroy', this);
-            if (this.getTop() === null &amp;&amp; this.getBottom() === null &amp;&amp; this.getRight() === null &amp;&amp; this.getLeft() === null &amp;&amp; !this.getCentered()) {
-                //&lt;debug warn&gt;
-                Ext.Logger.warn(&quot;You have specified a modal config on a container that is neither centered nor has any positioning information.  Setting to top and left to 0 to compensate.&quot;);
-                //&lt;/debug&gt;
-                this.setTop(0);
-                this.setLeft(0);
-            }
-
-            if (this.isPainted()) {
-                this.refreshModalMask();
-            }
-        }
-        else if (oldModal) {
-            oldModal.un('destroy', 'onModalDestroy', this);
-            this.un(listeners);
-        }
-    },
-
-    onModalDestroy: function() {
-        this.setModal(null);
-    },
-
-    refreshModalMask: function() {
-        var mask = this.getModal(),
-            container = this.getParent();
-
-        if (!this.painted) {
-            this.painted = true;
-
-            if (mask) {
-                container.insertBefore(mask, this);
-                mask.setZIndex(this.getZIndex() - 1);
-                if (this.getHideOnMaskTap()) {
-                    mask.on('tap', 'hide', this, { single: true });
-                }
+            if (modal) {
+                container.insertBefore(modal, this);
+                modal.setZIndex(this.getZIndex() - 1);
             }
         }
     },
 
-    destroyModalMask: function() {
-        var mask = this.getModal(),
-            container = this.getParent();
+<span id='Ext-Container-method-applyModal'>    applyModal: function(modal, currentModal) {
+</span>        var isVisible = true;
 
-        if (this.painted) {
-            this.painted = false;
+        if (modal === false) {
+            modal = true;
+            isVisible = false;
+        }
 
-            if (mask) {
-                mask.un('tap', 'hide', this);
-                container.remove(mask, false);
+        currentModal = Ext.factory(modal, Ext.Mask, currentModal);
+
+        if (currentModal) {
+            currentModal.setVisibility(isVisible);
+        }
+
+        return currentModal;
+    },
+
+<span id='Ext-Container-method-updateModal'>    updateModal: function(modal) {
+</span>        var container = this.getParent();
+
+        if (container) {
+            if (modal) {
+                container.insertBefore(modal, this);
+                modal.setZIndex(this.getZIndex() - 1);
+            }
+            else {
+                container.remove(modal);
             }
         }
     },
 
-    updateZIndex: function(zIndex) {
-        var modal = this.getModal();
+<span id='Ext-Container-method-updateHideOnMaskTap'>    updateHideOnMaskTap : function(hide) {
+</span>        var mask = this.getModal();
+
+        if (mask) {
+            mask[hide ? 'on' : 'un'].call(mask, 'tap', 'hide', this);
+        }
+    },
+
+<span id='Ext-Container-method-updateZIndex'>    updateZIndex: function(zIndex) {
+</span>        var modal = this.getModal();
 
         this.callParent(arguments);
 
@@ -490,8 +481,8 @@ Ext.define('Ext.Container', {
         }
     },
 
-    updateBaseCls: function(newBaseCls, oldBaseCls) {
-        var me = this,
+<span id='Ext-Container-method-updateBaseCls'>    updateBaseCls: function(newBaseCls, oldBaseCls) {
+</span>        var me = this,
             ui = me.getUi();
 
         if (newBaseCls) {
@@ -513,25 +504,33 @@ Ext.define('Ext.Container', {
         }
     },
 
-    updateUseBodyElement: function(useBodyElement) {
-        if (useBodyElement) {
-            this.bodyElement = this.innerElement.wrap({
+<span id='Ext-Container-method-updateUseBodyElement'>    updateUseBodyElement: function(useBodyElement) {
+</span>        if (useBodyElement) {
+            this.link('bodyElement', this.innerElement.wrap({
                 cls: 'x-body'
-            });
-            this.referenceList.push('bodyElement');
+            }));
         }
     },
 
-    applyItems: function(items, collection) {
-        if (items) {
-            this.getDefaultType();
-            this.getDefaults();
+<span id='Ext-Container-method-applyItems'>    applyItems: function(items, collection) {
+</span>        if (items) {
+            var me = this;
 
-            if (this.initialized &amp;&amp; collection.length &gt; 0) {
-                this.removeAll();
+            me.getDefaultType();
+            me.getDefaults();
+
+            if (me.initialized &amp;&amp; collection.length &gt; 0) {
+                me.removeAll();
             }
 
-            this.add(items);
+            me.add(items);
+
+            //Don't need to call setActiveItem when Container is first initialized
+            if (me.initialized) {
+                var activeItem = me.initialConfig.activeItem || me.config.activeItem || 0;
+
+                me.setActiveItem(activeItem);
+            }
         }
     },
 
@@ -567,28 +566,38 @@ Ext.define('Ext.Container', {
     onFirstItemAdd: function() {
         delete this.onItemAdd;
 
-        this.setLayout(new Ext.layout.Layout(this, this.getLayout() || 'default'));
-
         if (this.innerHtmlElement &amp;&amp; !this.getHtml()) {
             this.innerHtmlElement.destroy();
             delete this.innerHtmlElement;
         }
 
-        this.on(this.delegateListeners);
+        this.on('innerstatechange', 'onItemInnerStateChange', this, {
+            delegate: '&gt; component'
+        });
 
         return this.onItemAdd.apply(this, arguments);
     },
 
-    //&lt;debug error&gt;
-    updateLayout: function(newLayout, oldLayout) {
+<span id='Ext-Container-method-updateLayout'>    //&lt;debug error&gt;
+</span>    updateLayout: function(newLayout, oldLayout) {
         if (oldLayout &amp;&amp; oldLayout.isLayout) {
             Ext.Logger.error('Replacing a layout after one has already been initialized is not currently supported.');
         }
     },
-    //&lt;/debug&gt;
+<span id='Ext-Container-method-getLayout'>    //&lt;/debug&gt;
+</span>
+    getLayout: function() {
+        var layout = this.layout;
+        if (!layout) {
+            layout = this.link('_layout', this.link('layout', Ext.factory(this._layout || 'default', Ext.layout.Default, null, 'layout')));
+            layout.setContainer(this);
+        }
 
-    updateDefaultType: function(defaultType) {
-        // Cache the direct reference to the default item class here for performance
+        return layout;
+    },
+
+<span id='Ext-Container-method-updateDefaultType'>    updateDefaultType: function(defaultType) {
+</span>        // Cache the direct reference to the default item class here for performance
         this.defaultItemClass = Ext.ClassManager.getByAlias('widget.' + defaultType);
 
         //&lt;debug error&gt;
@@ -598,15 +607,15 @@ Ext.define('Ext.Container', {
         //&lt;/debug&gt;
     },
 
-    applyDefaults: function(defaults) {
-        if (defaults) {
+<span id='Ext-Container-method-applyDefaults'>    applyDefaults: function(defaults) {
+</span>        if (defaults) {
             this.factoryItem = this.factoryItemWithDefaults;
             return defaults;
         }
     },
 
-    factoryItem: function(item) {
-        //&lt;debug error&gt;
+<span id='Ext-Container-method-factoryItem'>    factoryItem: function(item) {
+</span>        //&lt;debug error&gt;
         if (!item) {
             Ext.Logger.error(&quot;Invalid item given: &quot; + item + &quot;, must be either the config object to factory a new item, &quot; +
                 &quot;or an existing component instance&quot;);
@@ -616,8 +625,8 @@ Ext.define('Ext.Container', {
         return Ext.factory(item, this.defaultItemClass);
     },
 
-    factoryItemWithDefaults: function(item) {
-        //&lt;debug error&gt;
+<span id='Ext-Container-method-factoryItemWithDefaults'>    factoryItemWithDefaults: function(item) {
+</span>        //&lt;debug error&gt;
         if (!item) {
             Ext.Logger.error(&quot;Invalid item given: &quot; + item + &quot;, must be either the config object to factory a new item, &quot; +
                 &quot;or an existing component instance&quot;);
@@ -668,13 +677,14 @@ Ext.define('Ext.Container', {
 <span id='Ext-Container-method-add'>    /**
 </span>     * Adds one or more Components to this Container. Example:
      *
-     *    var myPanel = Ext.create('Ext.Panel', {
-     *        html: 'This will be added to a Container'
-     *    });
+     *     var myPanel = Ext.create('Ext.Panel', {
+     *         html: 'This will be added to a Container'
+     *     });
      *
-     *    myContainer.add([myPanel])
+     *     myContainer.add([myPanel]);
      *
-     * @param {Array} newItems The new items to add to the Container
+     * @param {Object/Object[]/Ext.Component/Ext.Component[]} newItems The new items to add to the Container.
+     * @return {Ext.Component} The last item added to the Container from the `newItems` array.
      */
     add: function(newItems) {
         var me = this,
@@ -722,9 +732,9 @@ Ext.define('Ext.Container', {
     },
 
 <span id='Ext-Container-method-remove'>    /**
-</span>     * Removes an item from this Container, optionally destroying it
-     * @param {Object} item The item to remove
-     * @param {Boolean} destroy Calls the Component's {@link Ext.Component#destroy destroy} method if true
+</span>     * Removes an item from this Container, optionally destroying it.
+     * @param {Object} item The item to remove.
+     * @param {Boolean} destroy Calls the Component's {@link Ext.Component#destroy destroy} method if `true`.
      * @return {Ext.Component} this
      */
     remove: function(item, destroy) {
@@ -759,8 +769,8 @@ Ext.define('Ext.Container', {
         return me;
     },
 
-    doResetActiveItem: function(innerIndex) {
-        if (innerIndex === 0) {
+<span id='Ext-Container-method-doResetActiveItem'>    doResetActiveItem: function(innerIndex) {
+</span>        if (innerIndex === 0) {
             this.setActiveItem(1);
         }
         else {
@@ -768,8 +778,8 @@ Ext.define('Ext.Container', {
         }
     },
 
-    doRemove: function(item, index, destroy) {
-        var me = this;
+<span id='Ext-Container-method-doRemove'>    doRemove: function(item, index, destroy) {
+</span>        var me = this;
 
         me.items.remove(item);
 
@@ -787,9 +797,9 @@ Ext.define('Ext.Container', {
     },
 
 <span id='Ext-Container-method-removeAll'>    /**
-</span>     * Removes all items currently in the Container, optionally destroying them all
-     * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
-     * @param {Boolean} everything If true, completely remove all items including docked / centered and floating items
+</span>     * Removes all items currently in the Container, optionally destroying them all.
+     * @param {Boolean} destroy If `true`, {@link Ext.Component#destroy destroys} each removed Component.
+     * @param {Boolean} everything If `true`, completely remove all items including docked / centered and floating items.
      * @return {Ext.Component} this
      */
     removeAll: function(destroy, everything) {
@@ -817,6 +827,7 @@ Ext.define('Ext.Container', {
                 ln--;
             }
         }
+        this.setActiveItem(null);
 
         this.removingAll = false;
 
@@ -824,20 +835,24 @@ Ext.define('Ext.Container', {
     },
 
 <span id='Ext-Container-method-getAt'>    /**
-</span>     * Returns the Component for a given index in the Container's {@link #property-items}
-     * @param {Number} index The index of the Component to return
-     * @return {Ext.Component} The item at the specified index, if found
+</span>     * Returns the Component for a given index in the Container's {@link #property-items}.
+     * @param {Number} index The index of the Component to return.
+     * @return {Ext.Component} The item at the specified `index`, if found.
      */
     getAt: function(index) {
         return this.items.getAt(index);
     },
 
+<span id='Ext-Container-method-getInnerAt'>    getInnerAt: function(index) {
+</span>        return this.innerItems[index];
+    },
+
 <span id='Ext-Container-method-removeAt'>    /**
 </span>     * Removes the Component at the specified index:
      *
-     *     myContainer.removeAt(0); //removes the first item
+     *     myContainer.removeAt(0); // removes the first item
      *
-     * @param {Number} index The index of the Component to remove
+     * @param {Number} index The index of the Component to remove.
      */
     removeAt: function(index) {
         var item = this.getAt(index);
@@ -852,9 +867,9 @@ Ext.define('Ext.Container', {
 <span id='Ext-Container-method-removeInnerAt'>    /**
 </span>     * Removes an inner Component at the specified index:
      *
-     *     myContainer.removeInnerAt(0); //removes the first item of the innerItems propety
+     *     myContainer.removeInnerAt(0); // removes the first item of the innerItems property
      *
-     * @param {Number} index The index of the Component to remove
+     * @param {Number} index The index of the Component to remove.
      */
     removeInnerAt: function(index) {
         var item = this.getInnerItems()[index];
@@ -885,6 +900,10 @@ Ext.define('Ext.Container', {
      */
     indexOf: function(item) {
         return this.getItems().indexOf(item);
+    },
+
+<span id='Ext-Container-method-innerIndexOf'>    innerIndexOf: function(item) {
+</span>        return this.innerItems.indexOf(item);
     },
 
 <span id='Ext-Container-method-insertInner'>    /**
@@ -926,8 +945,8 @@ Ext.define('Ext.Container', {
         return this;
     },
 
-    onInnerItemMove: Ext.emptyFn,
-
+<span id='Ext-Container-method-onInnerItemMove'>    onInnerItemMove: Ext.emptyFn,
+</span>
 <span id='Ext-Container-method-removeInner'>    /**
 </span>     * @private
      * @param item
@@ -944,8 +963,8 @@ Ext.define('Ext.Container', {
      *
      *     myContainer.insert(0, {xtype: 'panel', html: 'new item'});
      *
-     * @param {Number} index The index to insert the Component at
-     * @param {Object} item The Component to insert
+     * @param {Number} index The index to insert the Component at.
+     * @param {Object} item The Component to insert.
      */
     insert: function(index, item) {
         var me = this,
@@ -1063,8 +1082,8 @@ Ext.define('Ext.Container', {
         }
     },
 
-    doItemLayoutAdd: function(item, index) {
-        var layout = this.getLayout();
+<span id='Ext-Container-method-doItemLayoutAdd'>    doItemLayoutAdd: function(item, index) {
+</span>        var layout = this.getLayout();
 
         if (this.isRendered() &amp;&amp; item.setRendered(true)) {
             item.fireAction('renderedchange', [this, item, true], 'onItemAdd', layout, { args: [item, index] });
@@ -1083,11 +1102,11 @@ Ext.define('Ext.Container', {
         this.fireEvent('remove', this, item, index);
     },
 
-    doItemLayoutRemove: function(item, index) {
-        var layout = this.getLayout();
+<span id='Ext-Container-method-doItemLayoutRemove'>    doItemLayoutRemove: function(item, index) {
+</span>        var layout = this.getLayout();
 
         if (this.isRendered() &amp;&amp; item.setRendered(false)) {
-            item.fireAction('renderedchange', [this, item, false], 'onItemRemove', layout, { args: [item, index] });
+            item.fireAction('renderedchange', [this, item, false], 'onItemRemove', layout, { args: [item, index, undefined] });
         }
         else {
             layout.onItemRemove(item, index);
@@ -1107,56 +1126,21 @@ Ext.define('Ext.Container', {
         this.fireEvent('move', this, item, toIndex, fromIndex);
     },
 
-    doItemLayoutMove: function(item, toIndex, fromIndex) {
-        this.getLayout().onItemMove(item, toIndex, fromIndex);
+<span id='Ext-Container-method-doItemLayoutMove'>    doItemLayoutMove: function(item, toIndex, fromIndex) {
+</span>        this.getLayout().onItemMove(item, toIndex, fromIndex);
     },
 
-<span id='Ext-Container-method-onItemCenteredChange'>    /**
-</span>     * @private
-     */
-    onItemCenteredChange: function(item, centered) {
-        if (!item.isFloating() &amp;&amp; !item.isDocked()) {
-            if (centered) {
-                this.removeInner(item);
-            }
-            else {
-                this.insertInner(item, this.indexOf(item));
-            }
+<span id='Ext-Container-method-onItemInnerStateChange'>    onItemInnerStateChange: function(item, isInner) {
+</span>        var layout = this.getLayout();
+
+        if (isInner) {
+            this.insertInner(item, this.items.indexOf(item));
+        }
+        else {
+            this.removeInner(item);
         }
 
-        this.getLayout().onItemCenteredChange(item, centered);
-    },
-
-<span id='Ext-Container-method-onItemFloatingChange'>    /**
-</span>     * @private
-     */
-    onItemFloatingChange: function(item, floating) {
-        if (!item.isCentered() &amp;&amp; !item.isDocked()) {
-            if (floating) {
-                this.removeInner(item);
-            }
-            else {
-                this.insertInner(item, this.indexOf(item));
-            }
-        }
-
-        this.getLayout().onItemFloatingChange(item, floating);
-    },
-
-<span id='Ext-Container-method-onItemDockedChange'>    /**
-</span>     * @private
-     */
-    onItemDockedChange: function(item, docked, oldDocked) {
-        if (!item.isCentered() &amp;&amp; !item.isFloating()) {
-            if (docked) {
-                this.removeInner(item);
-            }
-            else {
-                this.insertInner(item, this.indexOf(item));
-            }
-        }
-
-        this.getLayout().onItemDockedChange(item, docked, oldDocked);
+        layout.onItemInnerStateChange.apply(layout, arguments);
     },
 
 <span id='Ext-Container-method-getInnerItems'>    /**
@@ -1170,7 +1154,7 @@ Ext.define('Ext.Container', {
 
 <span id='Ext-Container-method-getDockedItems'>    /**
 </span>     * Returns all the {@link Ext.Component#docked} items in this container.
-     * @return {Array} The docked items of this container
+     * @return {Array} The docked items of this container.
      */
     getDockedItems: function() {
         var items = this.getItems().items,
@@ -1213,30 +1197,42 @@ Ext.define('Ext.Container', {
             }
         }
         else if (activeItem) {
-            if (!activeItem.isComponent) {
-                activeItem = this.factoryItem(activeItem);
+            var item;
+
+            //ComponentQuery selector?
+            if (typeof activeItem == 'string') {
+                item = this.child(activeItem);
+
+                activeItem = {
+                    xtype : activeItem
+                };
             }
 
+            if (!item || !item.isComponent) {
+                item = this.factoryItem(activeItem);
+            }
+            this.pendingActiveItem = item;
+
             //&lt;debug error&gt;
-            if (!activeItem.isInnerItem()) {
+            if (!item.isInnerItem()) {
                 Ext.Logger.error(&quot;Setting activeItem to be a non-inner item&quot;);
             }
             //&lt;/debug&gt;
 
-            if (!this.has(activeItem)) {
-                this.add(activeItem);
+            if (!this.has(item)) {
+                this.add(item);
             }
 
-            return activeItem;
+            return item;
         }
     },
 
 <span id='Ext-Container-method-animateActiveItem'>    /**
-</span>     * Animates to the supplied activeItem with a specified animation. Currently this only works
+</span>     * Animates to the supplied `activeItem` with a specified animation. Currently this only works
      * with a Card layout.  This passed animation will override any default animations on the
      * container, for a single card switch. The animation will be destroyed when complete.
-     * @param {Object/Number} activeItem The item or item index to make active
-     * @param {Object/Ext.fx.layout.Card} animation Card animation configuration or instance
+     * @param {Object/Number} activeItem The item or item index to make active.
+     * @param {Object/Ext.fx.layout.Card} animation Card animation configuration or instance.
      */
     animateActiveItem: function(activeItem, animation) {
         var layout = this.getLayout(),
@@ -1264,6 +1260,7 @@ Ext.define('Ext.Container', {
 </span>     * @private
      */
     doSetActiveItem: function(newActiveItem, oldActiveItem) {
+        delete this.pendingActiveItem;
         if (oldActiveItem) {
             oldActiveItem.fireEvent('deactivate', oldActiveItem, this, newActiveItem);
         }
@@ -1271,6 +1268,16 @@ Ext.define('Ext.Container', {
         if (newActiveItem) {
             newActiveItem.fireEvent('activate', newActiveItem, this, oldActiveItem);
         }
+    },
+
+<span id='Ext-Container-method-doSetHidden'>    doSetHidden: function(hidden) {
+</span>        var modal = this.getModal();
+
+        if (modal) {
+            modal.setHidden(hidden);
+        }
+
+        this.callSuper(arguments);
     },
 
 <span id='Ext-Container-method-setRendered'>    /**
@@ -1308,7 +1315,14 @@ Ext.define('Ext.Container', {
 </span>     * @private
      */
     applyScrollable: function(config) {
-        this.getScrollableBehavior().setConfig(config);
+        if (config &amp;&amp; !config.isObservable) {
+            this.getScrollableBehavior().setConfig(config);
+        }
+        return config;
+    },
+
+<span id='Ext-Container-method-doSetScrollable'>    doSetScrollable: function() {
+</span>        // Used for plugins when they need to reinitialize scroller listeners
     },
 
 <span id='Ext-Container-method-getScrollable'>    /**
@@ -1316,16 +1330,16 @@ Ext.define('Ext.Container', {
      *
      * Please checkout the documentation for {@link Ext.scroll.View}, {@link Ext.scroll.View#getScroller}
      * and {@link Ext.scroll.Scroller} for more information.
-     * @return {Ext.scroll.View} The scroll view
+     * @return {Ext.scroll.View} The scroll view.
      */
     getScrollable: function() {
         return this.getScrollableBehavior().getScrollView();
     },
 
-    // Used by ComponentQuery to retrieve all of the items
-    // which can potentially be considered a child of this Container.
-    // This should be overriden by components which have child items
-    // that are not contained in items. For example dockedItems, menu, etc
+<span id='Ext-Container-method-getRefItems'>    // Used by ComponentQuery to retrieve all of the items
+</span>    // which can potentially be considered a child of this Container.
+    // This should be overridden by components which have child items
+    // that are not contained in items. For example `dockedItems`, `menu`, etc
     // @private
     getRefItems: function(deep) {
         var items = this.getItems().items.slice(),
@@ -1346,17 +1360,17 @@ Ext.define('Ext.Container', {
     },
 
 <span id='Ext-Container-method-getComponent'>    /**
-</span>     * Examines this container's &lt;code&gt;{@link #property-items}&lt;/code&gt; &lt;b&gt;property&lt;/b&gt;
+</span>     * Examines this container's `{@link #property-items}` property
      * and gets a direct child component of this container.
      * @param {String/Number} component This parameter may be any of the following:
-     * &lt;div&gt;&lt;ul class=&quot;mdetail-params&quot;&gt;
-     * &lt;li&gt;a &lt;b&gt;&lt;code&gt;String&lt;/code&gt;&lt;/b&gt; : representing the &lt;code&gt;itemId&lt;/code&gt;
-     * or &lt;code&gt;{@link Ext.Component#getId id}&lt;/code&gt; of the child component &lt;/li&gt;
-     * &lt;li&gt;a &lt;b&gt;&lt;code&gt;Number&lt;/code&gt;&lt;/b&gt; : representing the position of the child component
-     * within the &lt;code&gt;{@link #property-items}&lt;/code&gt; &lt;b&gt;property&lt;/b&gt;&lt;/li&gt;
-     * &lt;/ul&gt;&lt;/div&gt;
-     * &lt;p&gt;For additional information see {@link Ext.util.MixedCollection#get}.
-     * @return Ext.Component The component (if found).
+     *
+     * - {String} : representing the `itemId`
+     * or `{@link Ext.Component#getId id}` of the child component.
+     * - {Number} : representing the position of the child component
+     * within the `{@link #property-items}` property.
+     *
+     * For additional information see {@link Ext.util.MixedCollection#get}.
+     * @return {Ext.Component} The component (if found).
      */
     getComponent: function(component) {
         if (Ext.isObject(component)) {
@@ -1367,10 +1381,10 @@ Ext.define('Ext.Container', {
     },
 
 <span id='Ext-Container-method-getDockedComponent'>    /**
-</span>     * Finds a docked item of this container using a reference, id or an index of its location
+</span>     * Finds a docked item of this container using a reference, `id `or an `index` of its location
      * in {@link #getDockedItems}.
-     * @param {String/Number} component The id or index of the component to find
-     * @return {Ext.Component/Boolean} The docked component, if found
+     * @param {String/Number} component The `id` or `index` of the component to find.
+     * @return {Ext.Component/Boolean} The docked component, if found.
      */
     getDockedComponent: function(component) {
         if (Ext.isObject(component)) {
@@ -1398,8 +1412,8 @@ Ext.define('Ext.Container', {
 <span id='Ext-Container-method-query'>    /**
 </span>     * Retrieves all descendant components which match the passed selector.
      * Executes an Ext.ComponentQuery.query using this container as its root.
-     * @param {String} selector Selector complying to an Ext.ComponentQuery selector
-     * @return {Array} Ext.Component's which matched the selector
+     * @param {String} selector Selector complying to an Ext.ComponentQuery selector.
+     * @return {Array} Ext.Component's which matched the selector.
      */
     query: function(selector) {
         return Ext.ComponentQuery.query(selector, this);
@@ -1407,9 +1421,9 @@ Ext.define('Ext.Container', {
 
 <span id='Ext-Container-method-child'>    /**
 </span>     * Retrieves the first direct child of this container which matches the passed selector.
-     * The passed in selector must comply with an Ext.ComponentQuery selector.
-     * @param {String} selector An Ext.ComponentQuery selector
-     * @return Ext.Component
+     * The passed in selector must comply with an {@link Ext.ComponentQuery} selector.
+     * @param {String} selector An {@link Ext.ComponentQuery} selector.
+     * @return {Ext.Component}
      */
     child: function(selector) {
         return this.query('&gt; ' + selector)[0] || null;
@@ -1417,35 +1431,38 @@ Ext.define('Ext.Container', {
 
 <span id='Ext-Container-method-down'>    /**
 </span>     * Retrieves the first descendant of this container which matches the passed selector.
-     * The passed in selector must comply with an Ext.ComponentQuery selector.
-     * @param {String} selector An Ext.ComponentQuery selector
-     * @return Ext.Component
+     * The passed in selector must comply with an {@link Ext.ComponentQuery} selector.
+     * @param {String} selector An {@link Ext.ComponentQuery} selector.
+     * @return {Ext.Component}
      */
     down: function(selector) {
         return this.query(selector)[0] || null;
     },
 
 
-    //&lt;deprecated product=touch since=2.0&gt;
-    onClassExtended: function(Class, members) {
+<span id='Ext-Container-method-onClassExtended'>    //&lt;deprecated product=touch since=2.0&gt;
+</span>    onClassExtended: function(Class, members) {
         if ('onAdd' in members || 'onRemove' in members) {
             throw new Error(&quot;[&quot;+Class.$className+&quot;] 'onAdd()' and 'onRemove()' methods &quot; +
                             &quot;no longer exist in Ext.Container, please use 'onItemAdd()' &quot; +
                             &quot;and 'onItemRemove()' instead }&quot;);
         }
     },
-    //&lt;/deprecated&gt;
-
+<span id='Ext-Container-method-destroy'>    //&lt;/deprecated&gt;
+</span>
     destroy: function() {
-        var modal = this.getModal();
+        var me = this,
+            modal = me.getModal();
 
         if (modal) {
             modal.destroy();
         }
 
-        this.removeAll(true, true);
-        Ext.destroy(this.getScrollable(), this.bodyElement);
-        this.callParent();
+        me.removeAll(true, true);
+        me.unlink('_scrollable');
+        Ext.destroy(me.items);
+
+        me.callSuper();
     }
 
 }, function() {
@@ -1456,8 +1473,8 @@ Ext.define('Ext.Container', {
 </span>     * @method addAll
      * Adds an array of Components to this Container.
      * @deprecated 2.0.0 Please use {@link #method-add} instead.
-     * @param {Array} items The array of items to add to this container
-     * @return {Array} The array of items after they have been added
+     * @param {Array} items The array of items to add to this container.
+     * @return {Array} The array of items after they have been added.
      */
     Ext.deprecateClassMethod(this, 'addAll', 'add');
 
@@ -1465,8 +1482,8 @@ Ext.define('Ext.Container', {
 </span>     * @method removeDocked
      * Removes a docked item from this Container.
      * @deprecated 2.0.0 Please use {@link #method-remove} instead.
-     * @param {Object} item The item to remove
-     * @param {Boolean} destroy Calls the Component's {@link Ext.Component#destroy destroy} method if true
+     * @param {Object} item The item to remove.
+     * @param {Boolean} destroy Calls the Component's {@link Ext.Component#destroy destroy} method if `true`.
      * @return {Ext.Component} this
      */
     Ext.deprecateClassMethod(this, 'removeDocked', 'remove');
@@ -1499,7 +1516,7 @@ Ext.define('Ext.Container', {
                 delete config.scroll;
             }
 
-            this.callParent(arguments);
+            this.callOverridden(arguments);
 
             if (dockedItems) {
                 //&lt;debug warn&gt;
@@ -1538,7 +1555,7 @@ Ext.define('Ext.Container', {
                 args = [Array.prototype.slice.call(args)];
             }
 
-            return this.callParent(args);
+            return this.callOverridden(args);
         },
 
         doAdd: function(item) {
@@ -1588,7 +1605,7 @@ Ext.define('Ext.Container', {
                 //&lt;/debug&gt;
             }
 
-            return this.callParent(arguments);
+            return this.callOverridden(arguments);
         },
 
         factoryItemWithDefaults: function(item) {

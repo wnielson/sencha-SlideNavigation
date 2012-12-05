@@ -19,7 +19,7 @@
 </span> * {@link Ext.TitleBar}'s are most commonly used as a docked item within an {@link Ext.Container}.
  *
  * The main difference between a {@link Ext.TitleBar} and an {@link Ext.Toolbar} is that
- * the {@link #title} configuration is **always** centered horiztonally in a {@link Ext.TitleBar} between
+ * the {@link #title} configuration is **always** centered horizontally in a {@link Ext.TitleBar} between
  * any items aligned left or right.
  *
  * You can also give items of a {@link Ext.TitleBar} an `align` configuration of `left` or `right`
@@ -87,7 +87,7 @@
  *             {
  *                 align: 'right',
  *                 text: 'Another button'
- *             },
+ *             }
  *         ]
  *     });
  *
@@ -103,12 +103,11 @@ Ext.define('Ext.TitleBar', {
     requires: [
         'Ext.Button',
         'Ext.Title',
-        'Ext.Spacer',
-        'Ext.util.SizeMonitor'
+        'Ext.Spacer'
     ],
 
-    // private
-    isToolbar: true,
+<span id='Ext-TitleBar-property-isToolbar'>    // @private
+</span>    isToolbar: true,
 
     config: {
 <span id='Ext-TitleBar-cfg-baseCls'>        /**
@@ -144,6 +143,8 @@ Ext.define('Ext.TitleBar', {
          */
         defaultType: 'button',
 
+<span id='Ext-TitleBar-cfg-height'>        height: '2.6em',
+</span>
 <span id='Ext-TitleBar-cfg-layout'>        /**
 </span>         * @cfg
          * @hide
@@ -170,116 +171,101 @@ Ext.define('Ext.TitleBar', {
      */
     maxButtonWidth: '40%',
 
-    constructor: function() {
-        this.refreshTitlePosition = Ext.Function.createThrottled(this.refreshTitlePosition, 50, this);
+<span id='Ext-TitleBar-method-constructor'>    constructor: function() {
+</span>        this.refreshTitlePosition = Ext.Function.createThrottled(this.refreshTitlePosition, 50, this);
 
         this.callParent(arguments);
     },
 
-    beforeInitialize: function() {
-        this.applyItems = this.applyInitialItems;
+<span id='Ext-TitleBar-method-beforeInitialize'>    beforeInitialize: function() {
+</span>        this.applyItems = this.applyInitialItems;
     },
 
-    initialize: function() {
-        delete this.applyItems;
-
-        this.doAdd = this.doBoxAdd;
-        this.remove = this.doBoxRemove;
-        this.doInsert = this.doBoxInsert;
+<span id='Ext-TitleBar-method-initialize'>    initialize: function() {
+</span>        delete this.applyItems;
 
         this.add(this.initialItems);
         delete this.initialItems;
 
         this.on({
-            painted: 'onPainted',
-            erased: 'onErased'
+            painted: 'refreshTitlePosition',
+            single: true
         });
     },
 
-    applyInitialItems: function(items) {
-        var SizeMonitor = Ext.util.SizeMonitor,
-            defaults = this.getDefaults() || {},
-            leftBox, rightBox, spacer;
+<span id='Ext-TitleBar-method-applyInitialItems'>    applyInitialItems: function(items) {
+</span>        var me = this,
+            defaults = me.getDefaults() || {};
 
-        this.initialItems = items;
+        me.initialItems = items;
 
-        this.leftBox = leftBox = this.add({
+        me.leftBox = me.add({
             xtype: 'container',
             style: 'position: relative',
             layout: {
                 type: 'hbox',
                 align: 'center'
+            },
+            listeners: {
+                resize: 'refreshTitlePosition',
+                scope: me
             }
         });
 
-        this.spacer = spacer = this.add({
+        me.spacer = me.add({
             xtype: 'component',
             style: 'position: relative',
-            flex: 1
+            flex: 1,
+            listeners: {
+                resize: 'refreshTitlePosition',
+                scope: me
+            }
         });
 
-        this.rightBox = rightBox = this.add({
+        me.rightBox = me.add({
             xtype: 'container',
             style: 'position: relative',
             layout: {
                 type: 'hbox',
                 align: 'center'
+            },
+            listeners: {
+                resize: 'refreshTitlePosition',
+                scope: me
             }
         });
 
-        this.titleComponent = this.add({
+        me.titleComponent = me.add({
             xtype: 'title',
             hidden: defaults.hidden,
             centered: true
         });
 
-        this.sizeMonitors = {
-            leftBox: new SizeMonitor({
-                element: leftBox.renderElement,
-                callback: this.refreshTitlePosition,
-                scope: this
-            }),
-            spacer: new SizeMonitor({
-                element: spacer.renderElement,
-                callback: this.refreshTitlePosition,
-                scope: this
-            }),
-            rightBox: new SizeMonitor({
-                element: rightBox.renderElement,
-                callback: this.refreshTitlePosition,
-                scope: this
-            })
-        };
+        me.doAdd = me.doBoxAdd;
+        me.remove = me.doBoxRemove;
+        me.doInsert = me.doBoxInsert;
     },
 
-    doBoxAdd: function(item) {
-        if (item.config.align == 'right') {
+<span id='Ext-TitleBar-method-doBoxAdd'>    doBoxAdd: function(item) {
+</span>        if (item.config.align == 'right') {
             this.rightBox.add(item);
         }
         else {
             this.leftBox.add(item);
         }
-
-        if (this.painted) {
-            this.refreshTitlePosition();
-        }
     },
 
-    doBoxRemove: function(item) {
-        if (item.config.align == 'right') {
+<span id='Ext-TitleBar-method-doBoxRemove'>    doBoxRemove: function(item) {
+</span>        if (item.config.align == 'right') {
             this.rightBox.remove(item);
         }
         else {
             this.leftBox.remove(item);
         }
-
-        if (this.painted) {
-            this.refreshTitlePosition();
-        }
     },
 
-    doBoxInsert: function(index, item) {
-        if (item.config.align == 'right') {
+<span id='Ext-TitleBar-method-doBoxInsert'>    doBoxInsert: function(index, item) {
+</span>        if (item.config.align == 'right') {
             this.rightBox.add(item);
         }
         else {
@@ -287,23 +273,8 @@ Ext.define('Ext.TitleBar', {
         }
     },
 
-    onPainted: function() {
-        var sizeMonitors = this.sizeMonitors;
-
-        this.painted = true;
-        this.refreshTitlePosition();
-
-        sizeMonitors.leftBox.refresh();
-        sizeMonitors.spacer.refresh();
-        sizeMonitors.rightBox.refresh();
-    },
-
-    onErased: function() {
-        this.painted = false;
-    },
-
-    getMaxButtonWidth: function() {
-        var value = this.maxButtonWidth;
+<span id='Ext-TitleBar-method-getMaxButtonWidth'>    getMaxButtonWidth: function() {
+</span>        var value = this.maxButtonWidth;
 
         //check if it is a percentage
         if (Ext.isString(this.maxButtonWidth)) {
@@ -314,8 +285,8 @@ Ext.define('Ext.TitleBar', {
         return value;
     },
 
-    refreshTitlePosition: function() {
-        var titleElement = this.titleComponent.renderElement;
+<span id='Ext-TitleBar-method-refreshTitlePosition'>    refreshTitlePosition: function() {
+</span>        var titleElement = this.titleComponent.renderElement;
 
         titleElement.setWidth(null);
         titleElement.setLeft(null);
@@ -323,9 +294,10 @@ Ext.define('Ext.TitleBar', {
         //set the min/max width of the left button
         var leftBox = this.leftBox,
             leftButton = leftBox.down('button'),
+            singleButton = leftBox.getItems().getCount() == 1,
             leftBoxWidth, maxButtonWidth;
 
-        if (leftButton) {
+        if (leftButton &amp;&amp; singleButton) {
             if (leftButton.getWidth() == null) {
                 leftButton.renderElement.setWidth('auto');
             }
@@ -365,25 +337,13 @@ Ext.define('Ext.TitleBar', {
         titleElement.repaint();
     },
 
-    // @private
-    updateTitle: function(newTitle) {
+<span id='Ext-TitleBar-method-updateTitle'>    // @private
+</span>    updateTitle: function(newTitle) {
         this.titleComponent.setTitle(newTitle);
 
-        this.titleBox = null;
-
-        if (this.painted) {
+        if (this.isPainted()) {
             this.refreshTitlePosition();
         }
-    },
-
-    destroy: function() {
-        this.callParent();
-
-        var sizeMonitors = this.sizeMonitors;
-
-        sizeMonitors.leftBox.destroy();
-        sizeMonitors.spacer.destroy();
-        sizeMonitors.rightBox.destroy();
     }
 });
 </pre>

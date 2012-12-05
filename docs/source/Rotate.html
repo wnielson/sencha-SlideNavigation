@@ -15,123 +15,105 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-event-recognizer-Rotate'>/**
-</span> * A simple event recogniser which knows when you rotate.
+  <pre class="prettyprint lang-js"><span id='Ext-chart-interactions-Rotate'>/**
+</span> * @class Ext.chart.interactions.Rotate
+ * @extends Ext.chart.interactions.Abstract
+ * 
+ * The Rotate interaction allows the user to rotate a polar chart about its central point.
  *
- * @private
+ *     @example preview
+ *     var chart = new Ext.chart.PolarChart({
+ *         animate: true,
+ *         interactions: ['rotate'],
+ *         colors: [&quot;#115fa6&quot;, &quot;#94ae0a&quot;, &quot;#a61120&quot;, &quot;#ff8809&quot;, &quot;#ffd13e&quot;],
+ *         store: {
+ *           fields: ['name', 'data1', 'data2', 'data3', 'data4', 'data5'],
+ *           data: [
+ *               {'name':'metric one', 'data1':10, 'data2':12, 'data3':14, 'data4':8, 'data5':13},
+ *               {'name':'metric two', 'data1':7, 'data2':8, 'data3':16, 'data4':10, 'data5':3},
+ *               {'name':'metric three', 'data1':5, 'data2':2, 'data3':14, 'data4':12, 'data5':7},
+ *               {'name':'metric four', 'data1':2, 'data2':14, 'data3':6, 'data4':1, 'data5':23},
+ *               {'name':'metric five', 'data1':27, 'data2':38, 'data3':36, 'data4':13, 'data5':33}
+ *           ]
+ *         },
+ *         series: [{
+ *             type: 'pie',
+ *             labelField: 'name',
+ *             xField: 'data3',
+ *             donut: 30
+ *         }]
+ *     });
+ *     Ext.Viewport.setLayout('fit');
+ *     Ext.Viewport.add(chart);
  */
-Ext.define('Ext.event.recognizer.Rotate', {
-    extend: 'Ext.event.recognizer.MultiTouch',
+Ext.define('Ext.chart.interactions.Rotate', {
 
-    requiredTouchesCount: 2,
+    extend: 'Ext.chart.interactions.Abstract',
 
-    handledEvents: ['rotatestart', 'rotate', 'rotateend'],
+<span id='Ext-chart-interactions-Rotate-property-type'>    type: 'rotate',
+</span>
+    alias: 'interaction.rotate',
 
-<span id='Ext-dom-Element-event-rotatestart'>    /**
-</span>     * @member Ext.dom.Element
-     * @event rotatestart
-     * Fired once when a rotation has started.
-     * @param {Ext.event.Event} event The {@link Ext.event.Event} event encapsulating the DOM event.
-     * @param {HTMLElement} node The target of the event.
-     * @param {Object} options The options object passed to Ext.mixin.Observable.addListener.
-     */
-
-<span id='Ext-dom-Element-event-rotate'>    /**
-</span>     * @member Ext.dom.Element
-     * @event rotate
-     * Fires continuously when there is rotation (the touch must move for this to be fired).
-     * When listening to this, ensure you know about the {@link Ext.event.Event#angle} and {@link Ext.event.Event#rotation}
-     * properties in the `event` object.
-     * @param {Ext.event.Event} event The {@link Ext.event.Event} event encapsulating the DOM event.
-     * @param {HTMLElement} node The target of the event.
-     * @param {Object} options The options object passed to Ext.mixin.Observable.addListener.
-     */
-
-<span id='Ext-dom-Element-event-rotateend'>    /**
-</span>     * @member Ext.dom.Element
-     * @event rotateend
-     * Fires when a rotation event has ended.
-     * @param {Ext.event.Event} event The {@link Ext.event.Event} event encapsulating the DOM event.
-     * @param {HTMLElement} node The target of the event.
-     * @param {Object} options The options object passed to Ext.mixin.Observable.addListener.
-     */
-
-<span id='Ext-event-Event-property-angle'>    /**
-</span>     * @property {Number} angle
-     * The angle of the rotation.
-     *
-     * **This is only available when the event type is `rotate`**
-     * @member Ext.event.Event
-     */
-
-<span id='Ext-event-Event-property-rotation'>    /**
-</span>     * @property {Number} rotation
-     * A amount of rotation, since the start of the event.
-     *
-     * **This is only available when the event type is `rotate`**
-     * @member Ext.event.Event
-     */
-
-    startAngle: 0,
-
-    lastTouches: null,
-
-    lastAngle: null,
-
-    onTouchMove: function(e) {
-        if (!this.isTracking) {
-            return;
-        }
-
-        var touches = Array.prototype.slice.call(e.touches),
-            lastAngle = this.lastAngle,
-            firstPoint, secondPoint, angle, nextAngle, previousAngle, diff;
-
-        firstPoint = touches[0].point;
-        secondPoint = touches[1].point;
-
-        angle = firstPoint.getAngleTo(secondPoint);
-
-        if (lastAngle !== null) {
-            diff = Math.abs(lastAngle - angle);
-            nextAngle = angle + 360;
-            previousAngle = angle - 360;
-
-            if (Math.abs(nextAngle - lastAngle) &lt; diff) {
-                angle = nextAngle;
-            }
-            else if (Math.abs(previousAngle - lastAngle) &lt; diff) {
-                angle = previousAngle;
-            }
-        }
-
-        this.lastAngle = angle;
-
-        if (!this.isStarted) {
-            this.isStarted = true;
-
-            this.startAngle = angle;
-
-            this.fire('rotatestart', e, touches, {
-                touches: touches,
-                angle: angle,
-                rotation: 0
-            });
-        }
-        else {
-            this.fire('rotate', e, touches, {
-                touches: touches,
-                angle: angle,
-                rotation: angle - this.startAngle
-            });
-        }
-
-        this.lastTouches = touches;
+    config: {
+<span id='Ext-chart-interactions-Rotate-cfg-gesture'>        /**
+</span>         * @cfg {String} gesture
+         * Defines the gesture type that will be used to rotate the chart. Currently only
+         * supports `pinch` for two-finger rotation and `drag` for single-finger rotation.
+         */
+        gesture: 'rotate'
     },
 
-    fireEnd: function(e) {
-        this.lastAngle = null;
-        this.fire('rotateend', e, this.lastTouches);
+<span id='Ext-chart-interactions-Rotate-property-oldRotations'>    oldRotations: null,
+</span>
+<span id='Ext-chart-interactions-Rotate-method-getGestures'>    getGestures: function () {
+</span>        var gestures = {};
+        gestures.rotate = 'onRotate';
+        gestures.rotateend = 'onRotate';
+        gestures.dragstart = 'onGestureStart';
+        gestures.drag = 'onGesture';
+        gestures.dragend = 'onGesture';
+        return gestures;
+    },
+
+<span id='Ext-chart-interactions-Rotate-method-getAngle'>    getAngle: function (e) {
+</span>        var me = this,
+            chart = me.getChart(),
+            xy = chart.getEventXY(e),
+            center = chart.getCenter();
+        return Math.atan2(xy[1] - center[1],
+            xy[0] - center[0]);
+    },
+
+<span id='Ext-chart-interactions-Rotate-method-onGestureStart'>    onGestureStart: function (e) {
+</span>        this.angle = this.getAngle(e);
+        this.oldRotations = {};
+    },
+
+<span id='Ext-chart-interactions-Rotate-method-onGesture'>    onGesture: function (e) {
+</span>        var me = this,
+            chart = me.getChart(),
+            angle = this.getAngle(e) - this.angle,
+            axes = chart.getAxes(), axis,
+            series = chart.getSeries(), seriesItem,
+            center = chart.getCenter(),
+            oldRotations = this.oldRotations,
+            oldRotation, i, ln;
+        for (i = 0, ln = axes.length; i &lt; ln; i++) {
+            axis = axes[i];
+            oldRotation = oldRotations[axis.getId()] || (oldRotations[axis.getId()] = axis.getRotation());
+            axis.setRotation(angle + oldRotation);
+        }
+
+        for (i = 0, ln = series.length; i &lt; ln; i++) {
+            seriesItem = series[i];
+            oldRotation = oldRotations[seriesItem.getId()] || (oldRotations[seriesItem.getId()] = seriesItem.getRotation());
+            seriesItem.setRotation(angle + oldRotation);
+        }
+        me.sync();
+    },
+
+<span id='Ext-chart-interactions-Rotate-method-onRotate'>    onRotate: function (e) {
+</span>
     }
 });
 </pre>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-chart-series-sprite-StackedCartesian'>/**
+</span> * @class Ext.chart.series.sprite.StackedCartesian
+ * @extends Ext.chart.series.sprite.Cartesian
+ * 
+ * Stacked cartesian sprite.
+ */
+Ext.define(&quot;Ext.chart.series.sprite.StackedCartesian&quot;, {
+    extend: 'Ext.chart.series.sprite.Cartesian',
+    inheritableStatics: {
+<span id='Ext-chart-series-sprite-StackedCartesian-property-def'>        def: {
+</span>            processors: {
+<span id='Ext-chart-series-sprite-StackedCartesian-cfg-groupCount'>                /**
+</span>                 * @private
+                 * @cfg {Number} [groupCount=1] The number of groups in the series.
+                 */
+                groupCount: 'number',
+
+<span id='Ext-chart-series-sprite-StackedCartesian-cfg-groupOffset'>                /**
+</span>                 * @private
+                 * @cfg {Number} [groupOffset=0] The group index of the series sprite.
+                 */
+                groupOffset: 'number',
+
+<span id='Ext-chart-series-sprite-StackedCartesian-cfg-dataStartY'>                /**
+</span>                 * @private
+                 * @cfg {Object} [dataStartY=null] The starting point of the data used in the series.
+                 */
+                dataStartY: 'data'
+            },
+            defaults: {
+                groupCount: 1,
+                groupOffset: 0,
+                dataStartY: null
+            },
+            dirtyTriggers: {
+                dataStartY: 'dataY,bbox'
+            }
+        }
+    },
+
+<span id='Ext-chart-series-sprite-StackedCartesian-method-getIndexNearPoint'>    //@inheritdoc
+</span>    getIndexNearPoint: function (x, y) {
+        var sprite = this,
+            mat = sprite.attr.matrix,
+            dataX = sprite.attr.dataX,
+            dataY = sprite.attr.dataY,
+            dataStartY = sprite.attr.dataStartY,
+            minX, minY, index = -1,
+            imat = mat.clone().prependMatrix(this.surfaceMatrix).inverse(),
+            center = imat.transformPoint([x, y]),
+            positionLB = imat.transformPoint([x - 22, y - 22]),
+            positionTR = imat.transformPoint([x + 22, y + 22]),
+            dx, dy,
+            left = Math.min(positionLB[0], positionTR[0]),
+            right = Math.max(positionLB[0], positionTR[0]);
+
+        for (var i = 0; i &lt; dataX.length; i++) {
+            if (left &lt;= dataX[i] &amp;&amp; dataX[i] &lt;= right &amp;&amp; dataStartY[i] &lt;= center[1] &amp;&amp; center[1] &lt;= dataY[i]) {
+                dx = Math.abs(dataX[i] - center[0]);
+                dy = Math.max(-Math.min(dataY[i] - center[1], center[1] - dataStartY[i]), 0);
+                if (index === -1 || dx &lt; minX &amp;&amp; dy &lt;= minY) {
+                    minX = dx;
+                    minY = dy;
+                    index = i;
+                }
+            }
+        }
+
+        return index;
+    }
+});</pre>
+</body>
+</html>

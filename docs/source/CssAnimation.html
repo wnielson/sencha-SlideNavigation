@@ -22,8 +22,8 @@
 Ext.define('Ext.fx.runner.CssAnimation', {
     extend: 'Ext.fx.runner.Css',
 
-    constructor: function() {
-        this.runningAnimationsMap = {};
+<span id='Ext-fx-runner-CssAnimation-method-constructor'>    constructor: function() {
+</span>        this.runningAnimationsMap = {};
 
         this.elementEndStates = {};
 
@@ -36,8 +36,8 @@ Ext.define('Ext.fx.runner.CssAnimation', {
         return this.callParent(arguments);
     },
 
-    attachListeners: function() {
-        var eventDispatcher = this.getEventDispatcher();
+<span id='Ext-fx-runner-CssAnimation-method-attachListeners'>    attachListeners: function() {
+</span>        var eventDispatcher = this.getEventDispatcher();
 
         this.listenersAttached = true;
 
@@ -45,8 +45,8 @@ Ext.define('Ext.fx.runner.CssAnimation', {
         eventDispatcher.addListener('element', '*', 'animationend', 'onAnimationEnd', this);
     },
 
-    onAnimationStart: function(e) {
-        var name = e.browserEvent.animationName,
+<span id='Ext-fx-runner-CssAnimation-method-onAnimationStart'>    onAnimationStart: function(e) {
+</span>        var name = e.browserEvent.animationName,
             elementId = this.animationElementMap[name],
             animation = this.runningAnimationsMap[elementId][name],
             elementEndStates = this.elementEndStates,
@@ -69,8 +69,8 @@ Ext.define('Ext.fx.runner.CssAnimation', {
         }
     },
 
-    onAnimationEnd: function(e) {
-        var element = e.target,
+<span id='Ext-fx-runner-CssAnimation-method-onAnimationEnd'>    onAnimationEnd: function(e) {
+</span>        var element = e.target,
             name = e.browserEvent.animationName,
             animationElementMap = this.animationElementMap,
             elementId = animationElementMap[name],
@@ -94,12 +94,12 @@ Ext.define('Ext.fx.runner.CssAnimation', {
         this.removeKeyframesRule(name);
     },
 
-    generateAnimationId: function() {
-        return 'animation-' + (++this.uniqueId);
+<span id='Ext-fx-runner-CssAnimation-method-generateAnimationId'>    generateAnimationId: function() {
+</span>        return 'animation-' + (++this.uniqueId);
     },
 
-    run: function(animations) {
-        var data = {},
+<span id='Ext-fx-runner-CssAnimation-method-run'>    run: function(animations) {
+</span>        var data = {},
             elementEndStates = this.elementEndStates,
             animationElementMap = this.animationElementMap,
             runningAnimationsMap = this.runningAnimationsMap,
@@ -175,8 +175,8 @@ Ext.define('Ext.fx.runner.CssAnimation', {
         this.applyStyles(data);
     },
 
-    addKeyframesRule: function(name, keyframes) {
-        var percentage, properties,
+<span id='Ext-fx-runner-CssAnimation-method-addKeyframesRule'>    addKeyframesRule: function(name, keyframes) {
+</span>        var percentage, properties,
             keyframesRule,
             styleSheet, rules, styles, rulesLength, key, value;
 
@@ -208,8 +208,8 @@ Ext.define('Ext.fx.runner.CssAnimation', {
         return this;
     },
 
-    removeKeyframesRule: function(name) {
-        var styleSheet = this.getStyleSheet(),
+<span id='Ext-fx-runner-CssAnimation-method-removeKeyframesRule'>    removeKeyframesRule: function(name) {
+</span>        var styleSheet = this.getStyleSheet(),
             rules = styleSheet.cssRules,
             i, ln, rule;
 

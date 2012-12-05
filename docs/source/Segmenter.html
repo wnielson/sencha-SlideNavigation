@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-chart-axis-segmenter-Segmenter'>/**
+</span> * @abstract
+ * @class Ext.chart.axis.segmenter.Segmenter
+ * 
+ * Interface for a segmenter in an Axis. A segmenter defines the operations you can do to a specific
+ * data type.
+ * 
+ * See {@link Ext.chart.axis.Axis}.
+ * 
+ */
+Ext.define(&quot;Ext.chart.axis.segmenter.Segmenter&quot;, {
+
+    config: {
+<span id='Ext-chart-axis-segmenter-Segmenter-cfg-axis'>        /**
+</span>         * @cfg {Ext.chart.axis.Axis} axis The axis that the Segmenter is bound.
+         */
+        axis: null
+    },
+
+<span id='Ext-chart-axis-segmenter-Segmenter-method-constructor'>    constructor: function (config) {
+</span>        this.initConfig(config);
+    },
+
+<span id='Ext-chart-axis-segmenter-Segmenter-method-renderer'>    /**
+</span>     * This method formats the value.
+     * 
+     * @param {*} value The value to format.
+     * @param {Object} context Axis layout context.
+     * @return {String}
+     */
+    renderer: function (value, context) {
+        return String(value);
+    },
+    
+<span id='Ext-chart-axis-segmenter-Segmenter-method-from'>    /**
+</span>     * Convert from any data into the target type.
+     * @param {*} value The value to convert from
+     * @return {*} The converted value. 
+     */
+    from: function (value) {
+        return value;
+    },
+
+<span id='Ext-chart-axis-segmenter-Segmenter-method-diff'>    /**
+</span>     * Returns the difference between the min and max value based on the given unit scale.
+     * 
+     * @param {*} min The smaller value.
+     * @param {*} max The larger value.
+     * @param {*} unit The unit scale. Unit can be any type.
+     * @return {Number} The number of `unit`s between min and max. It is the minimum n that min + n * unit &gt;= max.
+     */
+    diff: Ext.emptyFn,
+
+<span id='Ext-chart-axis-segmenter-Segmenter-method-align'>    /**
+</span>     * Align value with step of units.
+     * For example, for the date segmenter, if The unit is &quot;Month&quot; and step is 3, the value will be aligned by
+     * seasons.
+     * 
+     * @param {*} value The value to be aligned.
+     * @param {Number} step The step of units.
+     * @param {*} unit The unit.
+     * @return {*} Aligned value.
+     */
+    align: Ext.emptyFn,
+
+<span id='Ext-chart-axis-segmenter-Segmenter-method-add'>    /**
+</span>     * Add `step` `unit`s to the value. 
+     * @param {*} value  The value to be added.
+     * @param {Number} step The step of units. Negative value are allowed.
+     * @param {*} unit The unit.
+     */
+    add: Ext.emptyFn,
+
+<span id='Ext-chart-axis-segmenter-Segmenter-method-preferredStep'>    /**
+</span>     * Given a start point and estimated step size of a range, determine the preferred step size.
+     * 
+     * @param {*} start The start point of range.
+     * @param {*} estStepSize The estimated step size.
+     * @return {Object} Return the step size by an object of step x unit.
+     * @return {Number} return.step The step count of units.
+     * @return {*} return.unit The unit.
+     */
+    preferredStep: Ext.emptyFn
+});</pre>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-layout-wrapper-Dock'>/**
+</span> *
+ */
+Ext.define('Ext.layout.wrapper.Dock', {
+    requires: [
+        'Ext.util.Wrapper'
+    ],
+
+    config: {
+<span id='Ext-layout-wrapper-Dock-cfg-direction'>        direction: 'horizontal',
+</span><span id='Ext-layout-wrapper-Dock-cfg-element'>        element: {
+</span>            className: 'x-dock'
+        },
+<span id='Ext-layout-wrapper-Dock-cfg-bodyElement'>        bodyElement: {
+</span>            className: 'x-dock-body'
+        },
+<span id='Ext-layout-wrapper-Dock-cfg-innerWrapper'>        innerWrapper: null,
+</span><span id='Ext-layout-wrapper-Dock-cfg-sizeState'>        sizeState: false,
+</span><span id='Ext-layout-wrapper-Dock-cfg-container'>        container: null
+</span>    },
+
+<span id='Ext-layout-wrapper-Dock-property-positionMap'>    positionMap: {
+</span>        top: 'start',
+        left: 'start',
+        bottom: 'end',
+        right: 'end'
+    },
+
+<span id='Ext-layout-wrapper-Dock-method-constructor'>    constructor: function(config) {
+</span>        this.items = {
+            start: [],
+            end: []
+        };
+
+        this.itemsCount = 0;
+
+        this.initConfig(config);
+    },
+
+<span id='Ext-layout-wrapper-Dock-method-addItems'>    addItems: function(items) {
+</span>        var i, ln, item;
+
+        for (i = 0, ln = items.length; i &lt; ln; i++) {
+            item = items[i];
+            this.addItem(item);
+        }
+    },
+
+<span id='Ext-layout-wrapper-Dock-method-addItem'>    addItem: function(item) {
+</span>        var docked = item.getDocked(),
+            position = this.positionMap[docked],
+            wrapper = item.$dockWrapper,
+            container = this.getContainer(),
+            index = container.indexOf(item),
+            items = this.items,
+            sideItems = items[position],
+            itemWrapper, element, i, ln, sibling, referenceElement, siblingIndex;
+
+        if (wrapper) {
+            wrapper.removeItem(item);
+        }
+
+        item.$dockWrapper = this;
+        itemWrapper = item.link('$dockItemWrapper', new Ext.util.Wrapper({
+            className: 'x-dock-item'
+        }));
+        item.addCls('x-docked-' + docked);
+        element = itemWrapper.element;
+
+        for (i = 0, ln = sideItems.length; i &lt; ln; i++) {
+            sibling = sideItems[i];
+            siblingIndex = container.indexOf(sibling);
+
+            if (siblingIndex &gt; index) {
+                referenceElement = sibling.element;
+                sideItems.splice(i, 0, item);
+                break;
+            }
+        }
+
+        if (!referenceElement) {
+            sideItems.push(item);
+            referenceElement = this.getBodyElement();
+        }
+
+        this.itemsCount++;
+
+        if (position === 'start') {
+            element.insertBefore(referenceElement);
+        }
+        else {
+            element.insertAfter(referenceElement);
+        }
+
+        itemWrapper.wrap(item.element);
+        itemWrapper.bindSize(this.getDirection() === 'horizontal' ? 'width' : 'height');
+    },
+
+<span id='Ext-layout-wrapper-Dock-method-removeItem'>    removeItem: function(item) {
+</span>        var position = item.getDocked(),
+            items = this.items[this.positionMap[position]];
+
+        item.removeCls('x-docked-' + position);
+        Ext.Array.remove(items, item);
+        item.unlink('$dockItemWrapper');
+        item.element.detach();
+        delete item.$dockWrapper;
+
+        if (--this.itemsCount === 0) {
+            this.destroy();
+        }
+    },
+
+<span id='Ext-layout-wrapper-Dock-method-getItemsSlice'>    getItemsSlice: function(index) {
+</span>        var container = this.getContainer(),
+            items = this.items,
+            slice = [],
+            sideItems, i, ln, item;
+
+        for (sideItems = items.start, i = 0, ln = sideItems.length; i &lt; ln; i++) {
+            item = sideItems[i];
+            if (container.indexOf(item) &gt; index) {
+                slice.push(item);
+            }
+        }
+
+        for (sideItems = items.end, i = 0, ln = sideItems.length; i &lt; ln; i++) {
+            item = sideItems[i];
+            if (container.indexOf(item) &gt; index) {
+                slice.push(item);
+            }
+        }
+
+        return slice;
+    },
+
+<span id='Ext-layout-wrapper-Dock-method-applyElement'>    applyElement: function(element) {
+</span>        return Ext.Element.create(element);
+    },
+
+<span id='Ext-layout-wrapper-Dock-method-updateElement'>    updateElement: function(element) {
+</span>        element.addCls('x-dock-' + this.getDirection());
+    },
+
+<span id='Ext-layout-wrapper-Dock-method-applyBodyElement'>    applyBodyElement: function(bodyElement) {
+</span>        return Ext.Element.create(bodyElement);
+    },
+
+<span id='Ext-layout-wrapper-Dock-method-updateBodyElement'>    updateBodyElement: function(bodyElement) {
+</span>        this.getElement().append(bodyElement);
+    },
+
+<span id='Ext-layout-wrapper-Dock-method-updateInnerWrapper'>    updateInnerWrapper: function(innerWrapper, oldInnerWrapper) {
+</span>        var innerElement = this.getBodyElement();
+
+        if (oldInnerWrapper &amp;&amp; oldInnerWrapper.$outerWrapper === this) {
+            innerElement.remove(oldInnerWrapper.getElement());
+            delete oldInnerWrapper.$outerWrapper;
+        }
+
+        if (innerWrapper) {
+            innerWrapper.setSizeState(this.getSizeState());
+            innerWrapper.$outerWrapper = this;
+            innerElement.append(innerWrapper.getElement());
+        }
+    },
+
+<span id='Ext-layout-wrapper-Dock-method-updateSizeState'>    updateSizeState: function(state) {
+</span>        var innerWrapper = this.getInnerWrapper();
+
+        this.getElement().setSizeState(state);
+
+        if (innerWrapper) {
+            innerWrapper.setSizeState(state);
+        }
+    },
+
+<span id='Ext-layout-wrapper-Dock-method-destroy'>    destroy: function() {
+</span>        var innerWrapper = this.getInnerWrapper(),
+            outerWrapper = this.$outerWrapper;
+
+        if (innerWrapper) {
+            if (outerWrapper) {
+                outerWrapper.setInnerWrapper(innerWrapper);
+            }
+            else {
+                innerWrapper.getElement().replace(this.getElement());
+                delete innerWrapper.$outerWrapper;
+            }
+        }
+
+        delete this.$outerWrapper;
+
+        this.setInnerWrapper(null);
+
+        this.unlink('_bodyElement', '_element');
+
+        this.callSuper();
+    }
+});
+</pre>
+</body>
+</html>

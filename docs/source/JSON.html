@@ -15,11 +15,15 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-JSON'>/**
+  <pre class="prettyprint lang-js">//@tag foundation,core
+//@define Ext.JSON
+//@require Ext.Function
+
+<span id='Ext-JSON'>/**
 </span> * @class Ext.JSON
- * Modified version of Douglas Crockford&quot;s json.js that doesn&quot;t
- * mess with the Object prototype
- * http://www.json.org/js.html
+ * Modified version of Douglas Crockford's json.js that doesn't
+ * mess with the Object prototype.
+ * [http://www.json.org/js.html](http://www.json.org/js.html)
  * @singleton
  */
 Ext.JSON = new(function() {
@@ -106,15 +110,18 @@ Ext.JSON = new(function() {
     };
 
 <span id='Ext-JSON-method-encodeDate'>    /**
-</span>     * &lt;p&gt;Encodes a Date. This returns the actual string which is inserted into the JSON string as the literal expression.
-     * &lt;b&gt;The returned value includes enclosing double quotation marks.&lt;/b&gt;&lt;/p&gt;
-     * &lt;p&gt;The default return format is &quot;yyyy-mm-ddThh:mm:ss&quot;.&lt;/p&gt;
-     * &lt;p&gt;To override this:&lt;/p&gt;&lt;pre&gt;&lt;code&gt;
-Ext.JSON.encodeDate = function(d) {
-    return Ext.Date.format(d, '&quot;Y-m-d&quot;');
-};
-     &lt;/code&gt;&lt;/pre&gt;
-     * @param {Date} d The Date to encode
+</span>     * Encodes a Date. This returns the actual string which is inserted into the JSON string as the literal expression.
+     * __The returned value includes enclosing double quotation marks.__
+     *
+     * The default return format is &quot;yyyy-mm-ddThh:mm:ss&quot;.
+     * 
+     * To override this:
+     *
+     *     Ext.JSON.encodeDate = function(d) {
+     *         return Ext.Date.format(d, '&quot;Y-m-d&quot;');
+     *     };
+     *
+     * @param {Date} d The Date to encode.
      * @return {String} The string literal to use in a JSON string.
      */
     this.encodeDate = function(o) {
@@ -127,9 +134,10 @@ Ext.JSON.encodeDate = function(d) {
     };
 
 <span id='Ext-JSON-method-encode'>    /**
-</span>     * Encodes an Object, Array or other value
-     * @param {Object} o The variable to encode
-     * @return {String} The JSON string
+</span>     * Encodes an Object, Array or other value.
+     * @param {Object} o The variable to encode.
+     * @return {String} The JSON string.
+     * @method
      */
     this.encode = function() {
         var ec;
@@ -144,10 +152,11 @@ Ext.JSON.encodeDate = function(d) {
 
 
 <span id='Ext-JSON-method-decode'>    /**
-</span>     * Decodes (parses) a JSON string to an object. If the JSON is invalid, this function throws a SyntaxError unless the safe option is set.
-     * @param {String} json The JSON string
-     * @param {Boolean} safe (optional) Whether to return null or throw an exception if the JSON is invalid.
-     * @return {Object} The resulting object
+</span>     * Decodes (parses) a JSON string to an object. If the JSON is invalid, this function throws a Error unless the safe option is set.
+     * @param {String} json The JSON string.
+     * @param {Boolean} safe (optional) Whether to return `null` or throw an exception if the JSON is invalid.
+     * @return {Object/null} The resulting object.
+     * @method
      */
     this.decode = function() {
         var dc;
@@ -173,14 +182,14 @@ Ext.JSON.encodeDate = function(d) {
 
 })();
 <span id='Ext-method-encode'>/**
-</span> * Shorthand for {@link Ext.JSON#encode}
+</span> * Shorthand for {@link Ext.JSON#encode}.
  * @member Ext
  * @method encode
  * @alias Ext.JSON#encode
  */
 Ext.encode = Ext.JSON.encode;
 <span id='Ext-method-decode'>/**
-</span> * Shorthand for {@link Ext.JSON#decode}
+</span> * Shorthand for {@link Ext.JSON#decode}.
  * @member Ext
  * @method decode
  * @alias Ext.JSON#decode

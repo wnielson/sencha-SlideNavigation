@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-tab-Bar'>/**
+</span> * Ext.tab.Bar is used internally by {@link Ext.tab.Panel} to create the bar of tabs that appears at the top of the tab
+ * panel. It's unusual to use it directly, instead see the {@link Ext.tab.Panel tab panel docs} for usage instructions.
+ *
+ * Used in the {@link Ext.tab.Panel} component to display {@link Ext.tab.Tab} components.
+ *
+ * @private
+ */
+Ext.define('Ext.tab.Bar', {
+    extend: 'Ext.Toolbar',
+    alternateClassName: 'Ext.TabBar',
+    xtype : 'tabbar',
+
+    requires: ['Ext.tab.Tab'],
+
+    config: {
+<span id='Ext-tab-Bar-cfg-baseCls'>        /**
+</span>         * @cfg
+         * @inheritdoc
+         */
+        baseCls: Ext.baseCSSPrefix + 'tabbar',
+
+<span id='Ext-tab-Bar-cfg-defaultType'>        // @private
+</span>        defaultType: 'tab',
+
+<span id='Ext-tab-Bar-cfg-layout'>        // @private
+</span>        layout: {
+            type: 'hbox',
+            align: 'middle'
+        }
+    },
+
+    eventedConfig: {
+<span id='Ext-tab-Bar-cfg-activeTab'>        /**
+</span>         * @cfg {Number/String/Ext.Component} activeTab
+         * The initially activated tab. Can be specified as numeric index,
+         * component ID or as the component instance itself.
+         * @accessor
+         * @evented
+         */
+        activeTab: null
+    },
+
+<span id='Ext-tab-Bar-event-tabchange'>    /**
+</span>     * @event tabchange
+     * Fired when active tab changes.
+     * @param {Ext.tab.Bar} this
+     * @param {Ext.tab.Tab} newTab The new Tab
+     * @param {Ext.tab.Tab} oldTab The old Tab
+     */
+
+    initialize: function() {
+        var me = this;
+        me.callParent();
+
+        me.on({
+            tap: 'onTabTap',
+
+            delegate: '&gt; tab',
+            scope   : me
+        });
+    },
+
+<span id='Ext-tab-Bar-method-onTabTap'>    // @private
+</span>    onTabTap: function(tab) {
+        this.setActiveTab(tab);
+    },
+
+<span id='Ext-tab-Bar-method-applyActiveTab'>    /**
+</span>     * @private
+     */
+    applyActiveTab: function(newActiveTab, oldActiveTab) {
+        if (!newActiveTab &amp;&amp; newActiveTab !== 0) {
+            return;
+        }
+
+        var newTabInstance = this.parseActiveTab(newActiveTab);
+
+        if (!newTabInstance) {
+            // &lt;debug warn&gt;
+            if (oldActiveTab) {
+                Ext.Logger.warn('Trying to set a non-existent activeTab');
+            }
+            // &lt;/debug&gt;
+            return;
+        }
+        return newTabInstance;
+    },
+
+<span id='Ext-tab-Bar-method-doSetDocked'>    /**
+</span>     * @private
+     * Default pack to center when docked to the bottom, otherwise default pack to left
+     */
+    doSetDocked: function(newDocked) {
+        var layout = this.getLayout(),
+            initialConfig = this.getInitialConfig(),
+            pack;
+
+        if (!initialConfig.layout || !initialConfig.layout.pack) {
+            pack = (newDocked == 'bottom') ? 'center' : 'left';
+            //layout isn't guaranteed to be instantiated so must test
+            if (layout.isLayout) {
+                layout.setPack(pack);
+            } else {
+                layout.pack = (layout &amp;&amp; layout.pack) ? layout.pack : pack;
+            }
+        }
+    },
+
+<span id='Ext-tab-Bar-method-doSetActiveTab'>    /**
+</span>     * @private
+     * Sets the active tab
+     */
+    doSetActiveTab: function(newTab, oldTab) {
+        if (newTab) {
+            newTab.setActive(true);
+        }
+
+        //Check if the parent is present, if not it is destroyed
+        if (oldTab &amp;&amp; oldTab.parent) {
+            oldTab.setActive(false);
+        }
+    },
+
+<span id='Ext-tab-Bar-method-parseActiveTab'>    /**
+</span>     * @private
+     * Parses the active tab, which can be a number or string
+     */
+    parseActiveTab: function(tab) {
+        //we need to call getItems to initialize the items, otherwise they will not exist yet.
+        if (typeof tab == 'number') {
+            return this.getInnerItems()[tab];
+        }
+        else if (typeof tab == 'string') {
+            tab = Ext.getCmp(tab);
+        }
+        return tab;
+    }
+});
+</pre>
+</body>
+</html>

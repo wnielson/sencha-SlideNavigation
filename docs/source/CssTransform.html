@@ -22,11 +22,11 @@ Ext.define('Ext.scroll.indicator.CssTransform', {
     extend: 'Ext.scroll.indicator.Abstract',
 
     config: {
-        cls: 'csstransform'
-    },
+<span id='Ext-scroll-indicator-CssTransform-cfg-cls'>        cls: 'csstransform'
+</span>    },
 
-    getElementConfig: function() {
-        var config = this.callParent();
+<span id='Ext-scroll-indicator-CssTransform-method-getElementConfig'>    getElementConfig: function() {
+</span>        var config = this.callParent();
 
         config.children[0].children = [
             {
@@ -43,8 +43,8 @@ Ext.define('Ext.scroll.indicator.CssTransform', {
         return config;
     },
 
-    refresh: function() {
-        var axis = this.getAxis(),
+<span id='Ext-scroll-indicator-CssTransform-method-refresh'>    refresh: function() {
+</span>        var axis = this.getAxis(),
             startElementDom = this.startElement.dom,
             endElementDom = this.endElement.dom,
             middleElement = this.middleElement,
@@ -63,17 +63,12 @@ Ext.define('Ext.scroll.indicator.CssTransform', {
 
         this.startElementLength = startElementLength;
         this.endElementLength = endElementLength;
-        this.minLength = startElementLength + endElementLength;
 
         this.callParent();
     },
 
-    applyLength: function(length) {
-        return Math.round(Math.max(this.minLength, length));
-    },
-
-    updateLength: function(length) {
-        var axis = this.getAxis(),
+<span id='Ext-scroll-indicator-CssTransform-method-updateLength'>    updateLength: function(length) {
+</span>        var axis = this.getAxis(),
             endElementStyle = this.endElement.dom.style,
             middleElementStyle = this.middleElement.dom.style,
             endElementLength = this.endElementLength,
@@ -90,8 +85,8 @@ Ext.define('Ext.scroll.indicator.CssTransform', {
         }
     },
 
-    updateValue: function(value) {
-        var barLength = this.barLength,
+<span id='Ext-scroll-indicator-CssTransform-method-updateValue'>    updateValue: function(value) {
+</span>        var barLength = this.barLength,
             gapLength = this.gapLength,
             length = this.getLength(),
             newLength, offset, extra;
@@ -114,8 +109,8 @@ Ext.define('Ext.scroll.indicator.CssTransform', {
         this.setOffset(offset);
     },
 
-    setOffset: function(offset) {
-        var axis = this.getAxis(),
+<span id='Ext-scroll-indicator-CssTransform-method-setOffset'>    setOffset: function(offset) {
+</span>        var axis = this.getAxis(),
             elementStyle = this.element.dom.style;
 
         offset = Math.round(offset);

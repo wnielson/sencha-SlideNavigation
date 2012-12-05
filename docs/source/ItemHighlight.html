@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-chart-interactions-ItemHighlight'>/**
+</span> * @class Ext.chart.interactions.ItemHighlight
+ * @extends Ext.chart.interactions.Abstract
+ * 
+ * The ItemHighlight interaction allows the user to highlight series items in the chart.
+ */
+Ext.define('Ext.chart.interactions.ItemHighlight', {
+
+    extend: 'Ext.chart.interactions.Abstract',
+
+<span id='Ext-chart-interactions-ItemHighlight-property-type'>    type: 'itemhighlight',
+</span>    alias: 'interaction.itemhighlight',
+
+    config: {
+<span id='Ext-chart-interactions-ItemHighlight-cfg-gesture'>        /**
+</span>         * @cfg {String} gesture
+         * Defines the gesture type that should trigger item highlighting.
+         */
+        gesture: 'tap'
+    },
+
+<span id='Ext-chart-interactions-ItemHighlight-method-getGestures'>    getGestures: function () {
+</span>        var gestures = {};
+        gestures.itemtap = 'onGesture';
+        gestures.tap = 'onFailedGesture';
+        return gestures;
+    },
+
+<span id='Ext-chart-interactions-ItemHighlight-method-onGesture'>    onGesture: function (series, item, e) {
+</span>        e.highlightItem = item;
+    },
+
+<span id='Ext-chart-interactions-ItemHighlight-method-onFailedGesture'>    onFailedGesture: function (e) {
+</span>        this.getChart().setHighlightItem(e.highlightItem || null);
+        this.sync();
+    }
+});
+</pre>
+</body>
+</html>

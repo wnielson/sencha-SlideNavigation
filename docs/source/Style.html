@@ -27,22 +27,22 @@ Ext.define('Ext.fx.layout.card.Style', {
     ],
 
     config: {
-        inAnimation: {
-            before: {
+<span id='Ext-fx-layout-card-Style-cfg-inAnimation'>        inAnimation: {
+</span>            before: {
                 visibility: null
             },
             preserveEndState: false,
             replacePrevious: true
         },
 
-        outAnimation: {
-            preserveEndState: false,
+<span id='Ext-fx-layout-card-Style-cfg-outAnimation'>        outAnimation: {
+</span>            preserveEndState: false,
             replacePrevious: true
         }
     },
 
-    constructor: function(config) {
-        var inAnimation, outAnimation;
+<span id='Ext-fx-layout-card-Style-method-constructor'>    constructor: function(config) {
+</span>        var inAnimation, outAnimation;
 
         this.initConfig(config);
 
@@ -53,14 +53,25 @@ Ext.define('Ext.fx.layout.card.Style', {
 
         inAnimation.on('animationend', 'incrementEnd', this);
         outAnimation.on('animationend', 'incrementEnd', this);
-
-
-        inAnimation.setConfig(config);
-        outAnimation.setConfig(config);
     },
 
-    incrementEnd: function() {
-        this.endAnimationCounter++;
+<span id='Ext-fx-layout-card-Style-method-updateDirection'>    updateDirection: function(direction) {
+</span>        this.getInAnimation().setDirection(direction);
+        this.getOutAnimation().setDirection(direction);
+    },
+
+<span id='Ext-fx-layout-card-Style-method-updateDuration'>    updateDuration: function(duration) {
+</span>        this.getInAnimation().setDuration(duration);
+        this.getOutAnimation().setDuration(duration);
+    },
+
+<span id='Ext-fx-layout-card-Style-method-updateReverse'>    updateReverse: function(reverse) {
+</span>        this.getInAnimation().setReverse(reverse);
+        this.getOutAnimation().setReverse(reverse);
+    },
+
+<span id='Ext-fx-layout-card-Style-method-incrementEnd'>    incrementEnd: function() {
+</span>        this.endAnimationCounter++;
 
         if (this.endAnimationCounter &gt; 1) {
             this.endAnimationCounter = 0;
@@ -68,24 +79,24 @@ Ext.define('Ext.fx.layout.card.Style', {
         }
     },
 
-    applyInAnimation: function(animation, inAnimation) {
-        return Ext.factory(animation, Ext.fx.Animation, inAnimation);
+<span id='Ext-fx-layout-card-Style-method-applyInAnimation'>    applyInAnimation: function(animation, inAnimation) {
+</span>        return Ext.factory(animation, Ext.fx.Animation, inAnimation);
     },
 
-    applyOutAnimation: function(animation, outAnimation) {
-        return Ext.factory(animation, Ext.fx.Animation, outAnimation);
+<span id='Ext-fx-layout-card-Style-method-applyOutAnimation'>    applyOutAnimation: function(animation, outAnimation) {
+</span>        return Ext.factory(animation, Ext.fx.Animation, outAnimation);
     },
 
-    updateInAnimation: function(animation) {
-        animation.setScope(this);
+<span id='Ext-fx-layout-card-Style-method-updateInAnimation'>    updateInAnimation: function(animation) {
+</span>        animation.setScope(this);
     },
 
-    updateOutAnimation: function(animation) {
-        animation.setScope(this);
+<span id='Ext-fx-layout-card-Style-method-updateOutAnimation'>    updateOutAnimation: function(animation) {
+</span>        animation.setScope(this);
     },
 
-    onActiveItemChange: function(cardLayout, newItem, oldItem, options, controller) {
-        var inAnimation = this.getInAnimation(),
+<span id='Ext-fx-layout-card-Style-method-onActiveItemChange'>    onActiveItemChange: function(cardLayout, newItem, oldItem, options, controller) {
+</span>        var inAnimation = this.getInAnimation(),
             outAnimation = this.getOutAnimation(),
             inElement, outElement;
 
@@ -112,6 +123,12 @@ Ext.define('Ext.fx.layout.card.Style', {
             Ext.Animator.run([outAnimation, inAnimation]);
             controller.pause();
         }
+    },
+
+<span id='Ext-fx-layout-card-Style-method-destroy'>    destroy:  function () {
+</span>        Ext.destroy(this.getInAnimation(), this.getOutAnimation());
+
+        this.callParent(arguments);
     }
 });
 </pre>

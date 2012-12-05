@@ -26,8 +26,8 @@ Ext.define('Ext.event.Touch', {
         'Ext.util.Point'
     ],
 
-    constructor: function(event, info) {
-        if (info) {
+<span id='Ext-event-Touch-method-constructor'>    constructor: function(event, info) {
+</span>        if (info) {
             this.set(info);
         }
 
@@ -40,18 +40,18 @@ Ext.define('Ext.event.Touch', {
         return this.callParent([event]);
     },
 
-    clone: function() {
-        return new this.self(this);
+<span id='Ext-event-Touch-method-clone'>    clone: function() {
+</span>        return new this.self(this);
     },
 
-    setTargets: function(targetsMap) {
-        this.doSetTargets(this.changedTouches, targetsMap);
+<span id='Ext-event-Touch-method-setTargets'>    setTargets: function(targetsMap) {
+</span>        this.doSetTargets(this.changedTouches, targetsMap);
         this.doSetTargets(this.touches, targetsMap);
         this.doSetTargets(this.targetTouches, targetsMap);
     },
 
-    doSetTargets: function(touches, targetsMap) {
-        var i, ln, touch, identifier, targets;
+<span id='Ext-event-Touch-method-doSetTargets'>    doSetTargets: function(touches, targetsMap) {
+</span>        var i, ln, touch, identifier, targets;
 
         for (i = 0,ln = touches.length; i &lt; ln; i++) {
             touch = touches[i];
@@ -66,8 +66,8 @@ Ext.define('Ext.event.Touch', {
         }
     },
 
-    cloneTouches: function(touches) {
-        var map = this.touchesMap,
+<span id='Ext-event-Touch-method-cloneTouches'>    cloneTouches: function(touches) {
+</span>        var map = this.touchesMap,
             clone = [],
             lastIdentifier = null,
             i, ln, touch, identifier;

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-draw-sprite-Arc'>/**
+</span> * @class Ext.draw.sprite.Arc
+ * @extend Ext.draw.sprite.Circle
+ * 
+ *  A sprite that represents a circular arc.
+ *
+ *     @example preview miniphone
+ *     var component = new Ext.draw.Component({
+ *       items: [{
+ *         type: 'arc',
+ *         cx: 100,
+ *         cy: 100,
+ *         r: 25,
+ *         fillStyle: 'blue',
+ *         startAngle: 0,
+ *         endAngle: Math.PI,
+ *         anticlockwise: true
+ *       }]
+ *     });
+ *     Ext.Viewport.setLayout('fit');
+ *     Ext.Viewport.add(component);
+ */
+Ext.define(&quot;Ext.draw.sprite.Arc&quot;, {
+    extend: &quot;Ext.draw.sprite.Circle&quot;,
+    alias: 'sprite.arc',
+<span id='Ext-draw-sprite-Arc-property-type'>    type: 'arc',
+</span>    inheritableStatics: {
+<span id='Ext-draw-sprite-Arc-property-def'>        def: {
+</span>            processors: {
+<span id='Ext-draw-sprite-Arc-cfg-startAngle'>                /**
+</span>                 * @cfg {Number} [startAngle=0] The beginning angle of the arc.
+                 */
+                startAngle: &quot;number&quot;,
+
+<span id='Ext-draw-sprite-Arc-cfg-endAngle'>                /**
+</span>                 * @cfg {Number} [endAngle=Math.PI*2] The ending angle of the arc.
+                 */
+                endAngle: &quot;number&quot;,
+
+<span id='Ext-draw-sprite-Arc-cfg-anticlockwise'>                /**
+</span>                 * @cfg {Boolean} [anticlockwise=false] Determines whether or not the arc is drawn clockwise.
+                 */
+                anticlockwise: &quot;bool&quot;
+            },
+            aliases: {
+                from: &quot;startAngle&quot;,
+                to: &quot;endAngle&quot;,
+                start: &quot;startAngle&quot;,
+                end: &quot;endAngle&quot;
+            },
+            defaults: {
+                startAngle: 0,
+                endAngle: Math.PI * 2,
+                anticlockwise: false
+            },
+            dirtyTriggers: {
+                startAngle: 'path',
+                endAngle: 'path',
+                anticlockwise: 'path'
+            }
+        }
+    },
+
+<span id='Ext-draw-sprite-Arc-method-updatePath'>    updatePath: function (path, attr) {
+</span>        path.arc(attr.cx, attr.cy, attr.r, attr.startAngle, attr.endAngle, attr.anticlockwise);
+    }
+});</pre>
+</body>
+</html>

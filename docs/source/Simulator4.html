@@ -22,8 +22,8 @@ Ext.define('Ext.device.geolocation.Simulator', {
     extend: 'Ext.device.geolocation.Abstract',
     requires: ['Ext.util.Geolocation'],
 
-    getCurrentPosition: function(config) {
-        config = this.callParent([config]);
+<span id='Ext-device-geolocation-Simulator-method-getCurrentPosition'>    getCurrentPosition: function(config) {
+</span>        config = this.callParent([config]);
 
         Ext.apply(config, {
             autoUpdate: false,
@@ -48,8 +48,8 @@ Ext.define('Ext.device.geolocation.Simulator', {
         return config;
     },
 
-    watchPosition: function(config) {
-        config = this.callParent([config]);
+<span id='Ext-device-geolocation-Simulator-method-watchPosition'>    watchPosition: function(config) {
+</span>        config = this.callParent([config]);
 
         Ext.apply(config, {
             listeners: {
@@ -72,8 +72,8 @@ Ext.define('Ext.device.geolocation.Simulator', {
         return config;
     },
 
-    clearWatch: function() {
-        if (this.geolocation) {
+<span id='Ext-device-geolocation-Simulator-method-clearWatch'>    clearWatch: function() {
+</span>        if (this.geolocation) {
             this.geolocation.destroy();
         }
 

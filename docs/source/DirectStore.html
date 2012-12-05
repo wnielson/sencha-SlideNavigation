@@ -30,7 +30,7 @@
  *         proxy: {
  *             paramsAsHash: true,
  *             directFn: someDirectFn,
- *             simpleSortMode: true
+ *             simpleSortMode: true,
  *             reader: {
  *                 rootProperty: 'results',
  *                 idProperty: '_id'
@@ -45,8 +45,8 @@ Ext.define('Ext.data.DirectStore', {
     requires: ['Ext.data.proxy.Direct'],
 
     config: {
-        proxy: {
-            type: 'direct',
+<span id='Ext-data-DirectStore-cfg-proxy'>        proxy: {
+</span>            type: 'direct',
             reader: {
                 type: 'json'
             }

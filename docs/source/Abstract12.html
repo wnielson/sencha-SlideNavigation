@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-fx-layout-card-Abstract'>/**
+</span> * @private
+ */
+Ext.define('Ext.fx.layout.card.Abstract', {
+    extend: 'Ext.Evented',
+<span id='Ext-fx-layout-card-Abstract-property-isAnimation'>    isAnimation: true,
+</span>
+    config: {
+<span id='Ext-fx-layout-card-Abstract-cfg-direction'>        direction: 'left',
+</span>
+<span id='Ext-fx-layout-card-Abstract-cfg-duration'>        duration: null,
+</span>
+<span id='Ext-fx-layout-card-Abstract-cfg-reverse'>        reverse: null,
+</span>
+<span id='Ext-fx-layout-card-Abstract-cfg-layout'>        layout: null
+</span>    },
+
+<span id='Ext-fx-layout-card-Abstract-method-updateLayout'>    updateLayout: function() {
+</span>        this.enable();
+    },
+
+<span id='Ext-fx-layout-card-Abstract-method-enable'>    enable: function() {
+</span>        var layout = this.getLayout();
+
+        if (layout) {
+            layout.onBefore('activeitemchange', 'onActiveItemChange', this);
+        }
+    },
+
+<span id='Ext-fx-layout-card-Abstract-method-disable'>    disable: function() {
+</span>        var layout = this.getLayout();
+
+        if (this.isAnimating) {
+            this.stopAnimation();
+        }
+
+        if (layout) {
+            layout.unBefore('activeitemchange', 'onActiveItemChange', this);
+        }
+    },
+
+<span id='Ext-fx-layout-card-Abstract-method-onActiveItemChange'>    onActiveItemChange: Ext.emptyFn,
+</span>
+<span id='Ext-fx-layout-card-Abstract-method-destroy'>    destroy: function() {
+</span>        var layout = this.getLayout();
+
+        if (this.isAnimating) {
+            this.stopAnimation();
+        }
+
+        if (layout) {
+            layout.unBefore('activeitemchange', 'onActiveItemChange', this);
+        }
+        this.setLayout(null);
+    }
+});
+</pre>
+</body>
+</html>

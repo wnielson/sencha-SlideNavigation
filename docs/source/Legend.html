@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-chart-Legend'>/**
+</span> * @class Ext.chart.Legend
+ * @extends Ext.dataview.DataView
+ * 
+ * A default legend for charts.
+ *
+ *     @example preview
+ *     var chart = new Ext.chart.Chart({
+ *         animate: true,
+ *         store: {
+ *           fields: ['name', 'data1', 'data2', 'data3', 'data4', 'data5'],
+ *           data: [
+ *               {'name':'metric one', 'data1':10, 'data2':12, 'data3':14, 'data4':8, 'data5':13},
+ *               {'name':'metric two', 'data1':7, 'data2':8, 'data3':16, 'data4':10, 'data5':3},
+ *               {'name':'metric three', 'data1':5, 'data2':2, 'data3':14, 'data4':12, 'data5':7},
+ *               {'name':'metric four', 'data1':2, 'data2':14, 'data3':6, 'data4':1, 'data5':23},
+ *               {'name':'metric five', 'data1':27, 'data2':38, 'data3':36, 'data4':13, 'data5':33}
+ *           ]
+ *         },
+ *         legend: {
+ *           position: 'bottom'
+ *         },
+ *         axes: [{
+ *             type: 'numeric',
+ *             position: 'left',
+ *             fields: ['data1'],
+ *             title: {
+ *                 text: 'Sample Values',
+ *                 fontSize: 15
+ *             },
+ *             grid: true,
+ *             minimum: 0
+ *         }, {
+ *             type: 'category',
+ *             position: 'bottom',
+ *             fields: ['name'],
+ *             title: {
+ *                 text: 'Sample Values',
+ *                 fontSize: 15
+ *             }
+ *         }],
+ *         series: [{
+ *             type: 'area',
+ *             title: ['Data1', 'Data2', 'Data3'],
+ *             subStyle: {
+ *                 fill: ['blue', 'green', 'red']
+ *             },
+ *             xField: 'name',
+ *             yField: ['data1', 'data2', 'data3']
+ *         
+ *         }]
+ *     });
+ *     Ext.Viewport.setLayout('fit');
+ *     Ext.Viewport.add(chart);
+ */
+Ext.define(&quot;Ext.chart.Legend&quot;, {
+    xtype: 'legend',
+    extend: &quot;Ext.dataview.DataView&quot;,
+    config: {
+<span id='Ext-chart-Legend-cfg-itemTpl'>        itemTpl: [
+</span>            &quot;&lt;span class=\&quot;x-legend-item-marker {[values.disabled?\'x-legend-inactive\':\'\']}\&quot; style=\&quot;background:{mark};\&quot;&gt;&lt;/span&gt;{name}&quot;
+        ],
+<span id='Ext-chart-Legend-cfg-baseCls'>        baseCls: 'x-legend',
+</span><span id='Ext-chart-Legend-cfg-padding'>        padding: 5,
+</span><span id='Ext-chart-Legend-cfg-disableSelection'>        disableSelection: true,
+</span><span id='Ext-chart-Legend-cfg-inline'>        inline: true,
+</span><span id='Ext-chart-Legend-cfg-position'>        /**
+</span>         * @cfg {String} position
+         * @deprecated Use `docked` instead.
+         * Delegates to `docked`
+         */
+        position: 'top',
+<span id='Ext-chart-Legend-cfg-horizontalHeight'>        horizontalHeight: 48,
+</span><span id='Ext-chart-Legend-cfg-verticalWidth'>        verticalWidth: 150
+</span>    },
+
+<span id='Ext-chart-Legend-method-constructor'>    constructor: function () {
+</span>        this.callSuper(arguments);
+
+        var scroller = this.getScrollable().getScroller(),
+            onDrag = scroller.onDrag;
+        scroller.onDrag = function (e) {
+            e.stopPropagation();
+            onDrag.call(this, e);
+        };
+    },
+
+<span id='Ext-chart-Legend-method-doSetDocked'>    doSetDocked: function (docked) {
+</span>        this.callSuper(arguments);
+        if (docked === 'top' || docked === 'bottom') {
+            this.setLayout({type: 'hbox', pack: 'center'});
+            this.setInline(true);
+            // TODO: Remove this when possible
+            this.setWidth(null);
+            this.setHeight(this.getHorizontalHeight());
+            this.setScrollable({direction: 'horizontal' });
+        } else {
+            this.setLayout({pack: 'center'});
+            this.setInline(false);
+            // TODO: Remove this when possible
+            this.setWidth(this.getVerticalWidth());
+            this.setHeight(null);
+            this.setScrollable({direction: 'vertical' });
+        }
+    },
+
+<span id='Ext-chart-Legend-method-updatePosition'>    updatePosition: function (position) {
+</span>        this.setDocked(position);
+    },
+
+<span id='Ext-chart-Legend-method-onItemTap'>    onItemTap: function (container, target, index, e) {
+</span>        this.callSuper(arguments);
+        var me = this,
+            store = me.getStore(),
+            record = store &amp;&amp; store.getAt(index);
+        record.beginEdit();
+        record.set('disabled', !record.get('disabled'));
+        record.commit();
+    }
+});</pre>
+</body>
+</html>

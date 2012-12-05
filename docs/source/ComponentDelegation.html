@@ -26,14 +26,14 @@ Ext.define('Ext.event.publisher.ComponentDelegation', {
         'Ext.ComponentQuery'
     ],
 
-    targetType: 'component',
-
-    optimizedSelectorRegex: /^#([\w\-]+)((?:[\s]*)&gt;(?:[\s]*)|(?:\s*))([\w\-]+)$/i,
-
-    handledEvents: ['*'],
-
-    getSubscribers: function(eventName, createIfNotExist) {
-        var subscribers = this.subscribers,
+<span id='Ext-event-publisher-ComponentDelegation-property-targetType'>    targetType: 'component',
+</span>
+<span id='Ext-event-publisher-ComponentDelegation-property-optimizedSelectorRegex'>    optimizedSelectorRegex: /^#([\w\-]+)((?:[\s]*)&gt;(?:[\s]*)|(?:\s*))([\w\-]+)$/i,
+</span>
+<span id='Ext-event-publisher-ComponentDelegation-property-handledEvents'>    handledEvents: ['*'],
+</span>
+<span id='Ext-event-publisher-ComponentDelegation-method-getSubscribers'>    getSubscribers: function(eventName, createIfNotExist) {
+</span>        var subscribers = this.subscribers,
             eventSubscribers = subscribers[eventName];
 
         if (!eventSubscribers &amp;&amp; createIfNotExist) {
@@ -49,8 +49,8 @@ Ext.define('Ext.event.publisher.ComponentDelegation', {
         return eventSubscribers;
     },
 
-    subscribe: function(target, eventName) {
-        // Ignore id-only selectors since they are already handled
+<span id='Ext-event-publisher-ComponentDelegation-method-subscribe'>    subscribe: function(target, eventName) {
+</span>        // Ignore id-only selectors since they are already handled
         if (this.idSelectorRegex.test(target)) {
             return false;
         }
@@ -107,8 +107,8 @@ Ext.define('Ext.event.publisher.ComponentDelegation', {
         return true;
     },
 
-    unsubscribe: function(target, eventName, all) {
-        var subscribers = this.getSubscribers(eventName);
+<span id='Ext-event-publisher-ComponentDelegation-method-unsubscribe'>    unsubscribe: function(target, eventName, all) {
+</span>        var subscribers = this.getSubscribers(eventName);
 
         if (!subscribers) {
             return false;
@@ -159,8 +159,8 @@ Ext.define('Ext.event.publisher.ComponentDelegation', {
         return true;
     },
 
-    notify: function(target, eventName) {
-        var subscribers = this.getSubscribers(eventName),
+<span id='Ext-event-publisher-ComponentDelegation-method-notify'>    notify: function(target, eventName) {
+</span>        var subscribers = this.getSubscribers(eventName),
             id, component;
 
         if (!subscribers || subscribers.$length === 0) {
@@ -177,16 +177,16 @@ Ext.define('Ext.event.publisher.ComponentDelegation', {
         }
     },
 
-    matchesSelector: function(component, selector) {
-        return Ext.ComponentQuery.is(component, selector);
+<span id='Ext-event-publisher-ComponentDelegation-method-matchesSelector'>    matchesSelector: function(component, selector) {
+</span>        return Ext.ComponentQuery.is(component, selector);
     },
 
-    dispatch: function(target, eventName, args, connectedController) {
-        this.dispatcher.doDispatchEvent(this.targetType, target, eventName, args, null, connectedController);
+<span id='Ext-event-publisher-ComponentDelegation-method-dispatch'>    dispatch: function(target, eventName, args, connectedController) {
+</span>        this.dispatcher.doDispatchEvent(this.targetType, target, eventName, args, null, connectedController);
     },
 
-    publish: function(eventName, component) {
-        var subscribers = this.getSubscribers(eventName);
+<span id='Ext-event-publisher-ComponentDelegation-method-publish'>    publish: function(eventName, component) {
+</span>        var subscribers = this.getSubscribers(eventName);
 
         if (!subscribers) {
             return;

@@ -43,7 +43,7 @@
  *                 { name: 'number', type: 'string' },
  *                 { name: 'street', type: 'string' },
  *                 { name: 'city', type: 'string' },
- *                 { name: 'zip', type: 'string' },
+ *                 { name: 'zip', type: 'string' }
  *             ]
  *         }
  *     });
@@ -73,7 +73,7 @@
  *
  * The new getAddress function will also accept an object containing success, failure and callback properties
  * - callback will always be called, success will only be called if the associated model was loaded successfully
- * and failure will only be called if the associatied model could not be loaded:
+ * and failure will only be called if the associated model could not be loaded:
  *
  *     person.getAddress({
  *         reload: true, // force a reload if the owner model is already cached
@@ -113,13 +113,13 @@
  *
  *     //alternative syntax:
  *     person.setAddress(10, {
- *         callback: function(address, operation), // a function that will always be called
- *         success : function(address, operation), // a function that will only be called if the load succeeded
- *         failure : function(address, operation), // a function that will only be called if the load did not succeed
+ *         callback: function(address, operation) {}, // a function that will always be called
+ *         success : function(address, operation) {}, // a function that will only be called if the load succeeded
+ *         failure : function(address, operation) {}, // a function that will only be called if the load did not succeed
  *         scope   : this //optionally pass in a scope object to execute the callbacks in
- *     })
+ *     });
  *
- * ## Customisation
+ * ## Customization
  *
  * Associations reflect on the models they are linking to automatically set up properties such as the
  * {@link #primaryKey} and {@link #foreignKey}. These can alternatively be specified:
@@ -185,23 +185,23 @@ Ext.define('Ext.data.association.HasOne', {
          */
         setterName: undefined,
 
-        instanceName: undefined
-    },
+<span id='Ext-data-association-HasOne-cfg-instanceName'>        instanceName: undefined
+</span>    },
 
-    applyForeignKey: function(foreignKey) {
-        if (!foreignKey) {
+<span id='Ext-data-association-HasOne-method-applyForeignKey'>    applyForeignKey: function(foreignKey) {
+</span>        if (!foreignKey) {
             var inverse = this.getInverseAssociation();
             if (inverse) {
                 foreignKey = inverse.getForeignKey();
             } else {
-                foreignKey = this.getOwnerName().toLowerCase() + '_id';
+                foreignKey = this.getAssociatedName().toLowerCase() + '_id';
             }
         }
         return foreignKey;
     },
 
-    updateForeignKey: function(foreignKey, oldForeignKey) {
-        var fields = this.getAssociatedModel().getFields(),
+<span id='Ext-data-association-HasOne-method-updateForeignKey'>    updateForeignKey: function(foreignKey, oldForeignKey) {
+</span>        var fields = this.getOwnerModel().getFields(),
             field = fields.get(foreignKey);
 
         if (!field) {
@@ -221,39 +221,39 @@ Ext.define('Ext.data.association.HasOne', {
         }
     },
 
-    applyInstanceName: function(instanceName) {
-        if (!instanceName) {
-            instanceName = this.getAssociatedName() + 'BelongsToInstance';
+<span id='Ext-data-association-HasOne-method-applyInstanceName'>    applyInstanceName: function(instanceName) {
+</span>        if (!instanceName) {
+            instanceName = this.getAssociatedName() + 'HasOneInstance';
         }
         return instanceName;
     },
 
-    applyAssociationKey: function(associationKey) {
-        if (!associationKey) {
+<span id='Ext-data-association-HasOne-method-applyAssociationKey'>    applyAssociationKey: function(associationKey) {
+</span>        if (!associationKey) {
             var associatedName = this.getAssociatedName();
             associationKey = associatedName[0].toLowerCase() + associatedName.slice(1);
         }
         return associationKey;
     },
 
-    applyGetterName: function(getterName) {
-        if (!getterName) {
+<span id='Ext-data-association-HasOne-method-applyGetterName'>    applyGetterName: function(getterName) {
+</span>        if (!getterName) {
             var associatedName = this.getAssociatedName();
             getterName = 'get' + associatedName[0].toUpperCase() + associatedName.slice(1);
         }
         return getterName;
     },
 
-    applySetterName: function(setterName) {
-        if (!setterName) {
+<span id='Ext-data-association-HasOne-method-applySetterName'>    applySetterName: function(setterName) {
+</span>        if (!setterName) {
             var associatedName = this.getAssociatedName();
             setterName = 'set' + associatedName[0].toUpperCase() + associatedName.slice(1);
         }
         return setterName;
     },
 
-    updateGetterName: function(getterName, oldGetterName) {
-        var ownerProto = this.getOwnerModel().prototype;
+<span id='Ext-data-association-HasOne-method-updateGetterName'>    updateGetterName: function(getterName, oldGetterName) {
+</span>        var ownerProto = this.getOwnerModel().prototype;
         if (oldGetterName) {
             delete ownerProto[oldGetterName];
         }
@@ -262,8 +262,8 @@ Ext.define('Ext.data.association.HasOne', {
         }
     },
 
-    updateSetterName: function(setterName, oldSetterName) {
-        var ownerProto = this.getOwnerModel().prototype;
+<span id='Ext-data-association-HasOne-method-updateSetterName'>    updateSetterName: function(setterName, oldSetterName) {
+</span>        var ownerProto = this.getOwnerModel().prototype;
         if (oldSetterName) {
             delete ownerProto[oldSetterName];
         }
@@ -294,7 +294,7 @@ Ext.define('Ext.data.association.HasOne', {
 
             this.set(foreignKey, value);
 
-            record = Model.cache.get(Model.generateCacheId(associatedModel.modelName, value));
+            record = Model.cache[Model.generateCacheId(associatedModel.modelName, value)];
             if (record) {
                 this[instanceName] = record;
             }
@@ -309,6 +309,8 @@ Ext.define('Ext.data.association.HasOne', {
             if (Ext.isObject(options)) {
                 return this.save(options);
             }
+
+            return this;
         };
     },
 
@@ -384,8 +386,8 @@ Ext.define('Ext.data.association.HasOne', {
         }
     },
 
-    getInverseAssociation: function() {
-        var ownerName = this.getOwnerModel().modelName;
+<span id='Ext-data-association-HasOne-method-getInverseAssociation'>    getInverseAssociation: function() {
+</span>        var ownerName = this.getOwnerModel().modelName;
 
         return this.getAssociatedModel().associations.findBy(function(assoc) {
             return assoc.getType().toLowerCase() === 'belongsto' &amp;&amp; assoc.getAssociatedModel().modelName === ownerName;

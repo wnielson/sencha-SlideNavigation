@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-chart-series-sprite-Polar'>/**
+</span> * @class Ext.chart.series.sprite.Polar
+ * @extends Ext.draw.sprite.Sprite
+ * 
+ * Polar sprite.
+ */
+Ext.define(&quot;Ext.chart.series.sprite.Polar&quot;, {
+    mixins: {
+        markerHolder: &quot;Ext.chart.MarkerHolder&quot;
+    },
+    extend: 'Ext.draw.sprite.Sprite',
+    inheritableStatics: {
+<span id='Ext-chart-series-sprite-Polar-property-def'>        def: {
+</span>            processors: {
+<span id='Ext-chart-series-sprite-Polar-cfg-dataMinX'>                /**
+</span>                 * @cfg {Number} [dataMinX=0] Data minimum on the x-axis.
+                 */
+                dataMinX: 'number',
+
+<span id='Ext-chart-series-sprite-Polar-cfg-dataMaxX'>                /**
+</span>                 * @cfg {Number} [dataMaxX=1] Data maximum on the x-axis.
+                 */
+                dataMaxX: 'number',
+
+<span id='Ext-chart-series-sprite-Polar-cfg-dataMinY'>                /**
+</span>                 * @cfg {Number} [dataMinY=0] Data minimum on the y-axis.
+                 */
+                dataMinY: 'number',
+
+<span id='Ext-chart-series-sprite-Polar-cfg-dataMaxY'>                /**
+</span>                 * @cfg {Number} [dataMaxY=2] Data maximum on the y-axis.
+                 */
+                dataMaxY: 'number',
+
+<span id='Ext-chart-series-sprite-Polar-cfg-dataY'>                /**
+</span>                 * @cfg {Object} [dataY=null] Data items on the y-axis.
+                 */
+                dataY: 'data',
+
+<span id='Ext-chart-series-sprite-Polar-cfg-dataX'>                /**
+</span>                 * @cfg {Object} [dataX=null] Data items on the x-axis.
+                 */
+                dataX: 'data',
+
+<span id='Ext-chart-series-sprite-Polar-cfg-centerX'>                /**
+</span>                 * @cfg {Number} [centerX=0] The central point of the series on the x-axis.
+                 */
+                centerX: 'number',
+
+<span id='Ext-chart-series-sprite-Polar-cfg-centerY'>                /**
+</span>                 * @cfg {Number} [centerY=0] The central point of the series on the y-axis.
+                 */
+                centerY: 'number',
+
+<span id='Ext-chart-series-sprite-Polar-cfg-startAngle'>                /**
+</span>                 * @cfg {Number} [startAngle=0] The starting angle of the polar series.
+                 */
+                startAngle: &quot;number&quot;,
+
+<span id='Ext-chart-series-sprite-Polar-cfg-endAngle'>                /**
+</span>                 * @cfg {Number} [endAngle=Math.PI] The ending angle of the polar series.
+                 */
+                endAngle: &quot;number&quot;,
+
+<span id='Ext-chart-series-sprite-Polar-cfg-startRho'>                /**
+</span>                 * @cfg {Number} [startRho=0] The starting radius of the polar series.
+                 */
+                startRho: &quot;number&quot;,
+
+<span id='Ext-chart-series-sprite-Polar-cfg-endRho'>                /**
+</span>                 * @cfg {Number} [endRho=150] The ending radius of the polar series.
+                 */
+                endRho: &quot;number&quot;,
+
+<span id='Ext-chart-series-sprite-Polar-cfg-baseRotation'>                /**
+</span>                 * @cfg {Number} [baseRotation=0] The starting rotation of the polar series.
+                 */
+                baseRotation: &quot;number&quot;,
+
+<span id='Ext-chart-series-sprite-Polar-cfg-labels'>                /**
+</span>                 * @cfg {Object} [labels=null] Labels used in the series.
+                 */
+                labels: 'default',
+
+<span id='Ext-chart-series-sprite-Polar-cfg-labelOverflowPadding'>                /**
+</span>                 * @cfg {Number} [labelOverflowPadding=10] Padding around labels to determine overlap.
+                 */
+                labelOverflowPadding: 'number'
+            },
+            defaults: {
+                dataY: null,
+                dataX: null,
+                dataMinX: 0,
+                dataMaxX: 1,
+                dataMinY: 0,
+                dataMaxY: 1,
+                centerX: 0,
+                centerY: 0,
+                startAngle: 0,
+                endAngle: Math.PI,
+                startRho: 0,
+                endRho: 150,
+                baseRotation: 0,
+                labels: null,
+                labelOverflowPadding: 10
+            },
+            dirtyTriggers: {
+                dataX: 'bbox',
+                dataY: 'bbox',
+                dataMinX: 'bbox',
+                dataMaxX: 'bbox',
+                dataMinY: 'bbox',
+                dataMaxY: 'bbox',
+                centerX: &quot;bbox&quot;,
+                centerY: &quot;bbox&quot;,
+                startAngle: &quot;bbox&quot;,
+                endAngle: &quot;bbox&quot;,
+                startRho: &quot;bbox&quot;,
+                endRho: &quot;bbox&quot;,
+                baseRotation: &quot;bbox&quot;
+            }
+        }
+    },
+
+    config: {
+<span id='Ext-chart-series-sprite-Polar-cfg-dataItems'>        dataItems: null,
+</span><span id='Ext-chart-series-sprite-Polar-cfg-field'>        field: null
+</span>    },
+    
+<span id='Ext-chart-series-sprite-Polar-method-updatePlainBBox'>    updatePlainBBox: function (plain) {
+</span>        var attr = this.attr;
+        plain.x = attr.centerX - attr.endRho;
+        plain.y = attr.centerY + attr.endRho;
+        plain.width = attr.endRho * 2;
+        plain.height = attr.endRho * 2;
+    }
+});</pre>
+</body>
+</html>

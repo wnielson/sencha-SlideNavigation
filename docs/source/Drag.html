@@ -16,23 +16,23 @@
 </head>
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js"><span id='Ext-event-recognizer-Drag'>/**
-</span> * A simple event recogniser which knows when you drag.
+</span> * A simple event recognizer which knows when you drag.
  *
  * @private
  */
 Ext.define('Ext.event.recognizer.Drag', {
     extend: 'Ext.event.recognizer.SingleTouch',
 
-    isStarted: false,
-
-    startPoint: null,
-
-    previousPoint: null,
-
-    lastPoint: null,
-
-    handledEvents: ['dragstart', 'drag', 'dragend'],
-
+<span id='Ext-event-recognizer-Drag-property-isStarted'>    isStarted: false,
+</span>
+<span id='Ext-event-recognizer-Drag-property-startPoint'>    startPoint: null,
+</span>
+<span id='Ext-event-recognizer-Drag-property-previousPoint'>    previousPoint: null,
+</span>
+<span id='Ext-event-recognizer-Drag-property-lastPoint'>    lastPoint: null,
+</span>
+<span id='Ext-event-recognizer-Drag-property-handledEvents'>    handledEvents: ['dragstart', 'drag', 'dragend'],
+</span>
 <span id='Ext-dom-Element-event-dragstart'>    /**
 </span>     * @member Ext.dom.Element
      * @event dragstart
@@ -76,8 +76,8 @@ Ext.define('Ext.event.recognizer.Drag', {
         this.startPoint = startTouch.point;
     },
 
-    onTouchMove: function(e) {
-        var touches = e.changedTouches,
+<span id='Ext-event-recognizer-Drag-method-onTouchMove'>    onTouchMove: function(e) {
+</span>        var touches = e.changedTouches,
             touch = touches[0],
             point = touch.point,
             time = e.time;
@@ -109,8 +109,8 @@ Ext.define('Ext.event.recognizer.Drag', {
         }
     },
 
-    onTouchEnd: function(e) {
-        if (this.isStarted) {
+<span id='Ext-event-recognizer-Drag-method-onTouchEnd'>    onTouchEnd: function(e) {
+</span>        if (this.isStarted) {
             var touches = e.changedTouches,
                 touch = touches[0],
                 point = touch.point;
@@ -132,8 +132,8 @@ Ext.define('Ext.event.recognizer.Drag', {
         }
     },
 
-    getInfo: function(e, touch) {
-        var time = e.time,
+<span id='Ext-event-recognizer-Drag-method-getInfo'>    getInfo: function(e, touch) {
+</span>        var time = e.time,
             startPoint = this.startPoint,
             previousPoint = this.previousPoint,
             startTime = this.startTime,

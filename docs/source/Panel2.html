@@ -60,15 +60,15 @@ Ext.define('Ext.Panel', {
 
     xtype: 'panel',
 
-    isPanel: true,
-
+<span id='Ext-Panel-property-isPanel'>    isPanel: true,
+</span>
     config: {
-        baseCls: Ext.baseCSSPrefix + 'panel',
-
+<span id='Ext-Panel-cfg-baseCls'>        baseCls: Ext.baseCSSPrefix + 'panel',
+</span>
 <span id='Ext-Panel-cfg-bodyPadding'>        /**
 </span>         * @cfg {Number/Boolean/String} bodyPadding
          * A shortcut for setting a padding style on the body element. The value can either be
-         * a number to be applied to all sides, or a normal css string describing padding.
+         * a number to be applied to all sides, or a normal CSS string describing padding.
          * @deprecated 2.0.0
          */
         bodyPadding: null,
@@ -76,7 +76,7 @@ Ext.define('Ext.Panel', {
 <span id='Ext-Panel-cfg-bodyMargin'>        /**
 </span>         * @cfg {Number/Boolean/String} bodyMargin
          * A shortcut for setting a margin style on the body element. The value can either be
-         * a number to be applied to all sides, or a normal css string describing margins.
+         * a number to be applied to all sides, or a normal CSS string describing margins.
          * @deprecated 2.0.0
          */
         bodyMargin: null,
@@ -84,14 +84,14 @@ Ext.define('Ext.Panel', {
 <span id='Ext-Panel-cfg-bodyBorder'>        /**
 </span>         * @cfg {Number/Boolean/String} bodyBorder
          * A shortcut for setting a border style on the body element. The value can either be
-         * a number to be applied to all sides, or a normal css string describing borders.
+         * a number to be applied to all sides, or a normal CSS string describing borders.
          * @deprecated 2.0.0
          */
         bodyBorder: null
     },
 
-    getElementConfig: function() {
-        var config = this.callParent();
+<span id='Ext-Panel-method-getElementConfig'>    getElementConfig: function() {
+</span>        var config = this.callParent();
 
         config.children.push({
             reference: 'tipElement',
@@ -102,8 +102,8 @@ Ext.define('Ext.Panel', {
         return config;
     },
 
-    applyBodyPadding: function(bodyPadding) {
-        if (bodyPadding === true) {
+<span id='Ext-Panel-method-applyBodyPadding'>    applyBodyPadding: function(bodyPadding) {
+</span>        if (bodyPadding === true) {
             bodyPadding = 5;
         }
 
@@ -114,12 +114,12 @@ Ext.define('Ext.Panel', {
         return bodyPadding;
     },
 
-    updateBodyPadding: function(newBodyPadding) {
-        this.element.setStyle('padding', newBodyPadding);
+<span id='Ext-Panel-method-updateBodyPadding'>    updateBodyPadding: function(newBodyPadding) {
+</span>        this.element.setStyle('padding', newBodyPadding);
     },
 
-    applyBodyMargin: function(bodyMargin) {
-        if (bodyMargin === true) {
+<span id='Ext-Panel-method-applyBodyMargin'>    applyBodyMargin: function(bodyMargin) {
+</span>        if (bodyMargin === true) {
             bodyMargin = 5;
         }
 
@@ -130,12 +130,12 @@ Ext.define('Ext.Panel', {
         return bodyMargin;
     },
 
-    updateBodyMargin: function(newBodyMargin) {
-        this.element.setStyle('margin', newBodyMargin);
+<span id='Ext-Panel-method-updateBodyMargin'>    updateBodyMargin: function(newBodyMargin) {
+</span>        this.element.setStyle('margin', newBodyMargin);
     },
 
-    applyBodyBorder: function(bodyBorder) {
-        if (bodyBorder === true) {
+<span id='Ext-Panel-method-applyBodyBorder'>    applyBodyBorder: function(bodyBorder) {
+</span>        if (bodyBorder === true) {
             bodyBorder = 1;
         }
 
@@ -146,12 +146,12 @@ Ext.define('Ext.Panel', {
         return bodyBorder;
     },
 
-    updateBodyBorder: function(newBodyBorder) {
-        this.element.setStyle('border-width', newBodyBorder);
+<span id='Ext-Panel-method-updateBodyBorder'>    updateBodyBorder: function(newBodyBorder) {
+</span>        this.element.setStyle('border-width', newBodyBorder);
     },
 
-    alignTo: function(component) {
-        var tipElement = this.tipElement;
+<span id='Ext-Panel-method-alignTo'>    alignTo: function(component) {
+</span>        var tipElement = this.tipElement;
 
         tipElement.hide();
 
@@ -192,26 +192,26 @@ Ext.define('Ext.Panel', {
         tipHeight = tipSize.height;
 
         if (centerLineSegment.intersects(new LineSegment(leftTopPoint, rightTopPoint))) {
-            tipX = Math.min(Math.max(alignToCenterX, left), right - (tipWidth / 2));
+            tipX = Math.min(Math.max(alignToCenterX, left + tipWidth), right - (tipWidth));
             tipY = top;
             offsetTop = tipHeight + 10;
             tipPosition = 'top';
         }
         else if (centerLineSegment.intersects(new LineSegment(leftTopPoint, leftBottomPoint))) {
             tipX = left;
-            tipY = Math.min(Math.max(alignToCenterY + (tipWidth / 2), top), bottom);
+            tipY = Math.min(Math.max(alignToCenterY + (tipWidth / 2), tipWidth * 1.6), bottom - (tipWidth / 2.2));
             offsetLeft = tipHeight + 10;
             tipPosition = 'left';
         }
         else if (centerLineSegment.intersects(new LineSegment(leftBottomPoint, rightBottomPoint))) {
-            tipX = Math.min(Math.max(alignToCenterX, left), right - (tipWidth / 2));
+            tipX = Math.min(Math.max(alignToCenterX, left + tipWidth), right - tipWidth);
             tipY = bottom;
             offsetTop = -tipHeight - 10;
             tipPosition = 'bottom';
         }
         else if (centerLineSegment.intersects(new LineSegment(rightTopPoint, rightBottomPoint))) {
             tipX = right;
-            tipY = Math.min(Math.max(alignToCenterY - (tipWidth / 2), top), bottom);
+            tipY = Math.max(Math.min(alignToCenterY - tipHeight, bottom - tipWidth * 1.3), tipWidth / 2);
             offsetLeft = -tipHeight - 10;
             tipPosition = 'right';
         }

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-draw-Animator'>/**
+</span> * @class Ext.draw.Animator
+ * 
+ * Singleton class that manages the animation pool.
+ */
+Ext.define('Ext.draw.Animator', {
+    uses: ['Ext.draw.Draw'],
+    singleton: true,
+
+<span id='Ext-draw-Animator-property-frameCallbacks'>    frameCallbacks: {},
+</span><span id='Ext-draw-Animator-property-frameCallbackId'>    frameCallbackId: 0,
+</span><span id='Ext-draw-Animator-property-scheduled'>    scheduled: 0,
+</span><span id='Ext-draw-Animator-property-frameStartTimeOffset'>    frameStartTimeOffset: Ext.frameStartTime,
+</span><span id='Ext-draw-Animator-property-animations'>    animations: [],
+</span>
+<span id='Ext-draw-Animator-method-animationTime'>    /**
+</span>     *  Cross platform `animationTime` implementation.
+     *  @return {Number}
+     */
+    animationTime: function () {
+        return Ext.frameStartTime - this.frameStartTimeOffset;
+    },
+
+<span id='Ext-draw-Animator-method-add'>    /**
+</span>     * Adds an animated object to the animation pool.
+     *
+     * @param {Object} animation The animation descriptor to add to the pool.
+     */
+    add: function (animation) {
+        if (!this.contains(animation)) {
+            this.animations.push(animation);
+            Ext.draw.Animator.ignite();
+            if ('fireEvent' in animation) {
+                animation.fireEvent('animationstart', animation);
+            }
+        }
+    },
+
+<span id='Ext-draw-Animator-method-remove'>    /**
+</span>     * Removes an animation from the pool.
+     * TODO: This is broken when called within `step` method.
+     * @param {Object} animation The animation to remove from the pool.
+     */
+    remove: function (animation) {
+        var me = this,
+            animations = me.animations,
+            i = 0,
+            l = animations.length;
+
+        for (; i &lt; l; ++i) {
+            if (animations[i] === animation) {
+                animations.splice(i, 1);
+                if ('fireEvent' in animation) {
+                    animation.fireEvent('animationend', animation);
+                }
+                return;
+            }
+        }
+    },
+
+<span id='Ext-draw-Animator-method-contains'>    /**
+</span>     * Returns `true` or `false` whether it contains the given animation or not.
+     *
+     * @param {Object} animation The animation to check for.
+     * @return {Boolean}
+     */
+    contains: function (animation) {
+        return this.animations.indexOf(animation) &gt; -1;
+    },
+
+<span id='Ext-draw-Animator-method-empty'>    /**
+</span>     * Returns `true` or `false` whether the pool is empty or not.
+     * @return {Boolean}
+     */
+    empty: function () {
+        return this.animations.length === 0;
+    },
+
+<span id='Ext-draw-Animator-method-step'>    /**
+</span>     * Given a frame time it will filter out finished animations from the pool.
+     *
+     * @param {Number} frameTime The frame's start time, in milliseconds.
+     */
+    step: function (frameTime) {
+        var me = this,
+        // TODO: Try to find a way to get rid of this copy
+            animations = me.animations.slice(),
+            animation,
+            i = 0, j = 0,
+            l = animations.length;
+
+        for (; i &lt; l; ++i) {
+            animation = animations[i];
+            animation.step(frameTime);
+            if (animation.animating) {
+                animations[j++] = animation;
+            } else {
+                me.animations.splice(j, 1);
+                if (animation.fireEvent) {
+                    animation.fireEvent('animationend');
+                }
+            }
+        }
+    },
+
+<span id='Ext-draw-Animator-method-schedule'>    /**
+</span>     * Register an one-time callback that will be called at the next frame.
+     * @param callback
+     * @param scope
+     * @return {String}
+     */
+    schedule: function (callback, scope) {
+        scope = scope || this;
+        var id = 'frameCallback' + (this.frameCallbackId++);
+
+        if (Ext.isString(callback)) {
+            callback = scope[callback];
+        }
+        Ext.draw.Animator.frameCallbacks[id] = {fn: callback, scope: scope, once: true};
+        this.scheduled++;
+        Ext.draw.Animator.ignite();
+        return id;
+    },
+
+<span id='Ext-draw-Animator-method-cancel'>    /**
+</span>     * Cancel a registered one-time callback
+     * @param id
+     */
+    cancel: function (id) {
+        if (Ext.draw.Animator.frameCallbacks[id] &amp;&amp; Ext.draw.Animator.frameCallbacks[id].once) {
+            this.scheduled--;
+            delete Ext.draw.Animator.frameCallbacks[id];
+        }
+    },
+
+<span id='Ext-draw-Animator-method-addFrameCallback'>    /**
+</span>     * Register a recursive callback that will be called at every frame.
+     *
+     * @param callback
+     * @param scope
+     * @return {String}
+     */
+    addFrameCallback: function (callback, scope) {
+        scope = scope || this;
+        if (Ext.isString(callback)) {
+            callback = scope[callback];
+        }
+        var id = 'frameCallback' + (this.frameCallbackId++);
+
+        Ext.draw.Animator.frameCallbacks[id] = {fn: callback, scope: scope};
+        return id;
+    },
+
+<span id='Ext-draw-Animator-method-removeFrameCallback'>    /**
+</span>     * Unregister a recursive callback.
+     * @param id
+     */
+    removeFrameCallback: function (id) {
+        delete Ext.draw.Animator.frameCallbacks[id];
+    },
+
+<span id='Ext-draw-Animator-method-fireFrameCallbacks'>    /**
+</span>     * @private
+     */
+    fireFrameCallbacks: function () {
+        var callbacks = this.frameCallbacks,
+            once = [],
+            id, i, ln, fn, cb;
+
+        for (id in callbacks) {
+            cb = callbacks[id];
+            fn = cb.fn;
+            if (Ext.isString(fn)) {
+                fn = cb.scope[fn];
+            }
+            fn.call(cb.scope);
+            if (cb.once) {
+                once.push(id);
+            }
+        }
+        for (i = 0, ln = once.length; i &lt; ln; i++) {
+            this.scheduled--;
+            delete callbacks[once[i]];
+        }
+    }
+}, function () {
+    //Initialize the endless animation loop.
+    var looping = false,
+        frame = Ext.draw.Animator,
+        requestAnimationFramePolyfill = (function (global) {
+            return global.requestAnimationFrame ||
+                global.webkitRequestAnimationFrame ||
+                global.mozAnimationFrame ||
+                global.oAnimationFrame ||
+                global.msAnimationFrame ||
+                function (callback) { setTimeout(callback, 1); };
+        })(Ext.global),
+        animationStartTimePolyfill = (function (global) {
+            return (global.animationStartTime ? function () { return global.animationStartTime; } : null) ||
+                (global.webkitAnimationStartTime ? function () { return global.webkitAnimationStartTime; } : null) ||
+                (global.mozAnimationStartTime ? function () { return global.mozAnimationStartTime; } : null) ||
+                (global.oAnimationStartTime ? function () { return global.oAnimationStartTime; } : null) ||
+                (global.msAnimationStartTime ? function () { return global.msAnimationStartTime; } : null) ||
+                (Date.now ? function () { return Date.now(); } :
+                    function () { return +new Date(); });
+
+        })(Ext.global);
+
+    // &lt;debug&gt;
+    var startLooping, frames;
+    // &lt;/debug&gt;
+
+    function animationLoop() {
+        Ext.frameStartTime = animationStartTimePolyfill();
+
+        // &lt;debug&gt;
+        if (startLooping === undefined) {
+            startLooping = Ext.frameStartTime;
+        }
+        // &lt;/debug&gt;
+        frame.step(frame.animationTime());
+        frame.fireFrameCallbacks();
+        if (frame.scheduled || !frame.empty()) {
+            requestAnimationFramePolyfill(animationLoop);
+            // &lt;debug&gt;
+            frames++;
+            // &lt;/debug&gt;
+        } else {
+            looping = false;
+            // &lt;debug&gt;
+            startLooping = undefined;
+            // &lt;/debug&gt;
+        }
+        // &lt;debug&gt;
+        frame.framerate = frames * 1000 / (frame.animationTime() - startLooping);
+        // &lt;/debug&gt;
+
+    }
+
+    // &lt;debug&gt;
+    frame.clearCounter = function () {
+        startLooping = frame.animationTime();
+        frames = 0;
+    };
+    // &lt;/debug&gt;
+
+    frame.ignite = function () {
+        if (!looping) {
+            // &lt;debug&gt;
+            frames = 0;
+            // &lt;/debug&gt;
+            looping = true;
+            requestAnimationFramePolyfill(animationLoop);
+            Ext.draw.Draw.updateIOS();
+        }
+    };
+
+});
+</pre>
+</body>
+</html>

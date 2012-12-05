@@ -19,12 +19,12 @@
 </span> * @private
  */
 Ext.define('Ext.event.publisher.Publisher', {
-    targetType: '',
-
-    idSelectorRegex: /^#([\w\-]+)$/i,
-
-    constructor: function() {
-        var handledEvents = this.handledEvents,
+<span id='Ext-event-publisher-Publisher-property-targetType'>    targetType: '',
+</span>
+<span id='Ext-event-publisher-Publisher-property-idSelectorRegex'>    idSelectorRegex: /^#([\w\-]+)$/i,
+</span>
+<span id='Ext-event-publisher-Publisher-method-constructor'>    constructor: function() {
+</span>        var handledEvents = this.handledEvents,
             handledEventsMap,
             i, ln, event;
 
@@ -41,45 +41,45 @@ Ext.define('Ext.event.publisher.Publisher', {
         return this;
     },
 
-    handles: function(eventName) {
-        var map = this.handledEventsMap;
+<span id='Ext-event-publisher-Publisher-method-handles'>    handles: function(eventName) {
+</span>        var map = this.handledEventsMap;
 
         return !!map[eventName] || !!map['*'] || eventName === '*';
     },
 
-    getHandledEvents: function() {
-        return this.handledEvents;
+<span id='Ext-event-publisher-Publisher-method-getHandledEvents'>    getHandledEvents: function() {
+</span>        return this.handledEvents;
     },
 
-    setDispatcher: function(dispatcher) {
-        this.dispatcher = dispatcher;
+<span id='Ext-event-publisher-Publisher-method-setDispatcher'>    setDispatcher: function(dispatcher) {
+</span>        this.dispatcher = dispatcher;
     },
 
-    subscribe: function() {
-        return false;
+<span id='Ext-event-publisher-Publisher-method-subscribe'>    subscribe: function() {
+</span>        return false;
     },
 
-    unsubscribe: function() {
-        return false;
+<span id='Ext-event-publisher-Publisher-method-unsubscribe'>    unsubscribe: function() {
+</span>        return false;
     },
 
-    unsubscribeAll: function() {
-        delete this.subscribers;
+<span id='Ext-event-publisher-Publisher-method-unsubscribeAll'>    unsubscribeAll: function() {
+</span>        delete this.subscribers;
         this.subscribers = {};
 
         return this;
     },
 
-    notify: function() {
-        return false;
+<span id='Ext-event-publisher-Publisher-method-notify'>    notify: function() {
+</span>        return false;
     },
 
-    getTargetType: function() {
-        return this.targetType;
+<span id='Ext-event-publisher-Publisher-method-getTargetType'>    getTargetType: function() {
+</span>        return this.targetType;
     },
 
-    dispatch: function(target, eventName, args) {
-        this.dispatcher.doDispatchEvent(this.targetType, target, eventName, args);
+<span id='Ext-event-publisher-Publisher-method-dispatch'>    dispatch: function(target, eventName, args) {
+</span>        this.dispatcher.doDispatchEvent(this.targetType, target, eventName, args);
     }
 });
 </pre>

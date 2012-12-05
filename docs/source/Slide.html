@@ -51,32 +51,32 @@ Ext.define('Ext.fx.animation.Slide', {
          */
         easing: 'auto',
 
-        containerBox: 'auto',
+<span id='Ext-fx-animation-Slide-cfg-containerBox'>        containerBox: 'auto',
+</span>
+<span id='Ext-fx-animation-Slide-cfg-elementBox'>        elementBox: 'auto',
+</span>
+<span id='Ext-fx-animation-Slide-cfg-isElementBoxFit'>        isElementBoxFit: true,
+</span>
+<span id='Ext-fx-animation-Slide-cfg-useCssTransform'>        useCssTransform: true
+</span>    },
 
-        elementBox: 'auto',
-
-        isElementBoxFit: true,
-
-        useCssTransform: true
-    },
-
-    reverseDirectionMap: {
-        up: 'down',
+<span id='Ext-fx-animation-Slide-property-reverseDirectionMap'>    reverseDirectionMap: {
+</span>        up: 'down',
         down: 'up',
         left: 'right',
         right: 'left'
     },
 
-    applyEasing: function(easing) {
-        if (easing === 'auto') {
+<span id='Ext-fx-animation-Slide-method-applyEasing'>    applyEasing: function(easing) {
+</span>        if (easing === 'auto') {
             return 'ease-' + ((this.getOut()) ? 'in' : 'out');
         }
 
         return easing;
     },
 
-    getContainerBox: function() {
-        var box = this._containerBox;
+<span id='Ext-fx-animation-Slide-method-getContainerBox'>    getContainerBox: function() {
+</span>        var box = this._containerBox;
 
         if (box === 'auto') {
             box = this.getElement().getParent().getPageBox();
@@ -85,8 +85,8 @@ Ext.define('Ext.fx.animation.Slide', {
         return box;
     },
 
-    getElementBox: function() {
-        var box = this._elementBox;
+<span id='Ext-fx-animation-Slide-method-getElementBox'>    getElementBox: function() {
+</span>        var box = this._elementBox;
 
         if (this.getIsElementBoxFit()) {
             return this.getContainerBox();
@@ -99,8 +99,8 @@ Ext.define('Ext.fx.animation.Slide', {
         return box;
     },
 
-    getData: function() {
-        var elementBox = this.getElementBox(),
+<span id='Ext-fx-animation-Slide-method-getData'>    getData: function() {
+</span>        var elementBox = this.getElementBox(),
             containerBox = this.getContainerBox(),
             box = elementBox ? elementBox : containerBox,
             from = this.getFrom(),

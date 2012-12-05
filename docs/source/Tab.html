@@ -25,8 +25,8 @@ Ext.define('Ext.tab.Tab', {
     xtype: 'tab',
     alternateClassName: 'Ext.Tab',
 
-    // @private
-    isTab: true,
+<span id='Ext-tab-Tab-property-isTab'>    // @private
+</span>    isTab: true,
 
     config: {
 <span id='Ext-tab-Tab-cfg-baseCls'>        /**
@@ -37,7 +37,7 @@ Ext.define('Ext.tab.Tab', {
 
 <span id='Ext-tab-Tab-cfg-pressedCls'>        /**
 </span>         * @cfg {String} pressedCls
-         * The CSS class to be applied to a Tab when it is pressed. Defaults to 'x-tab-pressed'.
+         * The CSS class to be applied to a Tab when it is pressed.
          * Providing your own CSS for this class enables you to customize the pressed state.
          * @accessor
          */
@@ -45,7 +45,7 @@ Ext.define('Ext.tab.Tab', {
 
 <span id='Ext-tab-Tab-cfg-activeCls'>        /**
 </span>         * @cfg {String} activeCls
-         * The CSS class to be applied to a Tab when it is active. Defaults to 'x-tab-active'.
+         * The CSS class to be applied to a Tab when it is active. 
          * Providing your own CSS for this class enables you to customize the active state.
          * @accessor
          */
@@ -53,7 +53,7 @@ Ext.define('Ext.tab.Tab', {
 
 <span id='Ext-tab-Tab-cfg-active'>        /**
 </span>         * @cfg {Boolean} active
-         * Set this to true to have the tab be active by default.
+         * Set this to `true` to have the tab be active by default.
          * @accessor
          */
         active: false,
@@ -66,8 +66,8 @@ Ext.define('Ext.tab.Tab', {
         title: '&amp;nbsp;'
     },
 
-    // We need to override this so the iconElement is properly hidden using visibilty
-    // when we render it.
+<span id='Ext-tab-Tab-property-template'>    // We need to override this so the `iconElement` is properly hidden using visibility
+</span>    // when we render it.
     template: [
         {
             tag: 'span',
@@ -87,6 +87,18 @@ Ext.define('Ext.tab.Tab', {
         }
     ],
 
+<span id='Ext-tab-Tab-method-updateIconCls'>    updateIconCls : function(newCls, oldCls) {
+</span>        this.callParent([newCls, oldCls]);
+
+        if (oldCls) {
+            this.removeCls('x-tab-icon');
+        }
+
+        if (newCls) {
+            this.addCls('x-tab-icon');
+        }
+    },
+
 <span id='Ext-tab-Tab-event-activate'>    /**
 </span>     * @event activate
      * Fires when a tab is activated
@@ -103,16 +115,16 @@ Ext.define('Ext.tab.Tab', {
         this.setText(title);
     },
 
-    hideIconElement: function() {
-        this.iconElement.dom.style.setProperty('visibility', 'hidden', '!important');
+<span id='Ext-tab-Tab-method-hideIconElement'>    hideIconElement: function() {
+</span>        this.iconElement.dom.style.setProperty('visibility', 'hidden', '!important');
     },
 
-    showIconElement: function() {
-        this.iconElement.dom.style.setProperty('visibility', 'visible', '!important');
+<span id='Ext-tab-Tab-method-showIconElement'>    showIconElement: function() {
+</span>        this.iconElement.dom.style.setProperty('visibility', 'visible', '!important');
     },
 
-    updateActive: function(active, oldActive) {
-        var activeCls = this.getActiveCls();
+<span id='Ext-tab-Tab-method-updateActive'>    updateActive: function(active, oldActive) {
+</span>        var activeCls = this.getActiveCls();
         if (active &amp;&amp; !oldActive) {
             this.element.addCls(activeCls);
             this.fireEvent('activate', this);

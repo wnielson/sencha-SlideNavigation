@@ -16,12 +16,12 @@
 </head>
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js"><span id='Ext-event-recognizer-Recognizer'>/**
-</span> * A base class for all event recognisers in Sencha Touch.
+</span> * A base class for all event recognizers in Sencha Touch.
  *
- * Sencha Touch, by default, includes various different {@link Ext.event.recognizer.Recognizer} subclasses to recognise
+ * Sencha Touch, by default, includes various different {@link Ext.event.recognizer.Recognizer} subclasses to recognize
  * events happening in your application.
  *
- * ## Default recognisers
+ * ## Default recognizers
  *
  * * {@link Ext.event.recognizer.Tap}
  * * {@link Ext.event.recognizer.DoubleTap}
@@ -31,11 +31,11 @@
  * * {@link Ext.event.recognizer.Pinch}
  * * {@link Ext.event.recognizer.Rotate}
  *
- * ## Additional recognisers
+ * ## Additional recognizers
  *
  * * {@link Ext.event.recognizer.VerticalSwipe}
  *
- * If you want to create custom recognisers, or disable recognisers in your Sencha Touch application, please refer to the
+ * If you want to create custom recognizers, or disable recognizers in your Sencha Touch application, please refer to the
  * documentation in {@link Ext#setup}.
  *
  * @private
@@ -43,36 +43,36 @@
 Ext.define('Ext.event.recognizer.Recognizer', {
     mixins: ['Ext.mixin.Identifiable'],
 
-    handledEvents: [],
-
+<span id='Ext-event-recognizer-Recognizer-property-handledEvents'>    handledEvents: [],
+</span>
     config: {
-        onRecognized: Ext.emptyFn,
-        onFailed: Ext.emptyFn,
-        callbackScope: null
-    },
+<span id='Ext-event-recognizer-Recognizer-cfg-onRecognized'>        onRecognized: Ext.emptyFn,
+</span><span id='Ext-event-recognizer-Recognizer-cfg-onFailed'>        onFailed: Ext.emptyFn,
+</span><span id='Ext-event-recognizer-Recognizer-cfg-callbackScope'>        callbackScope: null
+</span>    },
 
-    constructor: function(config) {
-        this.initConfig(config);
+<span id='Ext-event-recognizer-Recognizer-method-constructor'>    constructor: function(config) {
+</span>        this.initConfig(config);
 
         return this;
     },
 
-    getHandledEvents: function() {
-        return this.handledEvents;
+<span id='Ext-event-recognizer-Recognizer-method-getHandledEvents'>    getHandledEvents: function() {
+</span>        return this.handledEvents;
     },
 
-    onStart: Ext.emptyFn,
-
-    onEnd: Ext.emptyFn,
-
-    fail: function() {
-        this.getOnFailed().apply(this.getCallbackScope(), arguments);
+<span id='Ext-event-recognizer-Recognizer-method-onStart'>    onStart: Ext.emptyFn,
+</span>
+<span id='Ext-event-recognizer-Recognizer-method-onEnd'>    onEnd: Ext.emptyFn,
+</span>
+<span id='Ext-event-recognizer-Recognizer-method-fail'>    fail: function() {
+</span>        this.getOnFailed().apply(this.getCallbackScope(), arguments);
 
         return false;
     },
 
-    fire: function() {
-        this.getOnRecognized().apply(this.getCallbackScope(), arguments);
+<span id='Ext-event-recognizer-Recognizer-method-fire'>    fire: function() {
+</span>        this.getOnRecognized().apply(this.getCallbackScope(), arguments);
     }
 });
 </pre>

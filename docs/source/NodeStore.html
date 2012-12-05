@@ -26,15 +26,15 @@ Ext.define('Ext.data.NodeStore', {
     config: {
 <span id='Ext-data-NodeStore-cfg-node'>        /**
 </span>         * @cfg {Ext.data.Model} node The Record you want to bind this Store to. Note that
-         * this record will be decorated with the Ext.data.NodeInterface if this is not the
+         * this record will be decorated with the {@link Ext.data.NodeInterface} if this is not the
          * case yet.
          * @accessor
          */
         node: null,
 
 <span id='Ext-data-NodeStore-cfg-recursive'>        /**
-</span>         * @cfg {Boolean} recursive Set this to true if you want this NodeStore to represent
-         * all the descendents of the node in its flat data collection. This is useful for
+</span>         * @cfg {Boolean} recursive Set this to `true` if you want this NodeStore to represent
+         * all the descendants of the node in its flat data collection. This is useful for
          * rendering a tree structure to a DataView and is being used internally by
          * the TreeView. Any records that are moved, removed, inserted or appended to the
          * node at any depth below the node this store is bound to will be automatically
@@ -44,23 +44,23 @@ Ext.define('Ext.data.NodeStore', {
         recursive: false,
 
 <span id='Ext-data-NodeStore-cfg-rootVisible'>        /**
-</span>         * @cfg {Boolean} rootVisible False to not include the root node in this Stores collection.
+</span>         * @cfg {Boolean} rootVisible `false` to not include the root node in this Stores collection.
          * @accessor
          */
         rootVisible: false,
 
-        sorters: undefined,
-        filters: undefined,
-
+<span id='Ext-data-NodeStore-cfg-sorters'>        sorters: undefined,
+</span><span id='Ext-data-NodeStore-cfg-filters'>        filters: undefined,
+</span>
 <span id='Ext-data-NodeStore-cfg-folderSort'>        /**
 </span>         * @cfg {Boolean} folderSort
-         * Set to true to automatically prepend a leaf sorter. Defaults to `undefined`.
+         * Set to `true` to automatically prepend a leaf sorter.
          */
         folderSort: false
     },
 
-    afterEdit: function(record, modifiedFields) {
-        if (modifiedFields) {
+<span id='Ext-data-NodeStore-method-afterEdit'>    afterEdit: function(record, modifiedFields) {
+</span>        if (modifiedFields) {
             if (modifiedFields.indexOf('loaded') !== -1) {
                 return this.add(this.retrieveChildNodes(record));
             }
@@ -74,24 +74,24 @@ Ext.define('Ext.data.NodeStore', {
         this.callParent(arguments);
     },
 
-    onNodeAppend: function(parent, node) {
-        this.add([node].concat(this.retrieveChildNodes(node)));
+<span id='Ext-data-NodeStore-method-onNodeAppend'>    onNodeAppend: function(parent, node) {
+</span>        this.add([node].concat(this.retrieveChildNodes(node)));
     },
 
-    onNodeInsert: function(parent, node) {
-        this.add([node].concat(this.retrieveChildNodes(node)));
+<span id='Ext-data-NodeStore-method-onNodeInsert'>    onNodeInsert: function(parent, node) {
+</span>        this.add([node].concat(this.retrieveChildNodes(node)));
     },
 
-    onNodeRemove: function(parent, node) {
-        this.remove([node].concat(this.retrieveChildNodes(node)));
+<span id='Ext-data-NodeStore-method-onNodeRemove'>    onNodeRemove: function(parent, node) {
+</span>        this.remove([node].concat(this.retrieveChildNodes(node)));
     },
 
-    onNodeSort: function() {
-        this.sort();
+<span id='Ext-data-NodeStore-method-onNodeSort'>    onNodeSort: function() {
+</span>        this.sort();
     },
 
-    updateFolderSort: function(folderSort) {
-        if (folderSort) {
+<span id='Ext-data-NodeStore-method-updateFolderSort'>    updateFolderSort: function(folderSort) {
+</span>        if (folderSort) {
             this.setGrouper(function(node) {
                 if (node.isLeaf()) {
                     return 1;
@@ -103,19 +103,19 @@ Ext.define('Ext.data.NodeStore', {
         }
     },
 
-    createDataCollection: function() {
-        var collection = this.callParent();
+<span id='Ext-data-NodeStore-method-createDataCollection'>    createDataCollection: function() {
+</span>        var collection = this.callParent();
         collection.handleSort = Ext.Function.bind(this.handleTreeSort, this, [collection], true);
         collection.findInsertionIndex = Ext.Function.bind(this.handleTreeInsertionIndex, this, [collection, collection.findInsertionIndex], true);
         return collection;
     },
 
-    handleTreeInsertionIndex: function(items, item, collection, originalFn) {
-        return originalFn.call(collection, items, item, this.treeSortFn);
+<span id='Ext-data-NodeStore-method-handleTreeInsertionIndex'>    handleTreeInsertionIndex: function(items, item, collection, originalFn) {
+</span>        return originalFn.call(collection, items, item, this.treeSortFn);
     },
 
-    handleTreeSort: function(data) {
-        Ext.Array.sort(data, this.treeSortFn);
+<span id='Ext-data-NodeStore-method-handleTreeSort'>    handleTreeSort: function(data) {
+</span>        Ext.Array.sort(data, this.treeSortFn);
         return data;
     },
 
@@ -127,6 +127,7 @@ Ext.define('Ext.data.NodeStore', {
      * on this one single sort function.
      * @param node1
      * @param node2
+     * @return {Number}
      * @private
      */
     treeSortFn: function(node1, node2) {
@@ -159,15 +160,15 @@ Ext.define('Ext.data.NodeStore', {
         return (node1.data.index &gt; node2.data.index) ? 1 : -1;
     },
 
-    applyFilters: function(filters) {
-        var me = this;
+<span id='Ext-data-NodeStore-method-applyFilters'>    applyFilters: function(filters) {
+</span>        var me = this;
         return function(item) {
             return me.isVisible(item);
         };
     },
 
-    applyProxy: function(proxy) {
-        //&lt;debug&gt;
+<span id='Ext-data-NodeStore-method-applyProxy'>    applyProxy: function(proxy) {
+</span>        //&lt;debug&gt;
         if (proxy) {
             Ext.Logger.warn(&quot;A NodeStore cannot be bound to a proxy. Instead bind it to a record &quot; +
                             &quot;decorated with the NodeInterface by setting the node config.&quot;);
@@ -175,15 +176,15 @@ Ext.define('Ext.data.NodeStore', {
         //&lt;/debug&gt;
     },
 
-    applyNode: function(node) {
-        if (node) {
+<span id='Ext-data-NodeStore-method-applyNode'>    applyNode: function(node) {
+</span>        if (node) {
             node = Ext.data.NodeInterface.decorate(node);
         }
         return node;
     },
 
-    updateNode: function(node, oldNode) {
-        if (oldNode &amp;&amp; !oldNode.isDestroyed) {
+<span id='Ext-data-NodeStore-method-updateNode'>    updateNode: function(node, oldNode) {
+</span>        if (oldNode &amp;&amp; !oldNode.isDestroyed) {
             oldNode.un({
                 append  : 'onNodeAppend',
                 insert  : 'onNodeInsert',
@@ -229,7 +230,8 @@ Ext.define('Ext.data.NodeStore', {
 <span id='Ext-data-NodeStore-method-retrieveChildNodes'>    /**
 </span>     * Private method used to deeply retrieve the children of a record without recursion.
      * @private
-     * @param parent
+     * @param root
+     * @return {Array}
      */
     retrieveChildNodes: function(root) {
         var node = this.getNode(),
@@ -269,8 +271,17 @@ Ext.define('Ext.data.NodeStore', {
         return added;
     },
 
+<span id='Ext-data-NodeStore-method-isVisible'>    /**
+</span>     * @param {Object} node
+     * @return {Boolean}
+     */
     isVisible: function(node) {
         var parent = node.parentNode;
+
+        if (!this.getRecursive() &amp;&amp; parent !== this.getNode()) {
+            return false;
+        }
+
         while (parent) {
             if (!parent.isExpanded()) {
                 return false;

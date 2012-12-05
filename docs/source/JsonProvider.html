@@ -17,11 +17,9 @@
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js"><span id='Ext-direct-JsonProvider'>/**
 </span> * @class Ext.direct.JsonProvider
-
-A base provider for communicating using JSON. This is an abstract class
-and should not be instanced directly.
-
- * @markdown
+ *
+ * A base provider for communicating using JSON. This is an abstract class
+ * and should not be instanced directly.
  * @abstract
  */
 
@@ -33,9 +31,9 @@ Ext.define('Ext.direct.JsonProvider', {
     uses: ['Ext.direct.ExceptionEvent'],
 
 <span id='Ext-direct-JsonProvider-method-parseResponse'>    /**
-</span>     * Parse the JSON response
+</span>     * Parse the JSON response.
      * @private
-     * @param {Object} response The XHR response object
+     * @param {Object} response The XHR response object.
      * @return {Object} The data in the response.
      */
     parseResponse: function(response) {
@@ -49,10 +47,10 @@ Ext.define('Ext.direct.JsonProvider', {
     },
 
 <span id='Ext-direct-JsonProvider-method-createEvents'>    /**
-</span>     * Creates a set of events based on the XHR response
+</span>     * Creates a set of events based on the XHR response.
      * @private
-     * @param {Object} response The XHR response
-     * @return {Ext.direct.Event[]} An array of Ext.direct.Event
+     * @param {Object} response The XHR response.
+     * @return {Ext.direct.Event[]} An array of {@link Ext.direct.Event} objects.
      */
     createEvents: function(response) {
         var data = null,
@@ -83,9 +81,9 @@ Ext.define('Ext.direct.JsonProvider', {
     },
 
 <span id='Ext-direct-JsonProvider-method-createEvent'>    /**
-</span>     * Create an event from a response object
-     * @param {Object} response The XHR response object
-     * @return {Ext.direct.Event} The event
+</span>     * Create an event from a response object.
+     * @param {Object} response The XHR response object.
+     * @return {Ext.direct.Event} The event.
      */
     createEvent: function(response) {
         return Ext.create('direct.' + response.type, response);

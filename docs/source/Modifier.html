@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-draw-modifier-Modifier'>/**
+</span> * @class Ext.draw.modifier.Modifier
+ * 
+ * Each sprite has a stack of modifiers. The resulting attributes of sprite is
+ * the content of the stack top. When setting attributes to a sprite,
+ * changes will be pushed-down though the stack of modifiers and pop-back the
+ * additive changes; When modifier is triggered to change the attribute of a
+ * sprite, it will pop-up the changes to the top.
+ */
+Ext.define(&quot;Ext.draw.modifier.Modifier&quot;, {
+    config: {
+<span id='Ext-draw-modifier-Modifier-cfg-previous'>        /**
+</span>         * @cfg {Ext.draw.modifier.Modifier} previous Previous modifier that receives
+         * the push-down changes.
+         */
+        previous: null,
+
+<span id='Ext-draw-modifier-Modifier-cfg-next'>        /**
+</span>         * @cfg {Ext.draw.modifier.Modifier} next Next modifier that receives the
+         * pop-up changes.
+         */
+        next: null,
+
+<span id='Ext-draw-modifier-Modifier-cfg-sprite'>        /**
+</span>         * @cfg {Ext.draw.sprite.Sprite} sprite The sprite that the modifier is bound.
+         */
+        sprite: null
+    },
+
+<span id='Ext-draw-modifier-Modifier-method-constructor'>    constructor: function (config) {
+</span>        this.initConfig(config);
+    },
+
+<span id='Ext-draw-modifier-Modifier-method-updateNext'>    updateNext: function (next) {
+</span>        if (next) {
+            next.setPrevious(this);
+        }
+    },
+
+<span id='Ext-draw-modifier-Modifier-method-updatePrev'>    updatePrev: function (prev) {
+</span>        if (prev) {
+            prev.setNext    (this);
+        }
+    },
+
+<span id='Ext-draw-modifier-Modifier-method-prepareAttributes'>    /**
+</span>     * Validate attribute set before use.
+     * 
+     * @param {Object} attr The attribute to be validated. Note that it may be already initialized, so do
+     * not override properties that has already be used.
+     */
+    prepareAttributes: function (attr) {
+        if (this._previous) {
+            this._previous.prepareAttributes(attr);
+        }
+    },
+
+<span id='Ext-draw-modifier-Modifier-method-popUp'>    /**
+</span>     * Invoked when changes need to be popped up to the top. 
+     * @param attributes The source attributes.
+     * @param changes The changes to be popped up.
+     */
+    popUp: function (attributes, changes) {
+        if (this._next) {
+            this._next.popUp(attributes, changes);
+        } else {
+            Ext.apply(attributes, changes);
+        }
+    },
+
+<span id='Ext-draw-modifier-Modifier-method-pushDown'>    /**
+</span>     * Invoked when changes need to pushed down to the sprite.
+     * @param attr The source attributes.
+     * @param {Object} changes The changes to make. This object might be changed unexpectedly inside the method. 
+     * @return {Mixed}
+     */
+    pushDown: function (attr, changes) {
+        if (this._previous) {
+            return this._previous.pushDown(attr, changes);
+        } else {
+            for (var name in changes) {
+                if (changes[name] === attr[name]) {
+                    delete changes[name];
+                }
+            }
+            return changes;
+        }
+    }
+});</pre>
+</body>
+</html>

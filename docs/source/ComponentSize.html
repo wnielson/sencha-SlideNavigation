@@ -23,90 +23,129 @@ Ext.define('Ext.event.publisher.ComponentSize', {
     extend: 'Ext.event.publisher.Publisher',
 
     requires: [
-        'Ext.ComponentManager',
-        'Ext.util.SizeMonitor'
+        'Ext.ComponentManager'
     ],
 
-    targetType: 'component',
-
-    handledEvents: ['resize'],
-
-    constructor: function() {
-        this.callParent(arguments);
+<span id='Ext-event-publisher-ComponentSize-property-targetType'>    targetType: 'component',
+</span>
+<span id='Ext-event-publisher-ComponentSize-property-handledEvents'>    handledEvents: ['resize', 'innerresize'],
+</span>
+<span id='Ext-event-publisher-ComponentSize-method-constructor'>    constructor: function() {
+</span>        this.callParent(arguments);
 
         this.sizeMonitors = {};
     },
 
-    subscribe: function(target) {
-        var match = target.match(this.idSelectorRegex),
-            subscribers = this.subscribers,
+<span id='Ext-event-publisher-ComponentSize-method-getSubscribers'>    getSubscribers: function(target, createIfNotExist) {
+</span>        var subscribers = this.subscribers;
+
+        if (!subscribers.hasOwnProperty(target)) {
+            if (!createIfNotExist) {
+                return null;
+            }
+
+            subscribers[target] = {
+                $length: 0
+            };
+        }
+
+        return subscribers[target];
+    },
+
+<span id='Ext-event-publisher-ComponentSize-method-subscribe'>    subscribe: function(target, eventName) {
+</span>        var match = target.match(this.idSelectorRegex),
             sizeMonitors = this.sizeMonitors,
             dispatcher = this.dispatcher,
             targetType = this.targetType,
-            component;
+            subscribers, component, id;
 
         if (!match) {
             return false;
         }
 
-        if (!subscribers.hasOwnProperty(target)) {
-            subscribers[target] = 0;
+        id = match[1];
+        subscribers = this.getSubscribers(target, true);
+        subscribers.$length++;
 
-            dispatcher.addListener(targetType, target, 'painted', 'onComponentPainted', this, null, 'before');
-
-            component = Ext.ComponentManager.get(match[1]);
-
-            //&lt;debug error&gt;
-            if (!component) {
-                Ext.Logger.error(&quot;Adding a listener to the 'resize' event of a non-existing component&quot;);
-            }
-            //&lt;/debug&gt;
-
-            sizeMonitors[target] = new Ext.util.SizeMonitor({
-                element: component.element,
-                callback: this.onComponentSizeChange,
-                scope: this,
-                args: [this, target]
-            });
-        }
-
-        subscribers[target]++;
-        return true;
-    },
-
-    unsubscribe: function(target, eventName, all) {
-        var match = target.match(this.idSelectorRegex),
-            subscribers = this.subscribers,
-            dispatcher = this.dispatcher,
-            targetType = this.targetType,
-            sizeMonitors = this.sizeMonitors;
-
-        if (!match) {
-            return false;
-        }
-
-        if (!subscribers.hasOwnProperty(target) || (!all &amp;&amp; --subscribers[target] &gt; 0)) {
+        if (subscribers.hasOwnProperty(eventName)) {
+            subscribers[eventName]++;
             return true;
         }
 
-        sizeMonitors[target].destroy();
-        delete sizeMonitors[target];
+        if (subscribers.$length === 1) {
+            dispatcher.addListener(targetType, target, 'painted', 'onComponentPainted', this, null, 'before');
+        }
 
-        dispatcher.removeListener(targetType, target, 'painted', 'onComponentPainted', this, 'before');
+        component = Ext.ComponentManager.get(id);
 
-        delete subscribers[target];
+        //&lt;debug error&gt;
+        if (!component) {
+            Ext.Logger.error(&quot;Adding a listener to the 'resize' event of a non-existing component&quot;);
+        }
+        //&lt;/debug&gt;
+
+        if (!sizeMonitors[target]) {
+            sizeMonitors[target] = {};
+        }
+
+        sizeMonitors[target][eventName] = new Ext.util.SizeMonitor({
+            element: eventName === 'resize' ? component.element : component.innerElement,
+            callback: this.onComponentSizeChange,
+            scope: this,
+            args: [this, target, eventName]
+        });
+
+        subscribers[eventName] = 1;
         return true;
     },
 
-    onComponentPainted: function(component) {
-        var observableId = component.getObservableId(),
-            sizeMonitor = this.sizeMonitors[observableId];
+<span id='Ext-event-publisher-ComponentSize-method-unsubscribe'>    unsubscribe: function(target, eventName, all) {
+</span>        var match = target.match(this.idSelectorRegex),
+            dispatcher = this.dispatcher,
+            targetType = this.targetType,
+            sizeMonitors = this.sizeMonitors,
+            subscribers,
+            id;
 
-        sizeMonitor.refresh();
+        if (!match || !(subscribers = this.getSubscribers(target))) {
+            return false;
+        }
+
+        id = match[1];
+
+        if (!subscribers.hasOwnProperty(eventName) || (!all &amp;&amp; --subscribers[eventName] &gt; 0)) {
+            return true;
+        }
+
+        delete subscribers[eventName];
+
+        sizeMonitors[target][eventName].destroy();
+        delete sizeMonitors[target][eventName];
+
+        if (--subscribers.$length === 0) {
+            delete sizeMonitors[target];
+            delete this.subscribers[target];
+            dispatcher.removeListener(targetType, target, 'painted', 'onComponentPainted', this, 'before');
+        }
+
+        return true;
     },
 
-    onComponentSizeChange: function(component, observableId) {
-        this.dispatcher.doDispatchEvent(this.targetType, observableId, 'resize', [component]);
+<span id='Ext-event-publisher-ComponentSize-method-onComponentPainted'>    onComponentPainted: function(component) {
+</span>        var target = component.getObservableId(),
+            sizeMonitors = this.sizeMonitors[target];
+
+        if (sizeMonitors.resize) {
+            sizeMonitors.resize.refresh();
+        }
+
+        if (sizeMonitors.innerresize) {
+            sizeMonitors.innerresize.refresh();
+        }
+    },
+
+<span id='Ext-event-publisher-ComponentSize-method-onComponentSizeChange'>    onComponentSizeChange: function(component, observableId, eventName) {
+</span>        this.dispatcher.doDispatchEvent(this.targetType, observableId, eventName, [component]);
     }
 });
 </pre>

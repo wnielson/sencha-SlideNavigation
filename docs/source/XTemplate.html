@@ -280,33 +280,52 @@ Ext.define('Ext.XTemplate', {
 
     requires: 'Ext.XTemplateCompiler',
 
+<span id='Ext-XTemplate-property-emptyObj'>    /**
+</span>     * @private
+     */
+    emptyObj: {},
+
 <span id='Ext-XTemplate-cfg-compiled'>    /**
 </span>     * @cfg {Boolean} compiled
      * Only applies to {@link Ext.Template}, XTemplates are compiled automatically on the
      * first call to {@link #apply} or {@link #applyOut}.
+     * @hide
      */
 
     apply: function(values) {
         return this.applyOut(values, []).join('');
     },
 
-    applyOut: function(values, out) {
-        var me = this,
+<span id='Ext-XTemplate-method-applyOut'>    /**
+</span>     * Appends the result of this template to the provided output array.
+     * @param {Object/Array} values The template values. See {@link #apply}.
+     * @param {Array} out The array to which output is pushed.
+     * @param {Object} parent
+     * @return {Array} The given out array.
+     */
+    applyOut: function(values, out, parent) {
+        var me     = this,
+            xindex = values.xindex,
+            xcount = values.xcount,
             compiler;
 
         if (!me.fn) {
             compiler = new Ext.XTemplateCompiler({
-                useFormat: me.disableFormats !== true
+                useFormat   : me.disableFormats !== true,
+                definitions : me.definitions
             });
 
             me.fn = compiler.compile(me.html);
         }
 
         try {
-            me.fn.call(me, out, values, {}, 1, 1);
+            xindex = typeof xindex === 'number' ? xindex : 1;
+            xcount = typeof xcount === 'number' ? xcount : 1;
+
+            me.fn.call(me, out, values, parent || me.emptyObj, xindex, xcount);
         } catch (e) {
             //&lt;debug&gt;
-            Ext.Logger.error(e.message);
+            Ext.Logger.log('Error: ' + e.message);
             //&lt;/debug&gt;
         }
 
