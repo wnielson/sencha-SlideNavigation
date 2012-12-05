@@ -6,7 +6,7 @@ To see a current working demo, visit `this page`_ on a mobile device.  To see th
 navigation menu in the example, "flick" the toolbar (at the top) to the right; the
 opposite action can be used to close the menu.
 
-.. _`this page`: http://wnielson.github.com/sencha-SlideNavigation/
+.. _`this page`: http://wnielson.github.com/sencha-SlideNavigation/build/SlideNavigationExample/production/
 
 This is a work in progress and still needs quite a bit of work, but it is usable.
 
