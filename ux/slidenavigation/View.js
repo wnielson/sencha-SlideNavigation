@@ -141,7 +141,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
          * of the container when "flicked".  By default the animation is disable on
          * Android.
          */
-        slideDuration: Ext.os.is('Android') ? 0 : 100,
+        slideDuration: Ext.os.is('Android') ? 0 : 200,
         
         /**
          * @cfg {Integer} selectSlideDuration Number of miliseconds to animate the sliding
