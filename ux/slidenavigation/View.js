@@ -338,7 +338,9 @@ Ext.define('Ext.ux.slidenavigation.View', {
         }
         
         if (me.config.closeOnSelect) {
-            me.closeContainer(this.config.selectSlideDuration);
+            // The slight delay here gives the component enough time to update before
+            // the close animation starts.
+            Ext.defer(me.closeContainer, 150, me, [this.config.selectSlideDuration]);
         }
     },
 
