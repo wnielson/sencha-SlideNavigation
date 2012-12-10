@@ -1,0 +1,18 @@
+0.2.0 (Dec 10, 2012)
+====================
+  * Updated to work with Sencha Touch 2.1 and is no longer compatible
+    with earlier versions.
+  * CSS for styling the drop-shadow of the container when open is now
+    configurable via the ``shadowStyle`` configuration variable.
+  * Added events and actions.
+  * When the active item is changed and ``closeOnSelect`` is ``true``,
+    the container will not close until the new item has been fully
+    painted.  This makes the animation much smoother and generally looks
+    nicer.
+  * Items can now be 'disabled' (masked) when the container is open.  To
+    enable this, the ``itemMask`` variable should be set to ``true`` or a
+    valid ``Object`` for creating a new mask.  Additionally, any items that
+    should be masked must have the configuration variable ``maskOnOpen`` set
+    to ``true``.
+  * Removed ``onContainerDrag`` as it is not needed.  This should make
+    dragging slightly smoother.
