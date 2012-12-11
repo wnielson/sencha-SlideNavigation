@@ -170,7 +170,10 @@ Ext.define('Ext.ux.slidenavigation.View', {
          * open.  This should be a valid CSS 'box-shadow' argument.  Set to false to disable
          * it.
          */
-        shadowStyle: '0 0 4px 1px #999'
+        shadowStyle: '0 0 4px 1px #999',
+
+
+        slideButtonDefaults: {}
     },
         
     initConfig: function() {
@@ -204,7 +207,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
         
 
         // Default config values used for creating a slideButton.
-        me.slideButtonDefaults = {
+        me._slideButtonConfig = {
             xtype: 'button',
             iconMask: true,
             iconCls: 'more',
@@ -309,10 +312,12 @@ Ext.define('Ext.ux.slidenavigation.View', {
      */
     createSlideButton: function(el, config) {
         var me      = this,
+            config  = Ext.merge(me.getSlideButtonDefaults(),
+                                Ext.isObject(config) ? config : {}),
             parent  = el.down(config.selector);
         
         if (parent) {
-            return parent.add(Ext.merge(me.slideButtonDefaults, config));
+            return parent.add(Ext.merge(me._slideButtonConfig, config));
         }
         
         return false;

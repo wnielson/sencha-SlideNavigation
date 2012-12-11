@@ -1,6 +1,7 @@
 0.2.1 (Development)
 ===================
   * #7: Stop auto-focus of elements beneath slideButton.
+  * #9: Added `slideButtonDefaults` config option.
 
 0.2.0 (Dec 10, 2012)
 ====================

@@ -31,6 +31,15 @@ Ext.define("SlideNavigationExample.view.Main", {
          *  @since 0.2.0
          */
         itemMask: true,
+
+        /**
+         *  Define the default slide button config.  Any item that has
+         *  a `slideButton` value that is either `true` or a button config
+         *  will use these values at the default.
+         */
+        slideButtonDefaults: {
+            selector: 'toolbar'
+        },
          
         /**
          *  This allows us to configure how the actual list container
@@ -88,15 +97,10 @@ Ext.define("SlideNavigationExample.view.Main", {
         items: [{
             title: 'Item 1',
             group: 'Group 1',
-            
-            /**
-             *  Here's an example of how we can add a button into
-             *  particular location.  In this case, it'll be added into the
-             *  item's toolbar.
-             */
-            slideButton: {
-                selector: 'toolbar'
-            },
+
+            // Enable the slide button using the defaults defined above in
+            // `slideButtonDefaults`.
+            slideButton: true,
             items: [{
                 xtype: 'toolbar',
                 title: 'Item 1',
@@ -177,6 +181,10 @@ Ext.define("SlideNavigationExample.view.Main", {
         },{
             title: 'Item 7',
             group: 'Group 3',
+
+            // Explicitly disable `slideButton` (this is the default)
+            slideButton: false,
+            
             items: [{
                 xtype: 'toolbar',
                 title: 'Item 7',
@@ -188,6 +196,14 @@ Ext.define("SlideNavigationExample.view.Main", {
             title: 'Item 8',
             group: 'Group 3',
             order: 0,
+
+            // Extend `slideButtonDefaults`
+            slideButton: {
+                iconMask: false,
+                iconCls: null,
+                text: 'menu'
+            },
+
             items: [{
                 xtype: 'toolbar',
                 title: 'Item 8',
