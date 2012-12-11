@@ -24,6 +24,14 @@ Ext.define("SlideNavigationExample.view.Main", {
          *  after an item has been clicked on in the list.
          */
         selectSlideDuration: 200,
+
+
+        /**
+         *  Enable content masking when container is open.
+         *
+         *  @since 0.2.0
+         */
+        itemMask: true,
          
         /**
          *  This allows us to configure how the actual list container
@@ -42,7 +50,7 @@ Ext.define("SlideNavigationExample.view.Main", {
                     centered: false,
                     width: 200,
                     left: 0
-                }
+                },
                 
                 /**
                  *  Here's an example of how to add a different type of
@@ -50,6 +58,7 @@ Ext.define("SlideNavigationExample.view.Main", {
                  */
                 /*
                 items: [{
+                    docked: 'top',
                     xtype: 'searchfield',
                     placeHolder: 'search',
                     width: 180
@@ -95,7 +104,10 @@ Ext.define("SlideNavigationExample.view.Main", {
                 docked: 'top'
             },{
                 xtype: 'panel',
-                html: '<img src="resources/images/guide.jpg" width="100%" />'
+                html: '<img src="resources/images/guide.jpg" width="100%" />',
+
+                // Mask this item when the container is opened
+                maskOnOpen: true
             }]
         },{
             title: 'Item 2',
@@ -119,7 +131,8 @@ Ext.define("SlideNavigationExample.view.Main", {
                 layout: 'card',
                 styleHtmlContent: true,
                 html: '<p>The toolbar on this page doesn\'t have a slideButton, so you\'ll have to "slide" the toolbar to view the menu.</p><p>Donec neque augue, fermentum quis tempor quis, lacinia ut augue. Sed dictum risus id arcu vehicula sed porttitor nisi egestas. Aliquam arcu felis, sagittis vel pulvinar vitae, ultricies a augue. Praesent eget erat tellus. Aenean nec dui magna. Cras sagittis, diam vel bibendum mattis, neque purus placerat turpis, sit amet tempor neque nisl non eros. Pellentesque id orci nulla, nec eleifend quam. Proin ut magna turpis. Phasellus erat urna, faucibus in tempus bibendum, ultrices a mauris. Nulla semper ante sed est placerat sagittis. Nam ut vestibulum nulla. Sed sit amet aliquet urna. Morbi est velit, vulputate quis pretium vitae, lobortis sed ligula.</p>',
-                scrollable: true
+                scrollable: true,
+                maskOnOpen: true
             }]
         },{
             title: 'Item 4',
@@ -184,6 +197,7 @@ Ext.define("SlideNavigationExample.view.Main", {
                 xtype: 'container',
                 scrollable: 'vertical',
                 style: 'margin: auto !important; text-align: center;',
+                maskOnOpen: true,
                 defaults: {
                     style: "float: left; margin: 10px; box-shadow: "+
                            "#999 0px 0px 6px 2px; border: 1px solid #888; "+

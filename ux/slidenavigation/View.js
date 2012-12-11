@@ -3,6 +3,7 @@
  *  that provides a sliding main view with an underlying navigation list.  The
  *  concept was inspired by Facebook's mobile app.
  *
+ *  @version 0.2.0
  *  @author Weston Nielson <wnielson@github>
  */
 Ext.define('Ext.ux.slidenavigation.View', {
@@ -96,6 +97,13 @@ Ext.define('Ext.ux.slidenavigation.View', {
         container: {},
 
         /**
+         * @cfg {Object/Boolean} itemMask Configuration for the mask used to mask
+         * items when the container is opened.  Set to false to disable masking of
+         * items.
+         */
+        itemMask: false,
+
+        /**
          * @cfg {Array} items An array of items to put into the navigation list.
          * The items can either be Ext components or special objects with a "handler"
          * key, which should be a function to execute when selected.  Additionally, you
@@ -170,9 +178,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
         
         me._indexCount = 0;
         
-        /**
-         *  Create the store.
-         */
+        // Create the store.
         me.store = Ext.create('Ext.data.Store', {
             model: me.getModel(),
             sorters: 'order',
@@ -182,24 +188,22 @@ Ext.define('Ext.ux.slidenavigation.View', {
             }
         });
         
-        /**
-         *  Add the items into the list.
-         */
+        // Add the items into the list.
         me.addItems(me.config.items || []);
         delete me.config.items;
         
         me.callParent(arguments);
         
         /**
-         *  This stores the instances of the components created.
-         *  TODO: Support 'autoDestroy'.
          *  @private
+         *
+         *  This stores the instances of the components created.
+         *  TODO: Support 'autoDestroy'.  
          */
         me._cache = {};
         
-        /**
-         *  Default config values used for creating a slideButton.
-         */
+
+        // Default config values used for creating a slideButton.
         me.slideButtonDefaults = {
             xtype: 'button',
             iconMask: true,
@@ -207,6 +211,11 @@ Ext.define('Ext.ux.slidenavigation.View', {
             name: 'slidebutton',
             listeners: {
                 release: me.toggleContainer,
+                tap: function(button, e) {
+                    // Need this to stop auto-selecting any component
+                    // hidden beneath the container.
+                    e.preventDefault();
+                },
                 scope: me
             }
 
@@ -216,9 +225,14 @@ Ext.define('Ext.ux.slidenavigation.View', {
              */
             //selector: ['toolbar']
         };
-        
-        //me.config = Ext.merge({}, me.config, config || {});
-        //return me.callParent(arguments);
+
+        /**
+         *  Default config for masked items.
+         */
+        me.itemMaskDefaults = {
+            xtype: 'mask',
+            transparent: true
+        };
     },
             
     initialize: function() {
@@ -246,6 +260,8 @@ Ext.define('Ext.ux.slidenavigation.View', {
     },
     
     /**
+     *  @private
+     *
      *  Adds an array of items (or a single item) into the list.
      */
     addItems: function(items) {
@@ -264,6 +280,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
 
     /**
      *  @private
+     *
      *  Construct style element for container shadow and insert into the DOM.
      */
     createContainerCSS: function() {
@@ -286,12 +303,13 @@ Ext.define('Ext.ux.slidenavigation.View', {
     
     /**
      *  @private
+     *
      *  Creates a button that can toggle the navigation menu.  For an example
      *  config, see ``slideButtonDefaults``.
      */
     createSlideButton: function(el, config) {
-        var me = this,
-            parent = el.down(config.selector);
+        var me      = this,
+            parent  = el.down(config.selector);
         
         if (parent) {
             return parent.add(Ext.merge(me.slideButtonDefaults, config));
@@ -299,9 +317,47 @@ Ext.define('Ext.ux.slidenavigation.View', {
         
         return false;
     },
+
+    /**
+     *  @private
+     *
+     *  Gets the configuration for masking items.  If masking items is disabled
+     *  this returns false.
+     */
+    getMask: function() {
+        var mask = this.getItemMask();
+        if (mask != false) {
+            if (Ext.isBoolean(mask)) {
+                mask = this.itemMaskDefaults;
+            }
+        }
+        return mask;
+    },
+
+    /**
+     *  @private
+     *
+     *  If item masking is enabled, this method will mask any containers that have
+     *  a ``maskOnOpen`` configuration variable set to ``true``.  If masking is
+     *  disabled, this method does nothing.
+     */
+    doMaskItem: function(item, mask) {
+        var maskConfig  = this.getMask(),
+            mask        = Ext.isDefined(mask) ? mask : true;
+
+        Ext.each(item.query('component[maskOnOpen=true]'), function(el) {
+            if (mask) {
+                el.setMasked(maskConfig);
+            } else {
+                el.setMasked(false);
+            }
+        });
+    },
     
     /**
-     * Called when an item in the list is tapped.
+     *  @private
+     *
+     *  Called when an item in the list is tapped.
      */
     onSelect: function(list, item, eOpts) {
         var me = this,
@@ -310,15 +366,26 @@ Ext.define('Ext.ux.slidenavigation.View', {
             container = me.container,
             func      = Ext.emptyFn;
         
-        if (me._cache[index] == undefined) {
-            //container = this.down('container[cls="x-slidenavigation-container"]');
-            
+        if (me._cache[index] == undefined) {            
             // If the object has a handler defined, then we don't need to
             // create an Ext object
             if (Ext.isFunction(item.raw.handler)) {
                 me._cache[index] = item.raw.handler;
             } else {
                 me._cache[index] = container.add(Ext.merge({}, me.config.defaults, item.raw));
+
+                me.doMaskItem(me._cache[index], true);
+
+                // Wait until the component is painted before closing the container.  This makes
+                // the initial animation much smoother.
+                if (me.config.closeOnSelect) {
+                    me._cache[index].addListener('painted', function() {
+                        // The slight delay here gives the component enough time to update before
+                        // the close animation starts.
+                        Ext.defer(me.closeContainer, 200, me, [me.config.selectSlideDuration]);
+                    });
+                }
+                
 
                 // Add a button for controlling the slide, if desired
                 if ((item.raw.slideButton || false)) {
@@ -336,27 +403,23 @@ Ext.define('Ext.ux.slidenavigation.View', {
         if (me.__init) {
             me.fireAction('select', [me , me._cache[index], index], func, me);
         }
-        
-        if (me.config.closeOnSelect) {
-            // The slight delay here gives the component enough time to update before
-            // the close animation starts.
-            Ext.defer(me.closeContainer, 150, me, [this.config.selectSlideDuration]);
-        }
     },
 
+    /**
+     *  @private
+     *
+     *  Set the active item in the container.
+     */
     setContainerItem: function(nav, item) {
         var container = nav.container;
         container.setActiveItem(item);
     },
     
-    onContainerDrag: function(draggable, e, offset, eOpts) {
-        if (offset.x < 1) {
-            this.setClosed(true);
-        } else {
-            this.setClosed(false);
-        }
-    },
-    
+    /**
+     *  @private
+     *
+     *  Callback function for when the container has started being dragged.
+     */
     onContainerDragstart: function(draggable, e, offset, eOpts) {
         if (this.config.slideSelector == false) {
             return false;
@@ -375,6 +438,12 @@ Ext.define('Ext.ux.slidenavigation.View', {
         return false;
     },
     
+    /**
+     *  @private
+     *
+     *  Callback function for when the container has finished being dragged.  This determines
+     *  which direction to finish moving the container based on its current position and velocity.
+     */
     onContainerDragend: function(draggable, e, eOpts) {
         var velocity  = Math.abs(e.deltaX / e.deltaTime),
             direction = (e.deltaX > 0) ? "right" : "left",
@@ -396,8 +465,10 @@ Ext.define('Ext.ux.slidenavigation.View', {
     },
     
     /**
-     * Registers the model with Ext.ModelManager, if it hasn't been
-     * already, and returns the name of the model for use in the store.
+     *  @private
+     *
+     *  Registers the model with Ext.ModelManager, if it hasn't been
+     *  already, and returns the name of the model for use in the store.
      */
     getModel: function() {
         var model = 'SlideNavigationPanelItem',
@@ -430,7 +501,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
     },
     
     /**
-     *  Closes the container.  See ``moveContainer`` for more details.
+     *  Closes the container.  See {@link #moveContainer} for more details.
      */
     closeContainer: function(duration) {
         var me       = this,
@@ -442,7 +513,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
     },
     
     /**
-     *  Opens the container.  See ``moveContainer`` for more details.
+     *  Opens the container.  See {@link #moveContainer} for more details.
      */
     openContainer: function(duration) {
         var me       = this,
@@ -454,6 +525,9 @@ Ext.define('Ext.ux.slidenavigation.View', {
         }
     },
     
+    /**
+     *  Toggles the container open or close.
+     */
     toggleContainer: function(duration) {
         var duration = Ext.isNumber(duration) ? duration : this.config.slideDuration;
         if (this.isClosed()) {
@@ -464,6 +538,8 @@ Ext.define('Ext.ux.slidenavigation.View', {
     },
     
     /**
+     *  @private
+     *
      *  Moves the container to a specified ``offsetX`` pixels.  Positive
      *  integer values move the container that many pixels from the left edge
      *  of the window.  If ``duration`` is provided, it should be an integer
@@ -474,9 +550,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
         var duration  = duration || this.config.slideDuration,
             draggable = this.container.draggableBehavior.draggable;
         
-        if (offsetX > 0) {
-            this.container.addCls('open');
-        }
+        this.container.addCls('open');
 
         draggable.setOffset(offsetX, 0, {
             duration: duration
@@ -486,54 +560,45 @@ Ext.define('Ext.ux.slidenavigation.View', {
     /**
      *  Returns true if the container is closed, false otherwise.  This is a
      *  computed value based off the current offset position of the container.
+     *
+     *  @return {Boolean} Whether or not the container is fully closed.
      */
     isClosed: function() {
         return (this.container.draggableBehavior.draggable.offset.x == 0);
     },
 
+
+    /**
+     *  Returns true if the container is closed, false otherwise.  This is a
+     *  computed value based off the current offset position of the container.
+     *
+     *  @return {Boolean} Whether or not the container is fully open.
+     */
     isOpened: function() {
         return (this.container.draggableBehavior.draggable.offset.x == this.config.list.minWidth);
     },
     
     /**
+     *  @private
+     *
      *  Sets the container as being closed.  This shouldn't ever be called
      *  directly as it is automatically called by the ``translatable``
      *  "animationend" event after the container has stopped moving.  All this
      *  really does is set the CSS class for the container.
      */
-    setClosed: function(closed) {
-        /**
-         *  TODO: Consider some way to mask/disable certain elements when
-         *        the container is opened.  The code commented-out below
-         *        'works' but I think there is a better way to approach this.
-         */
-         
+    setClosed: function(closed) {         
         if (closed) {
             this.container.removeCls('open');
-
-            /*
-            Ext.each(this.container.getActiveItem().getItems().items, function(item) {
-                if (item.maskOnSlide) {
-                    item.setMasked(false);
-                }
-            });
-            */
         } else {
             this.container.addCls('open');
-
-            /*
-            Ext.each(this.container.getActiveItem().getItems().items, function(item) {
-                if (item.maskOnSlide) {
-                    item.setMasked(true);
-                }
-            });
-            */
         }
     },
     
     /**
-     * Generates a new Ext.dataview.List object to be used for displaying
-     * the navigation items.
+     *  @private
+     *
+     *  Generates a new Ext.dataview.List object to be used for displaying
+     *  the navigation items.
      */
     createNavigationList: function(store) {
         var listConfig = this.getList();
@@ -562,6 +627,8 @@ Ext.define('Ext.ux.slidenavigation.View', {
     },
     
     /**
+     *  @private
+     *
      *  Generates and returns the Ext.Container to be used for displaying
      *  content.  This is the "slideable" container that is positioned above
      *  the navigation list.
@@ -586,7 +653,6 @@ Ext.define('Ext.ux.slidenavigation.View', {
                         order: 'before',
                         scope: me
                     },
-                    drag:    Ext.Function.createThrottled(me.onContainerDrag, 100, me),
                     dragend: me.onContainerDragend,
                     scope:   me
                 },
@@ -603,10 +669,14 @@ Ext.define('Ext.ux.slidenavigation.View', {
 
                             if (me.isOpened()) {
                                 me.fireEvent('opened', me);
+
+                                me.doMaskItem(me.container.getActiveItem(), true);
                             }
 
                             else if (me.isClosed()) {
                                 me.fireEvent('closed', me);
+
+                                me.doMaskItem(me.container.getActiveItem(), false);
                             }
 
                             // Remove the class when the animation is finished, but only
@@ -625,6 +695,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
      *  otherwise this will always return the same thing (the main container, not the
      *  selected item).
      *
+     *  @return {Ext.Component/null} The currently active component.
      */
     getActiveItem: function() {
         var selection = this.list.getSelection();
