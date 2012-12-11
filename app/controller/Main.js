@@ -1,12 +1,23 @@
+/**
+ *  @class SlideNavigationExample.controller.Main
+ *
+ *  This {@link Ext.app.Controller} serves as a demonstration of how to
+ *  listen to various events relating to a {@link Ext.ux.slidenavigation.View}.
+ *
+ */
 Ext.define("SlideNavigationExample.controller.Main", {
     extend: 'Ext.app.Controller',
     
     config: {
         refs: {
-            slideNav: 'slidenavigationview'
+            slideNav:                   'slidenavigationview',
+            moviePosterListContainer:   'slidenavigationview container[title="Item 8"]'
         },
 
         control: {
+            /**
+             *  Here are examples of the various events you can listen for.
+             */
             slideNav: {
                 open: function(nav, position, duration) {
                     console.log('Container open (position='+position+',duration='+duration+')');
@@ -43,7 +54,18 @@ Ext.define("SlideNavigationExample.controller.Main", {
                 dragend: function(nav) {
                     console.log('Container dragend');
                 }
+            },
+
+            /**
+             *  The 'activate' event fires on the container, not the child
+             *  element.
+             *
+             */
+            moviePosterListContainer: {
+                activate: function(container) {
+                    console.log('Activate moviePosterListContainer');
+                }
             }
-        }
+        },
     }
 });

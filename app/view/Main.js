@@ -25,7 +25,6 @@ Ext.define("SlideNavigationExample.view.Main", {
          */
         selectSlideDuration: 200,
 
-
         /**
          *  Enable content masking when container is open.
          *
