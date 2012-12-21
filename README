@@ -49,16 +49,18 @@ Update the ``app.classpath`` variable to point to the ``ux`` directory, like so:
    app.classpath=${app.dir}/app.js,${app.dir}/app,path/to/ux
 
 
-
 Building the Example Application
 --------------------------------
 
-To build the example you need to put Sencha Touch into a folder named sdk.  Then run::
+To build the example you need to make sure you have the `Sencha Cmd`_ installed
+(>= v3.0.0.250) and Sencha Touch 2.1 extracted into a directory named `touch`.
+Then, run the following command (from the directory that this README is located)::
 
-    ./sdk/commands/sencha app build -e testing
+    sencha app build
 
-This will produce the example app in the `build/testing` directory.
+This will produce the example app in the `build/SlideNavigationExample/production` directory.
 
+.. _`Sencha Cmd`: 
 
 Notes
 -----
@@ -81,4 +83,5 @@ License
 -------
 
 This code is released under the MIT license.  See the LICENSE file for the actual license.
+
 
