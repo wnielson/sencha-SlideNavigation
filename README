@@ -60,7 +60,7 @@ Then, run the following command (from the directory that this README is located)
 
 This will produce the example app in the `build/SlideNavigationExample/production` directory.
 
-.. _`Sencha Cmd`: 
+.. _`Sencha Cmd`: http://www.sencha.com/products/sencha-cmd/download
 
 Notes
 -----
