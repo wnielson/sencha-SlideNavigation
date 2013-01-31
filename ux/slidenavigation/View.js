@@ -3,8 +3,17 @@
  *  that provides a sliding main view with an underlying navigation list.  The
  *  concept was inspired by Facebook's mobile app.
  *
- *  @version 0.2.0
+ *  @version 0.2.1
  *  @author Weston Nielson <wnielson@github>
+ *
+ *  Changes
+ *  =======
+ *
+ *  0.2.1
+ *  -----
+ *  - Added ability to dock the navigation list to the right or left of the screen.
+ *    Thanks to ElMassimo for the work on this.
+ *
  */
 Ext.define('Ext.ux.slidenavigation.View', {
     extend: 'Ext.Container',
