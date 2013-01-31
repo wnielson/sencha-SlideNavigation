@@ -36,7 +36,7 @@
      */
     "js": [
         {
-            "path": "touch/sencha-touch.js"
+            "path": "touch/sencha-touch-debug.js"
         },
         {
             "path": "app.js",
