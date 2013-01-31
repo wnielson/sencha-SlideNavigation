@@ -1,0 +1,6 @@
+build/
+archive/
+resources/sass/.sass-cache/*
+styles/.sass-cache/*
+*/Find Results
+touch/
