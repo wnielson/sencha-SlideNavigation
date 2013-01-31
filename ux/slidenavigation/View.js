@@ -139,7 +139,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
         },
 
         /**
-         * @cfg {String} menuPosition Position of the list menu, left or right.
+         * @cfg {String} listPosition Position of the list menu, left or right.
          * Defaults to 'left'.
          */
         listPosition: 'left',
@@ -323,9 +323,17 @@ Ext.define('Ext.ux.slidenavigation.View', {
         var me      = this,
             config  = Ext.merge(me.getSlideButtonDefaults(),
                                 Ext.isObject(config) ? config : {}),
-            parent  = el.down(config.selector);
+            parent  = el.down(config.selector),
+            listPosition = this.getListPosition();
         
         if (parent) {
+
+            // Make sure that the button is placed on the correct side of the toolbar
+            layout = parent.getLayout();
+            if (layout && Ext.isFunction(layout.setPack)) {
+                layout.setPack(listPosition);
+            }
+
             return parent.add(Ext.merge(me._slideButtonConfig, config));
         }
         
@@ -442,7 +450,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
         if (this.config.slideSelector) {
             node = e.target;
             while (node = node.parentNode) {
-                if (node.className && node.className.indexOf(this.config.slideSelector) > -1) {
+                if (node.classList && node.classList.contains(this.config.slideSelector)) {
                     this.fireEvent('dragstart', this);
                     return true;
                 }
@@ -459,10 +467,21 @@ Ext.define('Ext.ux.slidenavigation.View', {
      *  which direction to finish moving the container based on its current position and velocity.
      */
     onContainerDragend: function(draggable, e, eOpts) {
-        var velocity  = Math.abs(e.deltaX / e.deltaTime),
-            direction = (e.deltaX > 0) ? "right" : "left",
-            offset    = Ext.clone(draggable.offset),
-            threshold = parseInt(this.config.list.minWidth * .70);
+        var velocity     = Math.abs(e.deltaX / e.deltaTime),
+            listPosition = this.getListPosition()
+            direction    = (e.deltaX > 0) ? "right" : "left",
+            offset       = Ext.clone(draggable.offset),
+            threshold    = parseInt(this.config.list.minWidth * .70);
+
+        // XXX: This is ugly
+        if (listPosition == "right")
+        {
+            if (direction == "right")  {
+                direction = "left";
+            } else {
+                direction = "right";
+            }
+        }
         
         switch (direction) {
             case "right":
@@ -566,7 +585,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
             listPosition = this.getListPosition();
 
         // Invert the direction of the side movement
-        if(listPosition == "right") {
+        if (listPosition == "right") {
             offsetX = -offsetX;
         }
         
@@ -594,7 +613,10 @@ Ext.define('Ext.ux.slidenavigation.View', {
      *  @return {Boolean} Whether or not the container is fully open.
      */
     isOpened: function() {
-        return (this.container.draggableBehavior.draggable.offset.x == this.config.list.minWidth);
+        var listPosition = this.getListPosition();
+            offset = (listPosition == "left") ? this.config.list.minWidth : -this.config.list.minWidth;
+
+        return (this.container.draggableBehavior.draggable.offset.x == offset);
     },
     
     /**
@@ -627,7 +649,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
         if (listConfig.width) {
             listConfig.minWidth = listConfig.width;
 
-            if(listPosition == "left") {
+            if (listPosition == "left") {
                 // The actual width of the list is determined by maxDrag
                 listConfig.width = listConfig.maxDrag || listConfig.width;
             }
@@ -658,15 +680,15 @@ Ext.define('Ext.ux.slidenavigation.View', {
         listPosition = this.getListPosition(),
         containerConstraint;
 
-        if(listPosition == "left") {
+        if (listPosition == "left") {
             containerConstraint = {
                 min: { x: 0, y: 0 },
                 max: { x: me.config.list.maxDrag || Math.max(screen.width, screen.height), y: 0 }
             }
         } else {
             containerConstraint = {
-                // The sliding menu still does not support maxDrag when positioned on the right,
-                // it would require adding padding to every element in the list.
+                // TODO: The sliding menu does not currently support maxDrag when positioned on the right,
+                //       because it would require adding padding to every element in the list.
                 min: { x: -me.config.list.width, y: 0 },
                 max: { x: 0, y: 0 }
             }
