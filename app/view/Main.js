@@ -13,11 +13,11 @@ Ext.define("SlideNavigationExample.view.Main", {
         fullscreen: true,
          
         /**
-         *  Any component within the container with an 'x-toolbar' class
+         *  Any component within the container with an 'x-titlebar' class
          *  will be draggable.  To disable draggin all together, set this
          *  to false.
          */
-        slideSelector: 'x-toolbar',
+        slideSelector: 'x-titlebar',
         
         /**
          *  Time in milliseconds to animate the closing of the container
@@ -38,7 +38,7 @@ Ext.define("SlideNavigationExample.view.Main", {
          *  will use these values at the default.
          */
         slideButtonDefaults: {
-            selector: 'toolbar'
+            selector: 'titlebar'
         },
          
         /**
@@ -50,7 +50,7 @@ Ext.define("SlideNavigationExample.view.Main", {
             maxDrag: 400,
             width: 200,
             items: [{
-                xtype: 'toolbar',
+                xtype: 'titlebar',
                 docked: 'top',
                 ui: 'light',                    
                 title: {
@@ -62,7 +62,7 @@ Ext.define("SlideNavigationExample.view.Main", {
                 
                 /**
                  *  Here's an example of how to add a different type of
-                 *  component into the toolbar of the list.
+                 *  component into the titlebar of the list.
                  */
                 /*
                 items: [{
@@ -76,6 +76,8 @@ Ext.define("SlideNavigationExample.view.Main", {
             
         },
         
+        listPosition: 'right',
+
         /**
          *  Example of how to re-order the groups.
          */
@@ -102,7 +104,7 @@ Ext.define("SlideNavigationExample.view.Main", {
             // `slideButtonDefaults`.
             slideButton: true,
             items: [{
-                xtype: 'toolbar',
+                xtype: 'titlebar',
                 title: 'Item 1',
                 docked: 'top'
             },{
@@ -126,14 +128,14 @@ Ext.define("SlideNavigationExample.view.Main", {
             title: 'Item 3',
             group: 'Group 2',
             items: [{
-                xtype: 'toolbar',
+                xtype: 'titlebar',
                 title: 'Item 3',
                 docked: 'top'
             },{
                 xtype: 'panel',
                 layout: 'card',
                 styleHtmlContent: true,
-                html: '<p>The toolbar on this page doesn\'t have a slideButton, so you\'ll have to "slide" the toolbar to view the menu.</p><p>Donec neque augue, fermentum quis tempor quis, lacinia ut augue. Sed dictum risus id arcu vehicula sed porttitor nisi egestas. Aliquam arcu felis, sagittis vel pulvinar vitae, ultricies a augue. Praesent eget erat tellus. Aenean nec dui magna. Cras sagittis, diam vel bibendum mattis, neque purus placerat turpis, sit amet tempor neque nisl non eros. Pellentesque id orci nulla, nec eleifend quam. Proin ut magna turpis. Phasellus erat urna, faucibus in tempus bibendum, ultrices a mauris. Nulla semper ante sed est placerat sagittis. Nam ut vestibulum nulla. Sed sit amet aliquet urna. Morbi est velit, vulputate quis pretium vitae, lobortis sed ligula.</p>',
+                html: '<p>The titlebar on this page doesn\'t have a slideButton, so you\'ll have to "slide" the titlebar to view the menu.</p><p>Donec neque augue, fermentum quis tempor quis, lacinia ut augue. Sed dictum risus id arcu vehicula sed porttitor nisi egestas. Aliquam arcu felis, sagittis vel pulvinar vitae, ultricies a augue. Praesent eget erat tellus. Aenean nec dui magna. Cras sagittis, diam vel bibendum mattis, neque purus placerat turpis, sit amet tempor neque nisl non eros. Pellentesque id orci nulla, nec eleifend quam. Proin ut magna turpis. Phasellus erat urna, faucibus in tempus bibendum, ultrices a mauris. Nulla semper ante sed est placerat sagittis. Nam ut vestibulum nulla. Sed sit amet aliquet urna. Morbi est velit, vulputate quis pretium vitae, lobortis sed ligula.</p>',
                 scrollable: true,
                 maskOnOpen: true
             }]
@@ -141,19 +143,19 @@ Ext.define("SlideNavigationExample.view.Main", {
             title: 'Item 4',
             group: 'Group 2',
             slideButton: {
-                selector: 'toolbar',
+                selector: 'titlebar',
                 iconMask: true,
                 iconCls: 'arrow_left'
             },
             items: [{
-                xtype: 'toolbar',
+                xtype: 'titlebar',
                 title: 'Item 4',
                 docked: 'bottom'
             },{
                 styleHtmlContent: true,
                 xtype: 'panel',
                 layout: 'card',
-                html: '<h2>Item 4</h2><p>The toolbar for this item is at the bottom, which has a slideButton and uses a different icon.</p>'
+                html: '<h2>Item 4</h2><p>The titlebar for this item is at the bottom, which has a slideButton and uses a different icon.</p>'
             }]
         },{
             title: 'Item 5',
@@ -165,14 +167,14 @@ Ext.define("SlideNavigationExample.view.Main", {
             },
             items: [{
                 style: 'padding: 10px',
-                html: '<h2>Item 5</h2><p>Here we\'ve added a slideButton to a location other than a toolbar with text instead of an icon.</p>'
+                html: '<h2>Item 5</h2><p>Here we\'ve added a slideButton to a location other than a titlebar with text instead of an icon.</p>'
             }]
             
         },{
             title: 'Item 6',
             group: 'Group 3',
             items: [{
-                xtype: 'toolbar',
+                xtype: 'titlebar',
                 title: 'Item 6',
                 docked: 'top'
             },{
@@ -186,7 +188,7 @@ Ext.define("SlideNavigationExample.view.Main", {
             slideButton: false,
             
             items: [{
-                xtype: 'toolbar',
+                xtype: 'titlebar',
                 title: 'Item 7',
                 docked: 'top'
             },{
@@ -205,7 +207,7 @@ Ext.define("SlideNavigationExample.view.Main", {
             },
 
             items: [{
-                xtype: 'toolbar',
+                xtype: 'titlebar',
                 title: 'Item 8',
                 docked: 'top'
             },{

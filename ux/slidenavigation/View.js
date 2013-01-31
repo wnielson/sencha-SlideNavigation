@@ -76,8 +76,10 @@ Ext.define('Ext.ux.slidenavigation.View', {
      */
     
     config: {
+
         /**
-         * @cfg {Object} list Configuration for the navigation list
+         * @cfg {Object} list Configuration for the navigation list.
+         * The maxDrag property is not supported when the list is on the right.
          */
         list: {
             width: 250,
@@ -135,7 +137,13 @@ Ext.define('Ext.ux.slidenavigation.View', {
         defaults: {
             layout: 'card'
         },
-        
+
+        /**
+         * @cfg {String} menuPosition Position of the list menu, left or right.
+         * Defaults to 'left'.
+         */
+        listPosition: 'left',
+
         /**
          * @cfg {String} slideSelector Class selector of object (or parent)
          * of which dragging should be allowed.  Defaults to the entire container.
@@ -211,6 +219,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
             xtype: 'button',
             iconMask: true,
             iconCls: 'more',
+            align: this.getListPosition(),
             name: 'slidebutton',
             listeners: {
                 release: me.toggleContainer,
@@ -554,9 +563,14 @@ Ext.define('Ext.ux.slidenavigation.View', {
     moveContainer: function(nav, offsetX, duration) {
         var duration  = duration || this.config.slideDuration,
             draggable = this.container.draggableBehavior.draggable;
+            listPosition = this.getListPosition();
+
+        // Invert the direction of the side movement
+        if(listPosition == "right") {
+            offsetX = -offsetX;
+        }
         
         this.container.addCls('open');
-
         draggable.setOffset(offsetX, 0, {
             duration: duration
         });
@@ -606,24 +620,25 @@ Ext.define('Ext.ux.slidenavigation.View', {
      *  the navigation items.
      */
     createNavigationList: function(store) {
-        var listConfig = this.getList();
+        var listConfig = this.getList(),
+            listPosition = this.getListPosition();
 
-        // The width of the list needs to be set to 100%, so we copy
-        // the width value (if set) to minWidth and then delete it.
+        // The menu can be dragged further than the width
         if (listConfig.width) {
-            if (!listConfig.minWidth) {
-                listConfig.minWidth = listConfig.width;
+            listConfig.minWidth = listConfig.width;
+
+            if(listPosition == "left") {
+                // The actual width of the list is determined by maxDrag
+                listConfig.width = listConfig.maxDrag || listConfig.width;
             }
-            delete listConfig.width;
         }
 
         return Ext.create('Ext.dataview.List', Ext.merge({}, listConfig, {
             store: this.store,
-            docked: 'left',
+            docked: listPosition,
             cls: 'x-slidenavigation-list',
-            style: 'position: absolute; top: 0; left: 0; height: 100%;' +
+            style: 'position: absolute; top: 0; '+listPosition+': 0; height: 100%;' +
                    'z-index: 2',
-            width: '100%',
             listeners: {
                 select: this.onSelect,
                 scope: this
@@ -639,19 +654,32 @@ Ext.define('Ext.ux.slidenavigation.View', {
      *  the navigation list.
      */
     createContainer: function() {
-        var me = this;
+        var me = this,
+        listPosition = this.getListPosition(),
+        containerConstraint;
+
+        if(listPosition == "left") {
+            containerConstraint = {
+                min: { x: 0, y: 0 },
+                max: { x: me.config.list.maxDrag || Math.max(screen.width, screen.height), y: 0 }
+            }
+        } else {
+            containerConstraint = {
+                // The sliding menu still does not support maxDrag when positioned on the right,
+                // it would require adding padding to every element in the list.
+                min: { x: -me.config.list.width, y: 0 },
+                max: { x: 0, y: 0 }
+            }
+        }
 
         return Ext.create('Ext.Container', Ext.merge({}, me.config.container, {
-            docked: 'left',
+            // docked: 'left',
             cls: 'x-slidenavigation-container',
             style: 'width: 100%; height: 100%; position: absolute; opacity: 1; z-index: 5',
             layout: 'card',
             draggable: {
                 direction: 'horizontal',
-                constraint: {
-                    min: { x: 0, y: 0 },
-                    max: { x: me.config.list.maxDrag || Math.max(screen.width, screen.height), y: 0 }
-                },
+                constraint: containerConstraint,
                 listeners: {
                     dragstart: {
                         fn:    me.onContainerDragstart,
