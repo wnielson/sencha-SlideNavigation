@@ -79,7 +79,7 @@ Ext.define("SlideNavigationExample.view.Main", {
         /**
          *  Change this to 'right' to dock the navigation list to the right.
          */
-        listPosition: 'right',
+        listPosition: 'left',
 
         /**
          *  Example of how to re-order the groups.
