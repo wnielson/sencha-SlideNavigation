@@ -3,11 +3,15 @@
  *  that provides a sliding main view with an underlying navigation list.  The
  *  concept was inspired by Facebook's mobile app.
  *
- *  @version 0.2.1
+ *  @version 0.2.2-dev
  *  @author Weston Nielson <wnielson@github>
  *
  *  Changes
  *  =======
+ *
+ *  0.2.2 (dev)
+ *  -----------
+ *  - Added drag behavior to container via ``containerSlideDelay`` config option.
  *
  *  0.2.1
  *  -----
@@ -160,6 +164,13 @@ Ext.define('Ext.ux.slidenavigation.View', {
          * dragging only to a toolbar.
          */
         slideSelector: '',
+
+        /**
+         * @cfg {Integer} containerSlideDelay Pixel offset that must be dragged before
+         * allowing the underlying container to be dragged.
+         * Defaults to -1, which is disabled;
+         */
+        containerSlideDelay: -1,
         
         /**
          * @cfg {Integer} slideDuration Number of miliseconds to animate the sliding
@@ -278,6 +289,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
         this.list.select(0);
 
         this.__init = true;
+
     },
     
     /**
@@ -321,6 +333,8 @@ Ext.define('Ext.ux.slidenavigation.View', {
             }
         }
     },
+
+
     
     /**
      *  @private
@@ -452,14 +466,23 @@ Ext.define('Ext.ux.slidenavigation.View', {
      *  Callback function for when the container has started being dragged.
      */
     onContainerDragstart: function(draggable, e, offset, eOpts) {
-        if (this.config.slideSelector == false) {
+        var slideSelector       = this.getSlideSelector(),
+            containerSlideDelay = this.config.containerSlideDelay;
+
+
+        if (slideSelector == false && containerSlideDelay < 0) {
             return false;
         }
+
+        if (this.container.dragAllowed) {
+            console.log("dragAllowed");
+            return true;
+        }
         
-        if (this.config.slideSelector) {
+        if (slideSelector) {
             node = e.target;
             while (node = node.parentNode) {
-                if (node.classList && node.classList.contains(this.config.slideSelector)) {
+                if (node.classList && node.classList.contains(slideSelector)) {
                     this.fireEvent('dragstart', this);
                     return true;
                 }
@@ -685,9 +708,10 @@ Ext.define('Ext.ux.slidenavigation.View', {
      *  the navigation list.
      */
     createContainer: function() {
-        var me = this,
-        listPosition = this.getListPosition(),
-        containerConstraint;
+        var me                  = this,
+            listPosition        = this.getListPosition(),
+            containerSlideDelay = this.getContainerSlideDelay(),
+            containerConstraint;
 
         if (listPosition == "left") {
             containerConstraint = {
@@ -703,11 +727,12 @@ Ext.define('Ext.ux.slidenavigation.View', {
             }
         }
 
-        return Ext.create('Ext.Container', Ext.merge({}, me.config.container, {
+        var container = Ext.create('Ext.Container', Ext.merge({}, me.config.container, {
             // docked: 'left',
             cls: 'x-slidenavigation-container',
             style: 'width: 100%; height: 100%; position: absolute; opacity: 1; z-index: 5',
             layout: 'card',
+            dragAllowed: false,
             draggable: {
                 direction: 'horizontal',
                 constraint: containerConstraint,
@@ -752,6 +777,25 @@ Ext.define('Ext.ux.slidenavigation.View', {
                 }
             }
         }));
+        
+        // Create optional drag-on-container functionality
+        if (containerSlideDelay > -1) {
+
+            container.element.on({
+                drag: function(e, node) {
+                    deltaX = Math.abs(e.deltaX);
+                    if (deltaX > containerSlideDelay && !container.dragAllowed) {
+                        container.dragAllowed = true;
+                        container.element.fireEvent('dragstart');
+                    }
+                },
+                dragend: function() {
+                    container.dragAllowed = false;
+                }
+            });
+        }
+
+        return container;
     },
     
     /**

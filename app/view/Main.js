@@ -18,6 +18,12 @@ Ext.define("SlideNavigationExample.view.Main", {
          *  to false.
          */
         slideSelector: 'x-toolbar',
+
+        /**
+         *  Container must be dragged 40 pixels horizontally before allowing
+         *  the underlying container to actually be dragged.
+         */
+        containerSlideDelay: 40,
         
         /**
          *  Time in milliseconds to animate the closing of the container
@@ -58,7 +64,7 @@ Ext.define("SlideNavigationExample.view.Main", {
                     centered: false,
                     width: 200,
                     left: 0
-                },
+                }
                 
                 /**
                  *  Here's an example of how to add a different type of
