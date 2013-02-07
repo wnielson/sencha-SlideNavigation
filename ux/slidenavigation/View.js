@@ -156,7 +156,8 @@ Ext.define('Ext.ux.slidenavigation.View', {
         /**
          * @cfg {Integer} containerSlideDelay Pixel offset that must be dragged before
          * allowing the underlying container to be dragged.
-         * Defaults to -1, which is disabled;
+         * Defaults to -1, which is disabled.  Setting this to 10 will very closely mimic
+         * the behavior of the FB version.
          */
         containerSlideDelay: -1,
         
@@ -251,11 +252,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
          */
         me.itemMaskDefaults = {
             xtype: 'mask',
-            transparent: true,
-
-            // This is needed to allow dragging on the mask, which is disabled
-            // by the default Ext.Mask class.
-            onEvent: Ext.emptyFn
+            transparent: true
         };
     },
             
@@ -325,8 +322,6 @@ Ext.define('Ext.ux.slidenavigation.View', {
             }
         }
     },
-
-
     
     /**
      *  @private
@@ -385,6 +380,10 @@ Ext.define('Ext.ux.slidenavigation.View', {
         Ext.each(item.query('component[maskOnOpen=true]'), function(el) {
             if (mask) {
                 el.setMasked(maskConfig);
+
+                // This is needed to allow dragging on the mask, which is disabled
+                // by the default Ext.Mask class.
+                el.getMasked().onEvent = Ext.emptyFn;
             } else {
                 el.setMasked(false);
             }
@@ -460,7 +459,6 @@ Ext.define('Ext.ux.slidenavigation.View', {
     onContainerDragstart: function(draggable, e, offset, eOpts) {
         var slideSelector       = this.getSlideSelector(),
             containerSlideDelay = this.config.containerSlideDelay;
-
 
         if (slideSelector == false && containerSlideDelay < 0) {
             return false;
@@ -726,7 +724,8 @@ Ext.define('Ext.ux.slidenavigation.View', {
             cls: 'x-slidenavigation-container',
             style: 'width: 100%; height: 100%; position: absolute; opacity: 1; z-index: 5',
             layout: 'card',
-            dragAllowed: false,
+            dragAllowed:        false,
+            dragAllowedForced:  false,
             draggable: {
                 direction: 'horizontal',
                 constraint: containerConstraint,
@@ -775,15 +774,57 @@ Ext.define('Ext.ux.slidenavigation.View', {
         // Create optional drag-on-container functionality
         if (containerSlideDelay > -1) {
             container.element.on({
-                drag: function(e, node) {
-                    deltaX = Math.abs(e.deltaX);
-                    if (deltaX > containerSlideDelay && !container.dragAllowed) {
+                drag: function(e, node, opts, eOpts) {
+                    deltaX = e.absDeltaX;
+                    deltaY = e.absDeltaY;
+
+                    // This essentally acts as a vertical 'scroll-lock'.  If the user drags more
+                    // than 10px vertically, we disable horizontal drag all together.
+                    if (deltaY > 10 && !container.dragAllowed) {
+                        container.dragAllowedForced = true;
+                        return false;
+                    };
+
+                    //
+                    if (deltaX > containerSlideDelay && !container.dragAllowed && !container.dragAllowedForced) {
+                        if (!container.dragAllowed) {
+                            scrollParent = me.container.getActiveItem().down('component[scrollable]');
+                            if (scrollParent) {
+                                scrollable              = scrollParent.getScrollable();
+                                scroller                = scrollable.getScroller();
+                                scroller._scrollState   = scroller.getDisabled();
+
+                                console.log(scroller.getDisabled() != false);
+                                
+                                if (scroller._scrollState != false) {
+                                    scroller.setDisabled(true);
+                                    scrollable.hideIndicators();
+                                }
+                            }
+                        }
+
                         container.dragAllowed = true;
                         container.element.fireEvent('dragstart');
                     }
                 },
                 dragend: function() {
-                    container.dragAllowed = false;
+                    if (container.dragAllowed) {
+                        // Re-enable scrolling on the child element
+                        scrollParent = me.container.getActiveItem().down('component[scrollable]');
+                        if (scrollParent) {
+                            scrollable              = scrollParent.getScrollable();
+                            scroller                = scrollable.getScroller();
+                            scroller._scrollState   = scroller.getDisabled();
+                                
+                            if (scroller._scrollState != false) {
+                                scroller.setDisabled(null);
+                                scrollable.hideIndicators();
+                            }
+                        }
+                    }
+
+                    container.dragAllowedForced = false;
+                    container.dragAllowed       = false;
                 }
             });
         }

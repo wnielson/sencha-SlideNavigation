@@ -20,10 +20,12 @@ Ext.define("SlideNavigationExample.view.Main", {
         slideSelector: 'x-toolbar',
 
         /**
-         *  Container must be dragged 40 pixels horizontally before allowing
+         *  Container must be dragged 10 pixels horizontally before allowing
          *  the underlying container to actually be dragged.
+         *
+         *  @since 0.2.2
          */
-        containerSlideDelay: 40,
+        containerSlideDelay: 10,
         
         /**
          *  Time in milliseconds to animate the closing of the container
@@ -224,6 +226,7 @@ Ext.define("SlideNavigationExample.view.Main", {
                 scrollable: 'vertical',
                 style: 'margin: auto !important; text-align: center;',
                 maskOnOpen: true,
+                controlScroll: true,
                 defaults: {
                     style: "float: left; margin: 10px; box-shadow: "+
                            "#999 0px 0px 6px 2px; border: 1px solid #888; "+

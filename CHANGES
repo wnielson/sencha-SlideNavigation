@@ -1,10 +1,14 @@
 0.2.2 (Development)
 ===================
+  * Added more intelligent handling of container dragging.  Once vertical
+    scrolling is detected, vertical "scroll-lock" is enabled.  Similarly,
+    once horizontal dragging is detected, any underlying containers with
+    scrolling behaviors are temporarily disabled from scrolling.
+  * Container dragging now works when the container is open (i.e. you can drag
+    on the masked container).
   * Added drag behavior to container via ``containerSlideDelay`` config option.
     This means you are no longer limited to dragging on the toolbar only.  This
     more closely mimics the behavior of the FB menu.
-  * Container dragging now works when the container is open (i.e. you can drag
-    on the masked container).
 
 
 0.2.1 (Jan 31, 2013)
