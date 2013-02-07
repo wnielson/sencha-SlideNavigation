@@ -6,18 +6,6 @@
  *  @version 0.2.2-dev
  *  @author Weston Nielson <wnielson@github>
  *
- *  Changes
- *  =======
- *
- *  0.2.2 (dev)
- *  -----------
- *  - Added drag behavior to container via ``containerSlideDelay`` config option.
- *
- *  0.2.1
- *  -----
- *  - Added ability to dock the navigation list to the right or left of the screen.
- *    Thanks to ElMassimo for the work on this.
- *
  */
 Ext.define('Ext.ux.slidenavigation.View', {
     extend: 'Ext.Container',
@@ -263,7 +251,11 @@ Ext.define('Ext.ux.slidenavigation.View', {
          */
         me.itemMaskDefaults = {
             xtype: 'mask',
-            transparent: true
+            transparent: true,
+
+            // This is needed to allow dragging on the mask, which is disabled
+            // by the default Ext.Mask class.
+            onEvent: Ext.emptyFn
         };
     },
             
@@ -475,7 +467,9 @@ Ext.define('Ext.ux.slidenavigation.View', {
         }
 
         if (this.container.dragAllowed) {
-            console.log("dragAllowed");
+            // TODO: "value", This doesn't work as is, but I'd like to disable the underlying component
+            //       once dragging has started...
+            //this.doMaskItem(this.container.getActiveItem(), true);
             return true;
         }
         
@@ -780,7 +774,6 @@ Ext.define('Ext.ux.slidenavigation.View', {
         
         // Create optional drag-on-container functionality
         if (containerSlideDelay > -1) {
-
             container.element.on({
                 drag: function(e, node) {
                     deltaX = Math.abs(e.deltaX);
