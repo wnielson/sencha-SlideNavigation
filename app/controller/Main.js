@@ -66,6 +66,6 @@ Ext.define("SlideNavigationExample.controller.Main", {
                     console.log('Activate moviePosterListContainer');
                 }
             }
-        },
+        }
     }
 });
