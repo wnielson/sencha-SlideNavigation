@@ -785,7 +785,8 @@ Ext.define('Ext.ux.slidenavigation.View', {
                         return false;
                     };
 
-                    //
+                    // If vertical scroll-lock hasn't been enforced (``dragAllowedForced``), and
+                    // ``deltaX`` is large enough, enable horizontal dragging
                     if (deltaX > containerSlideDelay && !container.dragAllowed && !container.dragAllowedForced) {
                         if (!container.dragAllowed) {
                             scrollParent = me.container.getActiveItem().down('component[scrollable]');

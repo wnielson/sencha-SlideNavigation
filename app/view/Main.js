@@ -226,7 +226,6 @@ Ext.define("SlideNavigationExample.view.Main", {
                 scrollable: 'vertical',
                 style: 'margin: auto !important; text-align: center;',
                 maskOnOpen: true,
-                controlScroll: true,
                 defaults: {
                     style: "float: left; margin: 10px; box-shadow: "+
                            "#999 0px 0px 6px 2px; border: 1px solid #888; "+
