@@ -313,7 +313,6 @@ Ext.define('Ext.ux.slidenavigation.View', {
             if (!document.getElementById(id)) {
                 style           = document.createElement('style');
                 style.type      = 'text/css';
-                style.id        = id;
                 style.innerHTML = '.x-slidenavigation-container.x-dragging, '+
                                   '.x-slidenavigation-container.open { '+
                                   'box-shadow: '+shadowStyle+';'+
