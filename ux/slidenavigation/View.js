@@ -388,11 +388,22 @@ Ext.define('Ext.ux.slidenavigation.View', {
             }
         });
     },
+
+    /**
+     * @private
+     *
+     * Always called when item in the list is tapped.
+     */
+    onItemTap: function (list, index, target, item, e, eOpts) {
+        if (list.isSelected(item) && this.config.closeOnSelect) {
+            this.closeContainer();
+        }
+    },
     
     /**
      *  @private
      *
-     *  Called when an item in the list is tapped.
+     *  Called when an item in the list is tapped if item is not selected.
      */
     onSelect: function(list, item, eOpts) {
         var me = this,
@@ -686,6 +697,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
                    'z-index: 2',
             listeners: {
                 select: this.onSelect,
+                itemtap: this.onItemTap,
                 scope: this
             }
         }));
