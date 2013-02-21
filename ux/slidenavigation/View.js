@@ -733,7 +733,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
         var container = Ext.create('Ext.Container', Ext.merge({}, me.config.container, {
             // docked: 'left',
             cls: 'x-slidenavigation-container',
-            style: 'width: 100%; height: 100%; position: absolute; opacity: 1; z-index: 5',
+            style: 'width: 100%; height: 100%; position: absolute; opacity: 1; z-index: 3',
             layout: 'card',
             dragAllowed:        false,
             dragAllowedForced:  false,
