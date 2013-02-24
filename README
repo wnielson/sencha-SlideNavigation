@@ -36,6 +36,12 @@ or simply extend the 'Ext.ux.slidenavigation.View' class.
 
 For a more complete example, see `app/view/Main.js`.
 
+You will also need to make sure that you have included the appropriate css in order for
+the component to display correctly.  In your SASS style sheet, make sure to include
+`sencha-list`:
+
+    @include sencha-list
+
 Building with Sencha Command
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
