@@ -273,9 +273,15 @@ Ext.define('Ext.ux.slidenavigation.View', {
 
         this.createContainerCSS();
         
-        // TODO: Make this optional, perhaps by defining
-        // "selected: true" in the items list
-        this.list.select(0);
+        var selectedItemIndex = 0;		
+		
+        Ext.each(this.list.getStore().getRange(), function(item, index) {
+            if (item.get('selected') === true) {
+                selectedItemIndex = index;
+            }
+        });
+		
+        this.list.select(selectedItemIndex);
 
         this.__init = true;
 
@@ -547,7 +553,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
                 config: {
                     idProperty: 'index',
                     fields: [
-                        'index', 'title', 'group',
+                        'index', 'title', 'group', 'selected',
                         {
                             name: 'order',
                             defaultValue: 1
