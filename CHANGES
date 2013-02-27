@@ -1,5 +1,8 @@
 0.2.2 (Development)
 ===================
+  * Added: The initially selected item can now be defined via the addition of
+    ``selected: true`` configuration option of an item in the list.  Thanks
+    to acasaccia for the patch.
   * Fixed: Tapping on selected item in list closes the container.
   * Added: More intelligent handling of container dragging.  Once vertical
     scrolling is detected, vertical "scroll-lock" is enabled.  Similarly,
