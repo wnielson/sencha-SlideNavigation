@@ -811,9 +811,6 @@ Ext.define('Ext.ux.slidenavigation.View', {
                                 scrollable              = scrollParent.getScrollable();
                                 scroller                = scrollable.getScroller();
                                 scroller._scrollState   = scroller.getDisabled();
-
-                                console.log(scroller.getDisabled() != false);
-                                
                                 if (scroller._scrollState != false) {
                                     scroller.setDisabled(true);
                                     scrollable.hideIndicators();
