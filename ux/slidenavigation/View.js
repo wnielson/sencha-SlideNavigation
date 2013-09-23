@@ -275,13 +275,15 @@ Ext.define('Ext.ux.slidenavigation.View', {
         
         var selectedItemIndex = 0;		
 		
-        Ext.each(this.list.getStore().getRange(), function(item, index) {
-            if (item.get('selected') === true) {
-                selectedItemIndex = index;
-            }
-        });
+        if (this.list.getStore().getCount() > 0) {
+            Ext.each(this.list.getStore().getRange(), function(item, index) {
+                if (item.get('selected') === true) {
+                    selectedItemIndex = index;
+                }
+            });
 		
-        this.list.select(selectedItemIndex);
+            this.list.select(selectedItemIndex);
+        }
 
         this.__init = true;
 
