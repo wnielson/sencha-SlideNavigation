@@ -162,14 +162,14 @@ Ext.define('Ext.ux.slidenavigation.View', {
         containerSlideDelay: -1,
         
         /**
-         * @cfg {Integer} slideDuration Number of miliseconds to animate the sliding
+         * @cfg {Integer} slideDuration Number of milliseconds to animate the sliding
          * of the container when "flicked".  By default the animation is disable on
          * Android.
          */
         slideDuration: Ext.os.is('Android') ? 0 : 200,
         
         /**
-         * @cfg {Integer} selectSlideDuration Number of miliseconds to animate the sliding
+         * @cfg {Integer} selectSlideDuration Number of milliseconds to animate the sliding
          * of the container when list item is selected (if closeOnSelect = true). The default
          * value here of 300 gives a much nicer feel.  By default the animation is disable on
          * Android.
@@ -319,7 +319,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
 
         if (shadowStyle) {
             if (!document.getElementById(id)) {
-                style           = document.createElement('style');
+                var style           = document.createElement('style');
                 style.type      = 'text/css';
                 style.innerHTML = '.x-slidenavigation-container.x-dragging, '+
                                   '.x-slidenavigation-container.open { '+
@@ -346,7 +346,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
         if (parent) {
 
             // Make sure that the button is placed on the correct side of the toolbar
-            layout = parent.getLayout();
+            var layout = parent.getLayout();
             if (layout && Ext.isFunction(layout.setPack)) {
                 layout.setPack(listPosition);
             }
@@ -490,7 +490,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
         }
         
         if (slideSelector) {
-            node = e.target;
+            var node = e.target;
             while (node = node.parentNode) {
                 if (node.classList && node.classList.contains(slideSelector)) {
                     this.fireEvent('dragstart', this);
@@ -510,7 +510,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
      */
     onContainerDragend: function(draggable, e, eOpts) {
         var velocity     = Math.abs(e.deltaX / e.deltaTime),
-            listPosition = this.getListPosition()
+            listPosition = this.getListPosition(),
             direction    = (e.deltaX > 0) ? "right" : "left",
             offset       = Ext.clone(draggable.offset),
             threshold    = parseInt(this.config.list.minWidth * .70);
@@ -623,7 +623,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
      */
     moveContainer: function(nav, offsetX, duration) {
         var duration  = duration || this.config.slideDuration,
-            draggable = this.container.draggableBehavior.draggable;
+            draggable = this.container.draggableBehavior.draggable,
             listPosition = this.getListPosition();
 
         // Invert the direction of the side movement
@@ -655,7 +655,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
      *  @return {Boolean} Whether or not the container is fully open.
      */
     isOpened: function() {
-        var listPosition = this.getListPosition();
+        var listPosition = this.getListPosition(),
             offset = (listPosition == "left") ? this.config.list.minWidth : -this.config.list.minWidth;
 
         return (this.container.draggableBehavior.draggable.offset.x == offset);
@@ -794,7 +794,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
         if (containerSlideDelay > -1) {
             container.element.on({
                 drag: function(e, node, opts, eOpts) {
-                    deltaX = e.absDeltaX;
+                    var deltaX = e.absDeltaX,
                     deltaY = e.absDeltaY;
 
                     // This essentally acts as a vertical 'scroll-lock'.  If the user drags more
@@ -802,15 +802,15 @@ Ext.define('Ext.ux.slidenavigation.View', {
                     if (deltaY > 10 && !container.dragAllowed) {
                         container.dragAllowedForced = true;
                         return false;
-                    };
+                    }
 
                     // If vertical scroll-lock hasn't been enforced (``dragAllowedForced``), and
                     // ``deltaX`` is large enough, enable horizontal dragging
                     if (deltaX > containerSlideDelay && !container.dragAllowed && !container.dragAllowedForced) {
                         if (!container.dragAllowed) {
-                            scrollParent = me.container.getActiveItem().down('component[scrollable]');
+                            var scrollParent = me.container.getActiveItem().down('component[scrollable]');
                             if (scrollParent) {
-                                scrollable              = scrollParent.getScrollable();
+                                var scrollable              = scrollParent.getScrollable(),
                                 scroller                = scrollable.getScroller();
                                 scroller._scrollState   = scroller.getDisabled();
                                 if (scroller._scrollState != false) {
@@ -827,9 +827,9 @@ Ext.define('Ext.ux.slidenavigation.View', {
                 dragend: function() {
                     if (container.dragAllowed) {
                         // Re-enable scrolling on the child element
-                        scrollParent = me.container.getActiveItem().down('component[scrollable]');
+                        var scrollParent = me.container.getActiveItem().down('component[scrollable]');
                         if (scrollParent) {
-                            scrollable              = scrollParent.getScrollable();
+                            var scrollable              = scrollParent.getScrollable(),
                             scroller                = scrollable.getScroller();
                             scroller._scrollState   = scroller.getDisabled();
                                 
