@@ -509,7 +509,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
      *  which direction to finish moving the container based on its current position and velocity.
      */
     onContainerDragend: function(draggable, e, eOpts) {
-        var velocity     = Math.abs(e.deltaX / e.deltaTime),
+        var velocity     = e.absDeltaX / (e.time - e.startTime),
             listPosition = this.getListPosition()
             direction    = (e.deltaX > 0) ? "right" : "left",
             offset       = Ext.clone(draggable.offset),
