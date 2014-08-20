@@ -296,8 +296,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
      */
     addItems: function(items) {
         var me = this,
-            items = Ext.isArray(items) ? items : [items],
-            groups = me.config.groups;
+            items = Ext.isArray(items) ? items : [items];
         
         Ext.each(items, function(item, index) {
             if (!Ext.isDefined(item.index)) {
@@ -315,7 +314,8 @@ Ext.define('Ext.ux.slidenavigation.View', {
      */
     createContainerCSS: function() {
         var shadowStyle = this.getShadowStyle(),
-            id          = this.getId();
+            id          = this.getId(),
+            style;
 
         if (shadowStyle) {
             if (!document.getElementById(id)) {
@@ -341,7 +341,8 @@ Ext.define('Ext.ux.slidenavigation.View', {
             config  = Ext.merge(me.getSlideButtonDefaults(),
                                 Ext.isObject(config) ? config : {}),
             parent  = el.down(config.selector),
-            listPosition = this.getListPosition();
+            listPosition = this.getListPosition(),
+            layout;
         
         if (parent) {
 
@@ -476,7 +477,8 @@ Ext.define('Ext.ux.slidenavigation.View', {
      */
     onContainerDragstart: function(draggable, e, offset, eOpts) {
         var slideSelector       = this.getSlideSelector(),
-            containerSlideDelay = this.config.containerSlideDelay;
+            containerSlideDelay = this.config.containerSlideDelay,
+            node;
 
         if (slideSelector == false && containerSlideDelay < 0) {
             return false;
@@ -510,7 +512,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
      */
     onContainerDragend: function(draggable, e, eOpts) {
         var velocity     = Math.abs(e.deltaX / e.deltaTime),
-            listPosition = this.getListPosition()
+            listPosition = this.getListPosition(),
             direction    = (e.deltaX > 0) ? "right" : "left",
             offset       = Ext.clone(draggable.offset),
             threshold    = parseInt(this.config.list.minWidth * .70);
@@ -563,7 +565,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
                             name: 'groupOrder',
                             convert: function(value, record) {
                                 // By default we group and order by group name.
-                                group = record.get('group');
+                                var group = record.get('group');
                                 return groups[group] || group;
                             }
                         }
@@ -623,7 +625,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
      */
     moveContainer: function(nav, offsetX, duration) {
         var duration  = duration || this.config.slideDuration,
-            draggable = this.container.draggableBehavior.draggable;
+            draggable = this.container.draggableBehavior.draggable,
             listPosition = this.getListPosition();
 
         // Invert the direction of the side movement
@@ -655,7 +657,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
      *  @return {Boolean} Whether or not the container is fully open.
      */
     isOpened: function() {
-        var listPosition = this.getListPosition();
+        var listPosition = this.getListPosition(),
             offset = (listPosition == "left") ? this.config.list.minWidth : -this.config.list.minWidth;
 
         return (this.container.draggableBehavior.draggable.offset.x == offset);
@@ -794,8 +796,9 @@ Ext.define('Ext.ux.slidenavigation.View', {
         if (containerSlideDelay > -1) {
             container.element.on({
                 drag: function(e, node, opts, eOpts) {
-                    deltaX = e.absDeltaX;
-                    deltaY = e.absDeltaY;
+                    var deltaX = e.absDeltaX,
+                        deltaY = e.absDeltaY,
+                        scrollParent, scrollable, scroller;
 
                     // This essentally acts as a vertical 'scroll-lock'.  If the user drags more
                     // than 10px vertically, we disable horizontal drag all together.
@@ -825,6 +828,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
                     }
                 },
                 dragend: function() {
+                    var scrollParent,scrollable, scroller;
                     if (container.dragAllowed) {
                         // Re-enable scrolling on the child element
                         scrollParent = me.container.getActiveItem().down('component[scrollable]');
