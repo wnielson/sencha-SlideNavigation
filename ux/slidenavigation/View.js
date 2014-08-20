@@ -341,7 +341,8 @@ Ext.define('Ext.ux.slidenavigation.View', {
             config  = Ext.merge(me.getSlideButtonDefaults(),
                                 Ext.isObject(config) ? config : {}),
             parent  = el.down(config.selector),
-            listPosition = this.getListPosition();
+            listPosition = this.getListPosition(),
+            layout;
         
         if (parent) {
 
