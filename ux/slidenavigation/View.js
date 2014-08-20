@@ -315,7 +315,8 @@ Ext.define('Ext.ux.slidenavigation.View', {
      */
     createContainerCSS: function() {
         var shadowStyle = this.getShadowStyle(),
-            id          = this.getId();
+            id          = this.getId(),
+            style;
 
         if (shadowStyle) {
             if (!document.getElementById(id)) {
