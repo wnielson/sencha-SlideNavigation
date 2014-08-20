@@ -657,7 +657,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
      *  @return {Boolean} Whether or not the container is fully open.
      */
     isOpened: function() {
-        var listPosition = this.getListPosition();
+        var listPosition = this.getListPosition(),
             offset = (listPosition == "left") ? this.config.list.minWidth : -this.config.list.minWidth;
 
         return (this.container.draggableBehavior.draggable.offset.x == offset);
