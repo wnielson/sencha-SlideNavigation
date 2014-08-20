@@ -796,8 +796,9 @@ Ext.define('Ext.ux.slidenavigation.View', {
         if (containerSlideDelay > -1) {
             container.element.on({
                 drag: function(e, node, opts, eOpts) {
-                    deltaX = e.absDeltaX;
-                    deltaY = e.absDeltaY;
+                    var deltaX = e.absDeltaX,
+                        deltaY = e.absDeltaY,
+                        scrollParent, scrollable, scroller;
 
                     // This essentally acts as a vertical 'scroll-lock'.  If the user drags more
                     // than 10px vertically, we disable horizontal drag all together.
@@ -827,6 +828,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
                     }
                 },
                 dragend: function() {
+                    var scrollParent,scrollable, scroller;
                     if (container.dragAllowed) {
                         // Re-enable scrolling on the child element
                         scrollParent = me.container.getActiveItem().down('component[scrollable]');
