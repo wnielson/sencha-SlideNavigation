@@ -565,7 +565,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
                             name: 'groupOrder',
                             convert: function(value, record) {
                                 // By default we group and order by group name.
-                                group = record.get('group');
+                                var group = record.get('group');
                                 return groups[group] || group;
                             }
                         }
