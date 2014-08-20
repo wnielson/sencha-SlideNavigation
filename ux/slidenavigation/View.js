@@ -510,7 +510,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
      */
     onContainerDragend: function(draggable, e, eOpts) {
         var velocity     = Math.abs(e.deltaX / e.deltaTime),
-            listPosition = this.getListPosition()
+            listPosition = this.getListPosition(),
             direction    = (e.deltaX > 0) ? "right" : "left",
             offset       = Ext.clone(draggable.offset),
             threshold    = parseInt(this.config.list.minWidth * .70);
