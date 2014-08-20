@@ -476,7 +476,8 @@ Ext.define('Ext.ux.slidenavigation.View', {
      */
     onContainerDragstart: function(draggable, e, offset, eOpts) {
         var slideSelector       = this.getSlideSelector(),
-            containerSlideDelay = this.config.containerSlideDelay;
+            containerSlideDelay = this.config.containerSlideDelay,
+            node;
 
         if (slideSelector == false && containerSlideDelay < 0) {
             return false;
