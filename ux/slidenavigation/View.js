@@ -625,7 +625,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
      */
     moveContainer: function(nav, offsetX, duration) {
         var duration  = duration || this.config.slideDuration,
-            draggable = this.container.draggableBehavior.draggable;
+            draggable = this.container.draggableBehavior.draggable,
             listPosition = this.getListPosition();
 
         // Invert the direction of the side movement
