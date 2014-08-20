@@ -296,8 +296,7 @@ Ext.define('Ext.ux.slidenavigation.View', {
      */
     addItems: function(items) {
         var me = this,
-            items = Ext.isArray(items) ? items : [items],
-            groups = me.config.groups;
+            items = Ext.isArray(items) ? items : [items];
         
         Ext.each(items, function(item, index) {
             if (!Ext.isDefined(item.index)) {
