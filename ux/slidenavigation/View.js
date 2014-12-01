@@ -520,6 +520,8 @@ Ext.define('Ext.ux.slidenavigation.View', {
         // XXX: This is ugly
         if (listPosition == "right")
         {
+            
+       	    offset.x = -offset.x; //Handles threshold for right aligned lists
             if (direction == "right")  {
                 direction = "left";
             } else {
